@@ -25,6 +25,9 @@ public class Bubbling {
 
         maopao m = new maopao();
         m.maopaopaixu(arr);
+
+        maopao2 m2 = new maopao2();
+        m2.maopaopaixu(arr);
     }
 }
 class maopao {
@@ -57,4 +60,30 @@ class maopao {
     //12 34  44 78 56  第三轮结束
     //12 34 44  78 56  第四轮开始
     //12 34 44  56 78  第四轮结束
+}
+
+class maopao2{
+    public int arr[];
+    public void maopaopaixu(int[] arr){
+          this.arr = arr;
+          int len =arr.length;
+          for(int i=0;i<len;i++){//控制轮数
+              for(int j=0;j<len-i-1;j++){ //第一轮要交换4次len-i-1 第二轮要交换三次...所以
+                if(arr[j] > arr[j+1]){
+                     int temp = arr[j];
+                     arr[j] = arr[j+1];
+                     arr[j+1] = temp;
+                }
+              }
+          }
+        System.out.println(Arrays.toString(arr));
+    }
+//44 78 34 56 12 比较相邻
+//44 34 78 56 12
+//44 34 56 78 12
+//44 34 56 12 78 第一轮结束
+//34 44 56 12 78
+//34 44 12 56 78 第二轮结束
+//34 12 44 56 78 第三轮结束
+//12 34 44 56 78 第四轮结束
 }
