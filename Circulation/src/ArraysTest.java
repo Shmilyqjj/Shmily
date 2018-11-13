@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Random;
 public class ArraysTest {
     public static void main(String[] args) {
-
+//1.数组的定义和遍历
         int[] no = new int[5];//定义一个长度为5的数组 名字为no   no存在栈内，new int[]存在堆内
         no[0] = 1;
         no[1] = 2;//初始化数组，未初始化的默认为0
@@ -36,14 +36,14 @@ public class ArraysTest {
         print(1,2,3,4,5,6);
         System.out.println("-------------------------------------");
         print1(1,2,3,4,5,6);
-
+//2.注意事项
 //        //使用数组应注意空指针异常
 //        int len = no.length;
 //        for(int i=0;i<=len;i++){
 //            System.out.print(no[i]);
 //        }
 
-
+//3.二维数组 随机数
         int[] arr = new int[5];
         Random r = new Random();//生成随机数
         for(int i=0;i<arr.length;i++){
@@ -63,8 +63,19 @@ public class ArraysTest {
 
 
 
+//4.Arrays类  常用方法
+        //二分查找
+        int[] arr1 = {2,5,22,34,57,89,96};
+        int index0 = Arrays.binarySearch(arr1,89);//下标为5
+        int index1 = Arrays.binarySearch(arr1,100);//返回负数 绝对值为8  大于最大的 从-1开始到-(length+1)
+        int index2 = Arrays.binarySearch(arr1,1); //返回负数 绝对值为1
+        int index3 = Arrays.binarySearch(arr1,6); //返回负数 绝对值为3  -1开始 在中间取
+        System.out.println(index0+" "+index1+" "+index2+" "+index3);
+
+
     }
-    //函数的可变参数
+
+//函数的可变参数
     public static void print(int ...a){  //a是可变参数 进入函数之后变成数组了
         for(int x:a){
             System.out.println(x);
@@ -76,6 +87,10 @@ public class ArraysTest {
             System.out.println(x);
         }
     }
+
+
+
+
 
 }
 
