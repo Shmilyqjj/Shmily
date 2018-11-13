@@ -72,7 +72,29 @@ public class ArraysTest {
         int index3 = Arrays.binarySearch(arr1,6); //返回负数 绝对值为3  -1开始 在中间取
         System.out.println(index0+" "+index1+" "+index2+" "+index3);
 
+        //数组按字符串输出 toString
+        System.out.println(Arrays.toString(arr1));
 
+        //数组排序
+        int[] arr2 = {2,7,1,9,15,2,86,125,36};
+        Arrays.sort(arr2);//这个函数没有返回值 直接改变原数组
+        System.out.println(Arrays.toString(arr2));
+
+        //复制指定的数组 Arrays.copyOf(int[] array,int length);
+        int[] arr3 = Arrays.copyOf(arr2,6);
+        System.out.println(Arrays.toString(arr3));
+        //复制指定的数组 Arrays.copyOf(int[] array,int from,int to);
+        int[] arr4 = Arrays.copyOfRange(arr2,4,6);
+        System.out.println(Arrays.toString(arr4));
+
+        //判断数组相等Arrays.equals(arr1,arr2)
+        System.out.println(Arrays.equals(arr1,arr2));
+
+        //使用指定元素填充数组
+        Arrays.fill(arr1,10);//所有都填充
+        System.out.println(Arrays.toString(arr1));
+        Arrays.fill(arr2,2,4,10);//下标2，3填充
+        System.out.println(Arrays.toString(arr2));
     }
 
 //函数的可变参数
