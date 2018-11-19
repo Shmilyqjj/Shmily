@@ -22,7 +22,7 @@ public class ValueAndReferenceDeliver {
         System.out.println("String传递后name = "+name);
 
        //String传递+引用传递
-        Person p = new Person();
+        Person0 p = new Person0();
         method(p);
         System.out.println("经过传递后的p.name="+p.name);
     }
@@ -35,7 +35,7 @@ public class ValueAndReferenceDeliver {
     public static void method(String ms){ //String类似基本类型，值传递，不会改变实际参数的值
         ms = "小文";
     }
-    public static void method(Person mp){
+    public static void method(Person0 mp){
         mp.name = "zxw";
     }
 }
@@ -43,7 +43,7 @@ class Duck{
     int age = 2;
 }
 
-class Person{
+class Person0{
     String name = "qjj";
 }
 
