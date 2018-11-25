@@ -51,6 +51,6 @@ public static void main(String[] args) {
         default:
             System.out.println("运算符不正确");
     }
-}
+ }
 }
 
