@@ -4,7 +4,14 @@
 //1.不能有构造方法，只能有一个实例。 2.不能定义任何静态成员、静态方法。 3.不能是public,protected,private,static 4.一定是在new的后面，用其隐含实现一个接口或继承一个类。 5.匿名内部类为局部的，所以局部内部类的所有限制都对其生效。
 public class InnerClass {
     public static void main(String[] args) {
+
+
+
     Outer o = new Outer();
+
+    Outer.Inner1 oi1 = o.new Inner1(); //调用成员内部类
+        oi1.print0();
+
     Outer.SInner os= new Outer.SInner();//静态内部类可以直接用类名调用，不用实例化（成员内部类要以对象名.类名 调用）
     os.print2();
     o.say();//方法内部类 在方法内部调用了该类
@@ -18,6 +25,11 @@ public class InnerClass {
     }
 }
 class Outer{
+    public class Inner1{ //成员内部类
+        public void print0(){
+            System.out.println("调用成员内部类");
+        }
+    }
     private class Inner{ //成员内部类 设为私有可以仅供类内访问
         public void print1(){
             System.out.println("成员内部类");
