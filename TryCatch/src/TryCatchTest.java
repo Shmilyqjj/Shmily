@@ -1,14 +1,16 @@
 public class TryCatchTest {
     public static void main(String[] args) {
 //        div(10,5);
-        div(10,0);
+        System.out.println(div(10,0));
+        System.out.println(div(10,2));//先执行finally  再回try中执行return
     }
     public static int div(int a,int b){
         int arr[] = {1,2,3,4,5,6,7,8,9,10};
 //        arr = null;
         try{
             System.out.println(arr.length);
-            return a/b;
+            int c = a/b;
+            return c;
         }catch(NullPointerException e){
             System.out.println("空指针异常");
         }catch(ArithmeticException e){
