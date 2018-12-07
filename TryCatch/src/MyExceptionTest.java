@@ -1,3 +1,6 @@
+/**
+ * 功能：自定义异常
+ */
 public class MyExceptionTest {
     public static void main(String[] args) {
         UserService u  =new User();
