@@ -48,7 +48,7 @@ class PowerBImpl implements PowerB{
 
 
 
-
+//适配器模式的第二种写法：
 
 
 interface IPerson{
@@ -64,7 +64,7 @@ abstract class Adp implements IPerson{
     public void sing(){}
 }
 
-class Man extends Adp{
+class Man extends Adp{  //其他类继承适配器
     public void sing(){
 
     }
@@ -72,9 +72,7 @@ class Man extends Adp{
 }
 class Woman implements IPerson{
     public void eat(){}
-    public void swim(){
-
-    }
+    public void swim(){}
     public void run(){}
     public void sing(){}
 }
