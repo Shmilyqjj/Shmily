@@ -26,7 +26,7 @@ abstract class UserService{
     public abstract void Login(UserBean ub);
 }
 
-class UserBean{ //用户信息
+class UserBean{ //用户信息   -----  封装用户信息
     private String name;
     private String pwd;
 
