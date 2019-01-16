@@ -24,8 +24,8 @@ public class WordCountDriver {
         //5 设置 reducer的输出类型 key - value类型
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
-        //6 设置输入输出路径 指定job的输入原始文件所在目录
 
+        //6 设置输入输出路径 指定job的输入原始文件所在目录
         FileInputFormat.setInputPaths(job,new Path(args[0]));
         FileOutputFormat.setOutputPath(job,new Path(args[1]));
         //7 将job中配置的相关参数，以及job所用的java类所在的jar包， 提交给yarn去运行
