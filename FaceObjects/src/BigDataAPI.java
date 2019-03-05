@@ -1,3 +1,9 @@
+/**
+ * 对大的数据进行计算 对更大精度的小数进行计算  对数据快速格式化
+ * 对超过精度的数据进行操作和运算的API
+ * date:2019.3.5
+ */
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
