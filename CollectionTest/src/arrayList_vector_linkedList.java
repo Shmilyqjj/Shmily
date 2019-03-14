@@ -49,7 +49,7 @@ public class arrayList_vector_linkedList {
      *5  线程安全，适合在多线程访问时使用，效率较低
      */
     public static void vector(){
-        Vector<String> v = new Vector();
+        Vector<String> v = new Vector(10);//为了防止数组动态扩充次数太多，建议创建Vector时，给定初始容量
         v.add("aa");
         v.add("bb");
         v.add("cc");
