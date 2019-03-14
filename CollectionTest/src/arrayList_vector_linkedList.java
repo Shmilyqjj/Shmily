@@ -26,7 +26,7 @@ public class arrayList_vector_linkedList {
      * 6  线程不安全，适合在单线程访问时使用
      */
     public static void arrayList(){
-        List<String> list = new ArrayList();  //只允许String类型的list
+        List<String> list = new ArrayList(30);  //只允许String类型的list - 为了防止数组动态扩充次数太多，建议创建ArrayList时，给定初始容量
         list.add("aa");
         list.add("bb");
         list.add("cc");
