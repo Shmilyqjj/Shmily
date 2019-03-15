@@ -1,5 +1,5 @@
 /**
- * HDFS文件上传
+ * HDFS文件上传 - 本地上传到HDFS
  */
 
 import org.apache.commons.httpclient.URIException;
