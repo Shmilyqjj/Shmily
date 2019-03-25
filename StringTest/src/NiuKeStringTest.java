@@ -1,4 +1,4 @@
-public class NiuKeTest {
+public class NiuKeStringTest {
     public static void main(String[] args) {
         String s = "hello";String t = "hello";char c [ ] = {'h','e','l','l','o'};
         System.out.println(s.equals(c)); //cha[] 压根不能与String相比较，类型不是相同的
