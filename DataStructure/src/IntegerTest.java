@@ -30,7 +30,9 @@ public class IntegerTest {
         Integer i11 = 128;
         Integer i12 = 128;
         System.out.println(i11 == i12); //127 true      128 false   证明享元模式 小于一个字节可以共享，大于一个字节就不能
-
+        System.out.println("--------------------------------------------------------------");
+        System.out.println(i5.equals(i6)); //String和Integer等包装类的equals比较的是内容
+        System.out.println(i5.hashCode() == i6.hashCode());
 
     }
 }
