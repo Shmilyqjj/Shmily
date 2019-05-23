@@ -12,7 +12,7 @@ import java.util.Base64;
  */
 public class MD5API {
     public static void main(String[] args) {
-        String password = "qjj123456";
+        String password = "qjj";
         try {
             MessageDigest md5 = MessageDigest.getInstance("md5"); //ctrl+alt+t快捷键可以选很多方式
             byte[] bs = password.getBytes("utf-8");
@@ -22,6 +22,7 @@ public class MD5API {
             System.out.println("------------------------------------");
             String newStr = Base64.getEncoder().encodeToString(md5.digest(bs));
             System.out.println(newStr);//输出base64加密的值
+            System.out.println("------------------------------------");
             byte[] decode = Base64.getDecoder().decode(newStr);//base64解密得到md5
             System.out.println(Arrays.toString(decode));
 
