@@ -26,21 +26,21 @@ public class APP {
         //设置第二个bolt   fieldsGrouping按字段的分组，字段值是call对象-》设置分组策略
         builder.setBolt("call-log-counter-bolt",new CallLogCounterBolt()).fieldsGrouping("call-log-creator-bolt",new Fields("call"));
 
-        LocalCluster cluster = new LocalCluster();
-        cluster.submitTopology("LogAnalyserStorm",config,builder.createTopology());//交给本地Storm运行
+//        LocalCluster cluster = new LocalCluster();
+//        cluster.submitTopology("LogAnalyserStorm",config,builder.createTopology());//交给本地Storm运行
 
 
-
-        //代码提交到storm集群上运行
-//        try {
-//            StormSubmitter.submitTopology("LogAnalyserStorm", new Config(), builder.createTopology());
-//        } catch (AlreadyAliveException e) {
-//            e.printStackTrace();
-//        } catch (InvalidTopologyException e) {
-//            e.printStackTrace();
-//        } catch (AuthorizationException e) {
-//            e.printStackTrace();
-//        }
+//
+//        代码提交到storm集群上运行
+        try {
+            StormSubmitter.submitTopology("LogAnalyserStorm", new Config(), builder.createTopology());
+        } catch (AlreadyAliveException e) {
+            e.printStackTrace();
+        } catch (InvalidTopologyException e) {
+            e.printStackTrace();
+        } catch (AuthorizationException e) {
+            e.printStackTrace();
+        }
         //停止这个拓扑
 
     }
