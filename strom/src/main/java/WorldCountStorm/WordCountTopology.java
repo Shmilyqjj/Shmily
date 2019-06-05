@@ -33,11 +33,11 @@ public class WordCountTopology {
         //1 本地模式   2 集群模式
 
 //        //1、本地模式
-        LocalCluster localCluster = new LocalCluster();
-        localCluster.submitTopology("MyWordCount",config,job);
+//        LocalCluster localCluster = new LocalCluster();
+//        localCluster.submitTopology("MyWordCount",config,job);
 
 
-        //2、集群模式：用于打包jar，并放到storm运行
-//        StormSubmitter.submitTopology("WordCountTopology",config,job);
+//        2、集群模式：用于打包jar，并放到storm运行
+        StormSubmitter.submitTopology("WordCountTopology",config,job);
     }
 }
