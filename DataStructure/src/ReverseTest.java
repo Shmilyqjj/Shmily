@@ -42,6 +42,11 @@ public class ReverseTest {
         //使用Collections.reverse(ArrayList)进行反转
         Collections.reverse(arrayList);
         System.out.println("Collections.reverse(ArrayList)反转后："+arrayList.toString());
+
+        System.out.println("-----------------------------------");
+        StringBuffer sb = new StringBuffer();
+        sb.append("abcdefg");
+        System.out.println(sb.reverse());
     }
 
 
