@@ -65,8 +65,9 @@ public class StringAPI {
         }
         System.out.println();
 
-
-
-
+        //整数字符串转换为int数组
+        String intStr = "17835261516";
+        long i = Long.parseLong(intStr);
+        System.out.println("傻哲："+i);
     }
 }
