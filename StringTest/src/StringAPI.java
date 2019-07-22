@@ -42,6 +42,30 @@ public class StringAPI {
         System.out.println(s0.toLowerCase());//全转小写
         System.out.println(s0.toUpperCase());//全转大写
 
+        String sss = "1e12e23e34e45e56be7ace8";  //Split方法
+        String[] es = sss.split("e");
+        for (String sp:es) {
+            System.out.print(sp+" ");
+        }
+        System.out.println("---------------------------------");
+        String[] es1 = sss.split("e",3);
+        for (String sp1:es1) {
+            System.out.print(sp1+" ");
+        }
+        System.out.println("---------------------------------");
+
+        String S_indexof = "1a2a3a4a5aa89abcsa"; //获得所有a的位置索引
+        System.out.println(S_indexof.indexOf("a"));   // 但indexOf方法只返回第一个索引
+        //所以用if方法
+        char[] C_indexOf = S_indexof.toCharArray();
+        for (int i =0;i<C_indexOf.length;i++){
+            if(C_indexOf[i] == 'a'){
+                System.out.print(i+" ");
+            }
+        }
+        System.out.println();
+
+
 
 
     }
