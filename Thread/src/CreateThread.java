@@ -17,11 +17,12 @@ public class CreateThread{
         Thread tt = new Thread(r);
         tt.start();
 
+        //Callable接口和Runnable接口都可以创建线程，但是Callable可以拿到返回值，可以作为runnable的补充
         MyCallableImpl mci = new MyCallableImpl();
         ExecutorService exec= Executors.newCachedThreadPool();
-        exec.submit(mci);
+        exec.submit(mci); //submit方法可以执行runnable和callable的方法  execute方法只能执行runnable方法
 
-        //Callable接口和Runnable接口都可以创建线程，但是Callable可以拿到返回值，可以作为runnable的补充
+
     }
 }
 
