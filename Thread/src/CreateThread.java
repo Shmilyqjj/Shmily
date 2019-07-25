@@ -1,5 +1,9 @@
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
- * 线程的创建 创建线程的两种方法
+ * 线程的创建 创建线程的三种方法
  */
 public class CreateThread{
     public static void main(String[] args) {
@@ -13,6 +17,11 @@ public class CreateThread{
         Thread tt = new Thread(r);
         tt.start();
 
+        MyCallableImpl mci = new MyCallableImpl();
+        ExecutorService exec= Executors.newCachedThreadPool();
+        exec.submit(mci);
+
+        //Callable接口和Runnable接口都可以创建线程，但是Callable可以拿到返回值，可以作为runnable的补充
     }
 }
 
@@ -31,5 +40,17 @@ class MyRunnableImpl implements Runnable{ //创建一个线程方法2：实现Ru
         for (int i = 0; i < 1000; i++) {
             System.out.println(Thread.currentThread()+"-->"+i);
         }
+    }
+}
+
+class MyCallableImpl implements Callable{
+
+
+    @Override
+    public Object call() throws Exception {
+        for (int i = 0; i < 1000; i++) {
+            System.out.println(Thread.currentThread()+"---Callable--->"+i);
+        }
+        return null;
     }
 }
