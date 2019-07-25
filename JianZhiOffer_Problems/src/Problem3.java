@@ -3,22 +3,27 @@
  */
 import java.util.ArrayList;
 public class Problem3 {
-
-}
-/**
- *    public class ListNode {
- *        int val;
- *        ListNode next = null;
- *
- *        ListNode(int val) {
- *            this.val = val;
- *        }
- *    }
- *
- */
-
-class Solution {
-    public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
+    public static void main(String[] args) {
 
     }
 }
+
+class ListNode {
+    int val;
+    ListNode(int val) {
+        this.val = val;
+    }
+    ListNode next = null;
+}
+
+
+
+
+
+class Solution3 {
+    public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
+
+        return null;
+    }
+
+ }
