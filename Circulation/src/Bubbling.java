@@ -26,6 +26,8 @@ public class Bubbling {
         maopao m = new maopao();
         m.maopaopaixu(arr);
 
+        System.out.println("------------------------------");
+
         maopao2 m2 = new maopao2();
         m2.maopaopaixu(arr);
     }
