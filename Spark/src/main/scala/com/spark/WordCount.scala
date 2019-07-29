@@ -16,3 +16,5 @@ object WordCount {
     sc.stop();
   }
 }
+
+//打jar包提交集群运行，arg0是输入文件，arg1是输出路径
