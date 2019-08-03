@@ -1,5 +1,9 @@
 package com.study.spark
 
+/**
+  * 爱奇艺视频数据分析可视化项目 Kafka连接Spark部分
+  */
+
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.kafka.clients.consumer.ConsumerRecord
