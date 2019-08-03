@@ -1,20 +1,21 @@
 package com.study.spark
 
-import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-import org.apache.spark.streaming.kafka010.KafkaUtils
+import org.apache.kafka.clients.consumer.ConsumerRecord
+import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.spark.streaming.kafka010._
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
-
 object StatStreamingApp {
   def main(args: Array[String]): Unit = {
     // println("My-AiQiYi-Data-SparkStreaming-Project")
 
-    val scc = new StreamingContext("local[*]", "StatStreamingApp", Seconds(5))  //初始化StreamingContext
+    val scc = new StreamingContext("local[2]", "StatStreamingApp", Seconds(5))  //初始化StreamingContext
 
-    //    val conf = new SparkConf().setAppName("StatStreamingApp").setMaster("local[*]")
-    //    val sc = new SparkContext(conf)
-    //    val scc = new StreamingContext(sc, Seconds(5))
+//        val conf = new SparkConf().setAppName("StatStreamingApp").setMaster("local[*]")
+//        val sc = new SparkContext(conf)
+//        val scc = new StreamingContext(sc, Seconds(5))
 
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> "hadoop101:9092,hadoop102:9092,hadoop103:9092",  //配置kafka机器集群
