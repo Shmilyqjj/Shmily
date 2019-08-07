@@ -1,12 +1,14 @@
 package com.study.spark.util;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 操作Hbase的工具类
@@ -73,19 +75,47 @@ public class HbaseUtils {
 
     }
 
+    /**
+     * 根据tableName和day查询数据
+     * @param tableName
+     * @param day
+     * @return Map类型结果
+     */
+    public Map<String,Long> query(String tableName,String day) throws IOException {
+        HTable hTable = new HTable(conf,tableName);
+        Scan scan = new Scan(); //得到用于扫描region的对象
+        ResultScanner resultScanner = hTable.getScanner(scan);
+        Map<String,Long> map = new HashMap<String, Long>();
+        for (Result result:resultScanner){
+            Cell[] cells = result.rawCells();
+            for (Cell cell:cells){
+                String rowkeys = Bytes.toString(CellUtil.cloneRow(cell));
+                String temp = Bytes.toString(CellUtil.cloneValue(cell));
+                Long values = Long.parseLong(temp);
+                map.put(rowkeys,values);
+            }
+        }
+        return map;
+    }
 
 
-    //测试类 测试是否成功：
-    public static void main(String[] args) {
-        String tableName = "category_clickcount";
-        String rowkey = "20190804_1"; //rowkey的格式设计是：日期_类别编号
-        String cf = "info";
-        String column = "category_clickcount";
-        String value = "100";
+    //测试--测试是否成功：
+    public static void main(String[] args) throws IOException {
 
-        HbaseUtils.getInstance().put(tableName,rowkey,cf,column,value);
+        //插入数据测试
+//        String tableName = "category_clickcount";
+//        String rowkey = "20190805_3"; //rowkey的格式设计是：日期_类别编号
+//        String cf = "info";
+//        String column = "category_clickcount";
+//        String value = "100";
+//        HbaseUtils.getInstance().put(tableName,rowkey,cf,column,value);
+
+        //查询数据测试
+//        Map<String,Long> map =  HbaseUtils.getInstance().query("category_clickcount","2019");
+//        for (Map.Entry<String,Long> entry:map.entrySet()){
+//            System.out.println(entry.getKey()+" "+entry.getValue());
+//        }
         //插入成功
-
     }
 
 

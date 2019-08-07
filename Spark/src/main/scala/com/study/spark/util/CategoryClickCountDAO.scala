@@ -14,7 +14,6 @@ object CategoryClickCountDAO {
   val qulifier = "click_count"  //保存的click_count
 
   //save方法 保存数据到Hbase(调用HbaseUtil
-//  def save(rowkey: String, columnFamily: String, column: String, value: String) = {
   def save(list:ListBuffer[CategoryClickCount]) = {
   val table = HbaseUtils.getInstance().getHtable(tableName)  //得到Hbase的表
     for (x <- list){
