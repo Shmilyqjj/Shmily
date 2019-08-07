@@ -1,15 +1,10 @@
 package com.study.spark.util
-
-import java.util.Date
-
-import com.study.spark.util.Tests.Hbase_ScalaAPI_Test.table
 import org.apache.hadoop.hbase.client.{Get, Put, Scan}
 import org.apache.hadoop.hbase.util.Bytes
-
 import scala.collection.mutable.ListBuffer
 
 /**
-  * Scala版Hbase数据操作工具
+  * 对CategoryClickCount的Hbase表进行操作  操作过程调用HBaseUtils JavaAPI
   */
 
 object CategoryClickCountDAO {
