@@ -59,7 +59,7 @@ object StatStreamingApp {
       ClickLog(infos(0),DataUtils.parseToMin(infos(1)),categoryId,infos(3),infos(4).toInt)
     }).filter(log=>log.categoryId!=0)  //过滤掉脏数据日志  category=0就是脏数据
 
-//    cleanLog.print() //-至此，日志过滤完成 得到cleanLog
+    //cleanLog.print() //-至此，日志过滤完成 得到cleanLog
 
     //统计每个类别每天的点击量 需要cleanLog里得day和CategoryId  得到day_CategoryId
     cleanLog.map(log=>{

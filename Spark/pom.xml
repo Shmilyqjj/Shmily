@@ -39,9 +39,9 @@
 
         <!-- kafka依赖 -->
         <!--<dependency>-->
-            <!--<groupId>org.apache.kafka</groupId>-->
-            <!--<artifactId>kafka_2.11</artifactId>-->
-            <!--<version>0.11.0.2</version>-->
+        <!--<groupId>org.apache.kafka</groupId>-->
+        <!--<artifactId>kafka_2.11</artifactId>-->
+        <!--<version>0.11.0.2</version>-->
         <!--</dependency>-->
         <!-- SparkStreaming-Kafka依赖 -->
 
@@ -97,7 +97,7 @@
             <version>${hadoop.version}</version>
         </dependency>
 
-        
+
         <!-- 导入spark sql的依赖 -->
         <dependency>
             <groupId>org.apache.spark</groupId>
