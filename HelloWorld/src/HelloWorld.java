@@ -5,7 +5,7 @@ public class HelloWorld {
 //        Scanner in = new Scanner(System.in);
 //        String s = in.nextLine();//可以读入带空格的字符串
 //        System.out.println(s);
-//        String s0 = in.next();//遇到空格停止
+//        String s0 = in.next();//遇到空格停止 横着输入也可以in.next()  输入多个中间分隔开的话也可以nextLine然后split
 //        System.out.println(s0);
 //        }
 //public static void main(String[] args) {
@@ -51,6 +51,7 @@ public static void main(String[] args) {
         default:
             System.out.println("运算符不正确");
     }
+    System.out.println(2-1.10); //输出不是0.90000  因为1.1不能精确表示为一个double
  }
 }
 

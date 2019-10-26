@@ -1,0 +1,37 @@
+<!--
+  ~ Hibernate, Relational Persistence for Idiomatic Java
+  ~
+  ~ License: GNU Lesser General Public License (LGPL), version 2.1 or later.
+  ~ See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  -->
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <!--<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/myy?useSSL=false&amp;serverTimezone=UTC</property>-->
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/hibernate</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">123456</property>
+
+        <!-- 设置方言 -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
+
+        <!-- 自动建表 -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- 显示SQL -->
+        <property name="hibernate.show_sql">true</property>
+
+        <!-- 格式化SQL -->
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- 配置getCurrentSession 调用SessionFactory.getCurrentSession()来代替openSession()  用来保证线程同步-->
+        <property name="hibernate.current_session_context_class">thread</property>
+
+        <!--指定关联的hbm.xml文件 -->
+        <mapping resource="com/qjj/hibernate/News.hbm.xml"></mapping>
+    </session-factory>
+</hibernate-configuration>
+

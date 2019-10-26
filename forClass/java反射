@@ -1,0 +1,12 @@
+类信息->对象
+对象->类信息
+class反射得到一个对象
+Class类是一切的反射根源
+
+得到class类的对象有三种方式
+1.Object类中的getClass()方法
+2.类.class
+3.通过class类的forName()方法
+
+获得到类信息干嘛？
+可以使用Class类进行对象的实例化

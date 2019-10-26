@@ -10,7 +10,6 @@ public class MathTest {
         System.out.println(Math.random()); //随机数
         System.out.println(Math.round(5.6));//四舍五入
         System.out.println(Math.sqrt(81)); //平方根
-
         System.out.println(sqrt(2));
     }
 }

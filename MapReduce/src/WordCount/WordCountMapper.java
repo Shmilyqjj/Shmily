@@ -7,7 +7,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 
-public class WordCountMapper extends Mapper<LongWritable,Text, Text, IntWritable> {
+public class WordCountMapper extends Mapper<LongWritable,Text, Text, IntWritable> { //输入行数，输入文本，输出文本，输出个数
     protected void map(LongWritable key,Text value,Context context) throws IOException,InterruptedException{
 
         Text t = new Text();
