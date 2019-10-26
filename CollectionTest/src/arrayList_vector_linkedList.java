@@ -17,7 +17,7 @@ public class arrayList_vector_linkedList {
     }
 
     /**
-     * ArrayList
+     * ArrayList  动态数组
      * 1  采用动态对象数组实现，默认构造方法创建一个空对象数组
      * 2  第一次添加元素，开始扩充数组容量
      * 3  扩充算法：原来数组大小+原来数组大小的一半
@@ -28,7 +28,7 @@ public class arrayList_vector_linkedList {
     public static void arrayList(){
         List<String> list = new ArrayList(30);  //只允许String类型的list - 为了防止数组动态扩充次数太多，建议创建ArrayList时，给定初始容量
         list.add("aa");
-        list.add("bb");
+        list.add("bb");  //ArrayList是继承List的类
         list.add("cc");
         list.add("dd");
         list.add("ee");
