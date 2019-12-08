@@ -10,7 +10,7 @@ object SparkStreamingTest {
     val sc = new SparkContext(conf)
     val ssc = new StreamingContext(sc,Milliseconds(5000))  //5000毫秒取一次数据  Seconds(5)等价
 
-    val lines:ReceiverInputDStream[String] = ssc.socketTextStream("hadoop101",8888)  //监控hadoop101机器上的8888端口数据
+    val lines:ReceiverInputDStream[String] = ssc.socketTextStream("hadoop101",8888)  //监控hadoop101机器上的8888端口数据  在机器上nc -l 8888
     val word:DStream[String] = lines.flatMap(_.split(" ")) // (a,b,c,d),(e,f),(g,h,i)
     //现在想得到a,b,c,d,e,f,g,h,i,需要压平用flatMap
     val value:DStream[(String,Int)] = word.map(
