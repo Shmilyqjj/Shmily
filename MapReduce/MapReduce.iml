@@ -7,7 +7,18 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="activation-1.1" level="project" />
-    <orderEntry type="library" name="MapReduce" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://D:/hadoop-2.7.2/_lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://D:/hadoop-2.7.2/_lib" />
+        </SOURCES>
+        <jarDirectory url="file://D:/hadoop-2.7.2/_lib" recursive="false" />
+        <jarDirectory url="file://D:/hadoop-2.7.2/_lib" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
   </component>
 </module>
