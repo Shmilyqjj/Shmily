@@ -18,9 +18,15 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="required" level="project" />
-    <orderEntry type="library" exported="" name="mysql-connector-java-8.0.15" level="project" />
-    <orderEntry type="library" name="junit-4.51" level="project" />
-    <orderEntry type="library" exported="" name="junit-4.52" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../../Hibrenate/lib/required" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/../../../Hibrenate/lib/required" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
 </module>
