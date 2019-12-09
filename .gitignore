@@ -1,4 +1,5 @@
 Thumbs.db
 db.json
 *.log
+*.iml
 .idea/
