@@ -19,9 +19,9 @@ import java.net.URI;
 public class GenSequenceFile {
     private static String[] myvalues = {
             "hello world",
-            "qjj",
+            "qjj aaa",
             "hello hadoop",
-            "qjj"
+            "qjj bbb"
     };
 
     public static void main(String args[]) throws IOException {
