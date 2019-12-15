@@ -1,12 +1,19 @@
 package com.spark.book.SparkCore
 
+import java.sql.DriverManager
+
 import org.apache.spark.{SparkConf, SparkContext}
 import com.alibaba.fastjson.JSON
-import org.apache.hadoop.io.{LongWritable, Text}
+import org.apache.hadoop.io.{IntWritable, LongWritable, Text}
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
+import org.apache.spark.rdd.JdbcRDD
+import org.apache.spark.rdd.RDD
+
+import scala.util.parsing.json.{JSONArray, JSONObject}
 
 /**
-  * @Descriptioo:
+  * @Description:  Spark RDD读写基本操作学习 scala版本
   * @Owner: jiajing_qu
   * @Date: 2018/06/8 21:14
   * @Version: 1.0
@@ -16,7 +23,15 @@ object LearnRDD {
     val conf = new SparkConf().setMaster("local[*]").setAppName("LearnRDD")
     val sc = new SparkContext(conf)
     sc.setLogLevel("WARN")
+//    readAll(sc)        //所有读取操作
+    println("\nxxxxxxxxxxxxxxxxxxxxxxx以上是读取操作，以下是写入操作xxxxxxxxxxxxxxxxxxxxxxxxx\n")
+//    writeAll(sc)      //所有写入操作
 
+    sc.stop()
+  }
+
+  def readAll(sc: SparkContext): Unit = {
+    //所有读取操作
     //1.读文件
     println("#################################################################")
     readText(sc)
@@ -33,19 +48,45 @@ object LearnRDD {
     println("#################################################################")
     readSequenceFile(sc)
 
-    //5.显式调用Hadoop API读取文件
+    //5.读SequenceFile文件
+    println("#################################################################")
+    readObjectFile(sc)
+
+    //6.显式调用Hadoop API读取文件
     println("#################################################################")
     readHDFS(sc)
 
-
-
-
-
-
-
-
-    sc.stop()
+    //7.读取Mysql
+    println("#################################################################")
+    readMysql(sc)
   }
+
+  def writeAll(sc: SparkContext): Unit = {
+    //所有写入操作
+    val rdd = getRDD(sc)
+    //写RDD内容到文本文件
+    writeToText(rdd)
+
+    //写出Json文件
+    writeToJson(sc)
+
+    //写入CSV/TSV文件
+    writeToCSVTSV(sc)
+
+    //写入SequenceFile
+    writeToSequenceFile(sc)
+
+    //写入Object文件
+    writeToObject(sc)
+
+    //写入Hadoop文件
+    writeToHDFSFile(sc)
+
+    //写入Mysql
+    writeToMysql(sc)
+  }
+
+/** ############################################################################################################ */
 
   def readText(sc: SparkContext): Unit = {
     // 读取文件
@@ -78,7 +119,7 @@ object LearnRDD {
     println(a)
 
     //读取JSON文件
-    val inputJson = sc.textFile("Spark/src/main/scala/com/spark/book/SparkCore/jsonFile")
+    val inputJson = sc.textFile("Spark/src/main/scala/com/spark/book/SparkCore/Json_File")
     import scala.util.parsing.json.JSON
     val content = inputJson.map(JSON.parseFull)
     println(content.collect().mkString(","))
@@ -101,6 +142,12 @@ object LearnRDD {
     println(inputSequence.collect().mkString(","))
   }
 
+  //Object文件读取
+  def readObjectFile(sc: SparkContext): Unit = {
+    val inputObject = sc.objectFile[Person]("Spark/src/main/scala/com/spark/book/SparkCore/Object_File")
+    println(inputObject.collect.toList)
+  }
+
   //显式调用HadoopAPI读取
   def readHDFS(sc: SparkContext): Unit = {
     val path = "hdfs://localhost:9000/datas/spark_test/file_in_hdfs.txt"
@@ -110,5 +157,105 @@ object LearnRDD {
     println(res.mkString("\n"))
   }
 
+  def readMysql(sc: SparkContext): Unit = {
+    //需要mysql jdbc jar
+    val readMysqlRDD = new JdbcRDD(sc,() => {
+      Class.forName("com.mysql.cj.jdbc.Driver")
+      DriverManager.getConnection("jdbc:mysql://localhost:3306/student?characterEncoding=utf8", "root", "123456")
+    },"select * from grades where class >= ? and class <= ?;",1,8,1,
+      r => (r.getString(1),r.getInt(2),r.getInt(3)))
+    println("条数:" + readMysqlRDD.count())
+    readMysqlRDD.foreach(println)
+  }
+
+  //通过parallelize方法生成RDD
+  def getRDD(sc:SparkContext): RDD[(String,Int)] = sc.parallelize(Array(("One",1),("Two",2),("Three",3)),6)  //获取RDD,分片数6  Scala数组转为RDD
+  def getRDDTest(sc:SparkContext): RDD[(String,Int)] = sc.parallelize(Array(("One",1),("Two",2),("Three",3)))  //获取RDD,分片数由Spark默认分配
+
+  //写RDD内容到文本文件
+  def writeToText(rdd: RDD[(String,Int)]): Unit = {
+    //合理设置RDD分片数， RDD分片数就是输出文件的个数 如果RDD只有三个元素却有6个分片，则三个元素会分别输出到三个文件，另外三个为空文件
+    val path = "D:\\tmp\\tmp1"
+    rdd.saveAsTextFile(path)
+    println("写RDD内容到文本文件到%s成功".format(path))
+  }
+
+  //写出JSON内容
+  def writeToJson(sc:SparkContext): Unit = {
+    val path = "D:\\tmp\\tmp2"
+    val map1 = Map("name" -> "qjj","age" -> "21", "desc" -> JSONArray(List("weight","sex")))
+    val map2 = Map("name" -> "zxw","age" -> "21", "desc" -> JSONArray(List("weight","sex")))
+    val rdd = sc.parallelize(List(JSONObject(map1),JSONObject(map2)),1)
+    rdd.saveAsTextFile(path)
+    println("写出JSON内容到%s成功".format(path))
+  }
+
+  //写入CSV/TSV文件
+  def writeToCSVTSV(sc:SparkContext): Unit={
+    val CSVpath = "D:\\tmp\\tmp3"
+    val TSVpath = "D:\\tmp\\tmp4"
+    val array = Array("qjj","21","zxw","22","gjj","24") //数据源，一个数组
+    //存CSV
+    val CSVRDD = sc.parallelize(Array(array.mkString(",")), 1) //转换array到csv
+    CSVRDD.saveAsTextFile(CSVpath)
+    println("写出CSV格式到%s成功".format(CSVpath))
+
+    //存TSV
+    val TSVRDD = sc.parallelize(Array(array.mkString("\t")), 1) //转换array到csv
+    TSVRDD.saveAsTextFile(TSVpath)
+    println("写出TSV格式到%s成功".format(TSVpath))
+  }
+
+  //写入SequenceFile
+  def writeToSequenceFile(sc:SparkContext): Unit = {
+    val path:String = "D:\\tmp\\tmp5"
+    val rdd = sc.parallelize(List(("qjj",21),("zxw",21)))
+    rdd.saveAsSequenceFile(path)
+    println("写入SequenceFile到%s成功".format(path))
+  }
+
+  //写入Object文件
+  def writeToObject(sc:SparkContext): Unit = {
+    val path:String = "D:\\tmp\\tmp6"
+    val p1 = Person("qjj",21)
+    val p2 = Person("zxw",21)
+    val rdd = sc.parallelize(List(p1,p2),1)
+    rdd.saveAsObjectFile(path)
+    println("写入Object文件到%s成功".format(path))
+  }
+
+  //写入Hadoop文件
+  def writeToHDFSFile(sc:SparkContext):Unit = {
+    val rdd = sc.parallelize(List(("qjj",21),("zxw",21),("gjj",24)),1)
+    val hdfsPath = "hdfs://localhost:9000/datas/spark_test/outputs/writedFiles"
+    rdd.saveAsNewAPIHadoopFile(hdfsPath,classOf[Text],classOf[IntWritable],classOf[TextOutputFormat[Text,IntWritable]])
+    println("写入HDFS文件到%s成功".format(hdfsPath))
+  }
+
+  //写RDD数据到Mysql  Mysql不适合高并发写入，如果需要实现SQL操作，可以使用Phoenix基于HBase来写入
+  def writeToMysql(sc:SparkContext):Unit ={
+    val rdd = sc.parallelize(List((1,"110"),(2,"120")))
+    Class.forName("com.mysql.cj.jdbc.Driver")
+
+    rdd.foreachPartition((iter: Iterator[(Int,String)]) => {  //foreachPartition遍历rdd的每个分区
+      val conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/student?characterEncoding=utf8","root","123456")   //实例化Connection放在foreachPartition外会报异常  prepareStatement对象和Connection对象不能跨分区实例化（因为多个分区，一个分区产生一个进程，多个分区可能分散到不同机器上，如果对象在分区方法外进行实例化，则这个对象必须能被序列化，否则无法跨进程共享该对象）
+      conn.setAutoCommit(false)
+      val preparedStatement = conn.prepareStatement("INSERT INTO usertable(user_id,cell) VALUES (?,?);")
+      iter.foreach(t => {  //遍历RDD分区中的元素 将每个元素插入mysql
+        preparedStatement.setInt(1,t._1)
+        preparedStatement.setString(2,t._2)
+        preparedStatement.addBatch()
+      })
+      preparedStatement.executeBatch()
+      conn.commit()  //遍历时先将数据添加到缓存中，全部遍历完成后commit提交数据 （如果单个分区数据量很大，则需要多次分批commit，可以记录一个count，达到一定数值再提交并清空临时变量，避免一次提交太多数据到mysql）
+      conn.close()
+    }
+    )
+    println("写入rdd数据到mysql成功")
+  }
+
+
 
 }
+
+case class Person(name:String,age:Int)
