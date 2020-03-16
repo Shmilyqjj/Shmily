@@ -1,5 +1,14 @@
 /**
  * 创建String 存放位置 以及 intern方法
+ *
+ * String的构造方法有四种-分别是String为参数，char为参数，StringBuffer为参数和StringBuilder为参数
+ *
+ * String的equals重写了逻辑  普通的equals底层只有 ==
+ *
+ * StringBuffer线程安全 但效率低，源码上 所有方法都加了synchronized
+ *
+ * final修饰String类型的好处 1.安全，不用担心被修改  2.效率：只有字符串是不可变时，才能实现字符串常量池，提高效率。
+ *
  */
 public class CreateString {
     public static void main(String[] args) {
