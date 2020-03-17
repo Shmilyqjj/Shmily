@@ -1,3 +1,5 @@
+package collection.set;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +26,7 @@ public class  setTest {
         set.add("remove");
         set.add("lily");
         set.add("lily");//重复只保存一个
+        set.add(null);//set最多包含一个null
         System.out.println(set.size());
         set.remove("remove");
         System.out.println(set.size());
@@ -31,6 +34,7 @@ public class  setTest {
         for(String s:str){
             System.out.println(s);
         }
+
 
 
     }
