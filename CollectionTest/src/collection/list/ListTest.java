@@ -1,3 +1,5 @@
+package collection.list;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.Vector;
  * 对一组相同类型的数据进行统一管理操作  集合中分为三大接口： Collection、Map、Iterator  在java.util
  *
  */
-public class arrayList_vector_linkedList {
+public class ListTest {
     public static void main(String[] args) {
         arrayList();
         vector();
@@ -73,10 +75,12 @@ public class arrayList_vector_linkedList {
         l.add("cc");
         l.add("dd");
         l.add("ee");
+        l.remove(0);
         for(String c : l){
             System.out.print(c+" ");
         }
         System.out.println();
+        System.out.println(l.toString());
     }
 
 
