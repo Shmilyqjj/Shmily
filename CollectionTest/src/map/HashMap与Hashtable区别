@@ -1,0 +1,10 @@
+由于Hashtable已经不怎么用了 简单了解
+https://blog.csdn.net/wangxing233/article/details/79452946
+
+总结：
+1.HashMap是继承自AbstractMap类，而HashTable是继承自Dictionary类
+2.Hashtable不是驼峰命名，很久以前就有
+3.Hashtable既不支持Null key也不支持Null value
+4.Hashtable是线程安全的，它的每个方法中都加入了Synchronize方法；HashMap不是线程安全的
+5.初始容量大小和每次扩充容量大小的不同  Hashtable默认的初始大小为11，之后每次扩充，容量变为原来的2n+1  HashMap默认的初始化大小为16。之后每次扩充，容量变为原来的2倍
+    原因：Hashtable的侧重点是哈希的结果更加均匀，使得哈希冲突减少。当哈希表的大小为素数时，简单的取模哈希的结果会更加均匀。（Hashtable取余操作低效）   HashMap侧重hash的计算效率（位运算高效）
