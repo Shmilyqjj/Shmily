@@ -2,6 +2,7 @@ package collection.set;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * set 一个不包含重复元素的 collection。更确切地讲，set 不包含满足 e1.equals(e2) 的元素对 e1 和 e2，并且最多包含一个 null 元素。
@@ -11,13 +12,14 @@ import java.util.Set;
 public class  setTest {
     public static void main(String[] args) {
         hashSet();
+        System.out.println("-------------------");
+        treeSet();
     }
 
-
-    /**
-     * hashSet
-     */
     public static void hashSet(){
+        /**
+         * hashSet
+         */
         Set<String> set = new HashSet<>();
         set.add("tom");
         set.add("Tom");
@@ -34,9 +36,19 @@ public class  setTest {
         for(String s:str){
             System.out.println(s);
         }
+    }
 
-
-
+    public static void treeSet(){
+        /**
+         * treeSet
+         * TreeSet是一个有序的集合，它的作用是提供有序的Set集合
+         * 它继承了AbstractSet抽象类，实现了NavigableSet<E>，Cloneable，Serializable接口
+         * TreeSet是基于TreeMap实现的，TreeSet的元素支持2种排序方式：自然排序或者根据提供的Comparator进行排序
+         */
+        Set s = new TreeSet<>();
+        s.add("qjj");
+        System.out.println(s.contains("qjj"));
+        System.out.println(s.size());
     }
 
 
