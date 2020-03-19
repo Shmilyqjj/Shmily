@@ -1,0 +1,27 @@
+ArrayList、Vector和LinkedList类均在java.util包下
+
+ArrayList和Vector都是基于存储元素的Object[] array对象数组来实现的，它们会在内存中开辟一块连续的空间来存储
+因为数据存储是连续的，所以它们支持用下标来访问元素，索引数据的速度比较快（适合频繁读）
+
+1）ArrayList和Vector都有一个初始化的容量大小，当里面存储的元素超过初始的大小时就需要动态扩充
+Vector默认扩充为原来的两倍（每次扩充空间的大小可以设置）
+ArrayList默认扩充为原来的1.5倍（没有提供方法来设置空间扩充的方法）
+
+2）ArrayList和Vector
+最大的区别是synchronization的使用
+ArrayList的方法没有一个是同步的
+而Vector的绝大多数方法（如add,insert,remove,set,equals,hashcode）都是直接或间接同步的
+所以Vector是线程安全的，ArrayList不是线程安全的
+正是由于Vector提供了线程安全的机制，其性能不如ArrayList
+
+
+LinkedList：
+双向链表来实现，对数据的索引需要从列表头开始遍历，因此用于随机访问则效率比较低
+但是插入元素时不需要对数据进行移动，因此插入效率较高
+LinkedList是非线程安全的容器
+
+
+对容器的选择（场景）：
+当对数据的主要操作是索引或只在集合的末端增加、删除元素时，使用ArrayList或Vector效率比较高
+当对数据的操作主要为指定位置或删除操作时，使用LikedList效率比较高；当在多线程中使用容器时
+选用Vector较为安全

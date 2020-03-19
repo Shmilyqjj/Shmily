@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * 集合
+ * 集合  ArrayList  Vector  LinkedList
  * 2018.12.8
  * 对一组相同类型的数据进行统一管理操作  集合中分为三大接口： Collection、Map、Iterator  在java.util
  *
@@ -20,9 +20,9 @@ public class ListTest {
 
     /**
      * ArrayList  动态数组
-     * 1  采用动态对象数组实现，默认构造方法创建一个空对象数组
-     * 2  第一次添加元素，开始扩充数组容量
-     * 3  扩充算法：原来数组大小+原来数组大小的一半
+     * 1  采用动态对象数组（Object[initialCapacity]）实现，默认构造方法创建一个空对象数组
+     * 2  默认容量10   第一次添加元素，开始扩充数组容量
+     * 3  扩充算法：原来数组大小+原来数组大小的一半  对应源码：int newCapacity = oldCapacity + (oldCapacity >> 1)
      * 4  不适合进行删除和插入
      * 5  为了防止数组动态扩充次数太多，建议创建ArrayList时，给定初始容量
      * 6  线程不安全，适合在单线程访问时使用
@@ -65,8 +65,8 @@ public class ListTest {
 
 /**
  * linkedList
- *1 采用双向链表结构实现
- *2 适合插入，删除操作，性能高
+ * 1采用双向链表结构实现
+ * 2适合插入，删除操作，性能高
  */
     public static void linkedList(){
         LinkedList<String> l = new LinkedList<>();
@@ -82,7 +82,5 @@ public class ListTest {
         System.out.println();
         System.out.println(l.toString());
     }
-
-
 }
 
