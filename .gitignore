@@ -3,3 +3,5 @@ db.json
 *.log
 *.iml
 .idea/
+*.class
+
