@@ -1,6 +1,10 @@
 /**
  * join Thread中的join方法
  * 等待线程死亡 - 线程暂停 类似wait 不是死亡
+ *
+ * 在一个线程中调用 other.join() ，这时候当前线程会让出执行权给 other 线程，直到 other 线程执行完或者过了超时时间之后再继续执行当前线程
+ *
+ * 本来两个线程轮流执行，一个线程调用了另一个线程的join后，让出执行权给另一个线程join(2000)则先让另一个线程执行两秒再轮流执行
  */
 public class JoinThread {
     public static void main(String[] args) {
