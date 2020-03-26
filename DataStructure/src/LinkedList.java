@@ -85,14 +85,6 @@ class NodeManager {  //节点管理
 
 
 
-
-
-
-
-
-
-
-
     private class Node { //内部类 Node 节点   private封装所以里面的方法想调用后就要放在内部类外再定义一次
         private int data;  //数据
         private Node next; //地址-----Node类型
