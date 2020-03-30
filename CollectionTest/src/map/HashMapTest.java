@@ -22,6 +22,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * HashMap影响性能的因素：HashMap 的实例有两个参数影响其性能：初始容量 和加载因子。
  * 容量是哈希表中桶的数量，初始容量只是哈希表在创建时的容量。加载因子是哈希表在其容量自动增加之前可以达到多满的一种尺度。当哈希表中的条目数超出了加载因子与当前容量的乘积时，则要对该哈希表进行rehash 操作（即重建内部数据结构），从而哈希表将具有大约两倍的桶数。
  *
+ * 优化性能？
+ * 如果预估要存100个k-v，那就给初始容量 100/0.75=134
+ * 空间换时间：加大初始大小，降低加载因子
+ * 较高的“负载极限”可以降低hash表所占用的内存空间，但会增加查询数据的时间开销，而查询是最频繁的操作（HashMap的get()与put()方法都要用到查询）
+ * 较低的“负载极限”会提高查询数据的性能，但会增加hash表所占用的内存开销
+ *
+ *
  * HashMap元素小于等于6时还原成链表
  *
  * 当有哈希冲突，HashMap怎么查找并确认元素？
@@ -30,11 +37,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * HashMap源码中有哪些重要方法？
  * 查找get 添加put 扩容resize
  *
- * JDK1.7 resize并发情况下会导致死循环
  *
  * HashMap长度为什么要2的n次方？如何计算index？
  * https://blog.csdn.net/zs319428/article/details/81982770
- * 求得hashcode容易发生碰撞，h & (table.length -1)来计算该对象应该保存在table数组的哪个索引处
+ * 概括来说：计算index时是hash与(tab.length – 1)按位与，如果长度为偶数，计算hash值容易冲突
+ * 为了高效，减少Hash碰撞，分配均匀，长度为2的n次方。
+ *
+ * 如果长度不是2的n求得hashcode容易发生碰撞，h & (table.length -1)来计算该对象应该保存在table数组的哪个索引处
  * 所以 index = hash & (tab.length – 1)
  * 按位与 效率较高，如果不考虑效率可以直接取余
  *
@@ -56,11 +65,22 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * 在HashMap中，null可以作为键，这样的键只有一个，但可以有一个或多个键所对应的值为null。当get()方法返回null值时，即可以表示HashMap中没有该key，也可以表示该key所对应的value为null。因此，在HashMap中不能由get()方法来判断HashMap中是否存在某个key，应该用containsKey()方法来判断。
  *
+ * 扩容过程：
+ * 扩容就是用一个新的大数组替换原来的小数组，并将原来数组中的值迁移到新的数组中。
+ * 由于是双倍扩容，迁移过程中，会将原来table[i]中的链表的所有节点，分拆到新的数组的newTable[i]和newTable[i+oldLength]位置上。
+ * 如原来数组长度是16，那么扩容后，原来table[0]处的链表中的所有元素会被分配到新数组中newTable[0]和newTable[16]这两个位置。
+ * 扩容期间，由于会新建一个新的空数组，并且用旧的项填充到这个新的数组中去。
+ * 所以，在这个填充的过程中，如果有线程获取值，很可能会取到 null 值，而不是我们所希望的、原来添加的值。
+ *
  */
 
 public class HashMapTest {
+    /**
+     * @author qjj
+     * @param args
+     */
     public static void main(String[] args) {
-        HashMap hashMap = new HashMap();
+        HashMap hashMap = new HashMap(16);
 
         /**
          * hashmap的put实现方法
