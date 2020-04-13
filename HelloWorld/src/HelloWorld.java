@@ -53,21 +53,10 @@ public class HelloWorld {
 //    }
 //    System.out.println(2-1.10); //输出不是0.90000  因为1.1不能精确表示为一个double
 
-//    Set<String> set = new HashSet<String>();  //set无重复，去重
-//    set.add("aa");
-//    set.add("bb");
-//    set.add("aa");
-//    set.add("cc");
-//    set.add("aa");
-//    for (String s:set) {
-//        System.out.println(s);
-//    }
-//
-//
+// int转二进制
+// public static void main(String[] args) {
+//  System.out.println(Integer.toBinaryString(10));
+//  System.out.println(Integer.toBinaryString(-10).length());
 // }
-
- public static void main(String[] args) {
-
- }
 }
 
