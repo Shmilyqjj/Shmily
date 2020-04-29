@@ -1,3 +1,6 @@
+import java.util.Arrays;
+import java.util.Scanner;
+
 /**
  * @Description: 牛客网 Solution 练习
  * @Owner: jiajing_qu
@@ -28,3 +31,9 @@
 //    }
 //}
 
+public class Solution{
+    public static void main(String[] args) {
+
+    }
+
+}
