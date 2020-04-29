@@ -1,3 +1,8 @@
+import java.lang.ref.PhantomReference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
+
 public class HelloWorld {
 //    public static void main(String[] args){
 //        System.out.print("Shmily");
@@ -55,8 +60,55 @@ public class HelloWorld {
 
 // int转二进制
 // public static void main(String[] args) {
-//  System.out.println(Integer.toBinaryString(10));
+//  System.out.printlnintern(Integer.toBinaryString(10));
 //  System.out.println(Integer.toBinaryString(-10).length());
 // }
+//    Shmily shmily = new Shmily();
+
+
+    public static void main(String[] args) {
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
