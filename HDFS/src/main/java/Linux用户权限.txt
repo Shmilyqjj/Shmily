@@ -1,0 +1,32 @@
+drwxr-xr-x
+-rw-r--r--
+-rwxr-xr-x
+
+共10位
+
+d开头-文件夹      -开头-文件
+r可读权限
+w可写权限
+x可执行权限-文件可以执行
+--------drwx是当前用户的权限---------
+r当前用户组的读权限   当前用户组：当前组的其他用户
+-当前用户组的写权限
+x当前用户组的可执行权限
+r其他用户组的读权限   其他用户组：其他组的其他用户
+-其他用户组的写权限
+x其他用户组的可执行权限
+
+
+-rwxr-xr-x. 1 root root 3734 5月  22 2017 start-dfs.sh
+前面root是创建该文件的用户    后面的root是该文件属于哪个组  3734是文件大小
+
+chmod u+x start-dfs.sh	u当前用户 +加上  x可执行权限    u-x去掉可执行权限....
+chmod g+r start-dfs.sh	g当前用户组  +加上  r可读权限    
+chmod o+w start-dfs.sh	o其他用户组   +加上 w可写权限
+chmod a+w start-dfs.sh	a所有用户和组   +加上 w可写权限
+
+chmod 777 xx.sh  所有用户拥有所有权限
+chmod 767 xx.sh  除了当前用户组拥有所有权限
+
+chown shmily xx.sh  改变文件拥有者
+chgrp  shmily xx.sh  改变文件所在用户组
