@@ -1,3 +1,5 @@
+package javaAPIs;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -55,7 +57,7 @@ class Dog implements Comparable<Dog> {  //对象比较器  Comparable接口  只
 
     @Override
     public String toString() {
-        return "Dog{" +
+        return "javaAPIs.Dog{" +
                 "name='" + name + '\'' +
                 ", age=" + age +
                 '}';
@@ -79,7 +81,7 @@ class Dog implements Comparable<Dog> {  //对象比较器  Comparable接口  只
 }
 
 class CatComparator implements Comparator<Cat>{  //Comparator接口
-//    public int compare(Cat c1,Cat c2){}
+//    public int compare(javaAPIs.Cat c1,javaAPIs.Cat c2){}
 //    public boolean equals(Object obj){}
 
       public int compare(Cat c1,Cat c2){
@@ -114,7 +116,7 @@ class Cat implements Comparable<Cat> {  //对象比较器   单独定义一个Ca
 
     @Override
     public String toString() {
-        return "Cat{" +
+        return "javaAPIs.Cat{" +
                 "name='" + name + '\'' +
                 ", age=" + age +
                 '}';
