@@ -1,5 +1,0 @@
-zip + 压缩包名 +xxx.sh+xxx.txt+...   压缩为zip格式
-unzip +压缩包名.zip
-
-tar -zcvf xxx.tar.gz + 要压缩的内容     压缩成tar.gz的包
-tar -zxvf xxx.tar.gz -C 解压到的目录
