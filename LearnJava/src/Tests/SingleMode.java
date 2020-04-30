@@ -1,3 +1,5 @@
+package Tests;
+
 public class SingleMode {
     public static void main(String[] args) {
         LazySingleton ls = LazySingleton.getInstance(); //调用类的方法获得实例化的对象

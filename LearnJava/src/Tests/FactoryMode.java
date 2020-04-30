@@ -1,3 +1,5 @@
+package Tests;
+
 public class FactoryMode {
     public static void main(String[] args) {
         CarFactory AF = new AFactory();

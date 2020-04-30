@@ -1,4 +1,4 @@
-package javaAPIs;
+package JavaAPIs;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

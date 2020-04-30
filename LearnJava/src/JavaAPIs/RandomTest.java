@@ -1,4 +1,4 @@
-package javaAPIs;
+package JavaAPIs;
 
 import java.util.Random;
 
