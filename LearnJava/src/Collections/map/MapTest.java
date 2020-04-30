@@ -1,4 +1,4 @@
-package map;
+package Collections.map;
 /**
  * Map是个接口,有四个实现类,分别是HashMap Hashtable LinkedHashMap 和TreeMap.
  */

@@ -1,4 +1,4 @@
-package map;
+package Collections.map;
 /**
  * TreeMap学习
  *
