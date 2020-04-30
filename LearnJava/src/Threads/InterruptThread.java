@@ -1,4 +1,4 @@
-import sun.font.TrueTypeFont;
+package Threads;
 
 /**
  * Interrupt  中断线程

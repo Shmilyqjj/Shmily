@@ -1,3 +1,5 @@
+package Threads;
+
 /**
  * 守护线程   线程分守护线程和用户线程
  * public final void setDaemon(boolean on) 将此线程标记为daemon线程或用户线程。 当运行的唯一线程都是守护进程线程时，Java虚拟机将退出。

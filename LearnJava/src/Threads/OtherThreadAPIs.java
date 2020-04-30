@@ -1,3 +1,5 @@
+package Threads;
+
 public class OtherThreadAPIs {
     public static void main(String[] args) {
         MyThreadTest mtd = new MyThreadTest();

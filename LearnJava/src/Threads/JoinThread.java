@@ -1,3 +1,5 @@
+package Threads;
+
 /**
  * join Thread中的join方法
  * 等待线程死亡 - 线程暂停 类似wait 不是死亡

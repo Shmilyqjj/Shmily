@@ -1,3 +1,5 @@
+package Threads;
+
 /**
  * 多线程---生产者和消费者案例
  * wait notify使用
