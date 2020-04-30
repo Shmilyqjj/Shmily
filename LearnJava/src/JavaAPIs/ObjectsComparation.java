@@ -1,4 +1,4 @@
-package javaAPIs;
+package JavaAPIs;
 
 import java.util.Arrays;
 import java.util.Comparator;
