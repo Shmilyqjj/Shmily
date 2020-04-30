@@ -1,3 +1,5 @@
+package TryCatchFinally;
+
 /**
  * 功能：自定义异常
  */
@@ -51,7 +53,7 @@ class UserBean{ //用户信息   -----  封装用户信息
 
     @Override
     public String toString() {
-        return "UserBean{" +
+        return "TryCatchFinally.UserBean{" +
                 "name='" + name + '\'' +
                 ", pwd='" + pwd + '\'' +
                 '}';

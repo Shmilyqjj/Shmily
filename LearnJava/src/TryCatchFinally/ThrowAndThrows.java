@@ -1,3 +1,5 @@
+package TryCatchFinally;
+
 /**
  * throws 在声明方法的时候使用，抛出异常给这个方法的调用者处理
  * throw  手动抛出异常给调用者，可以自定义异常类型
