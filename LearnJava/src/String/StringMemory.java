@@ -1,3 +1,5 @@
+package String;
+
 public class StringMemory {
     public static void main(String[] args) {
         String s1 = "飞飞";  //直接定义的String字符串--存在于字符串常量区（字符串常量池）

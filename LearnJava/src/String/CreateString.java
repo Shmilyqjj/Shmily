@@ -1,3 +1,5 @@
+package String;
+
 /**
  * 创建String 存放位置 以及 intern方法
  *

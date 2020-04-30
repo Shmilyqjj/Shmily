@@ -1,3 +1,5 @@
+package String;
+
 import oracle.jrockit.jfr.StringConstantPool;
 
 import java.util.Arrays;

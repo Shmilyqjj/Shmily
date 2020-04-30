@@ -1,3 +1,5 @@
+package String;
+
 import java.util.Arrays;
 
 //StringBuffer效率高于String  StringBuilder效率高于StringBuffer但是有线程危险性
