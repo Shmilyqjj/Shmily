@@ -19,7 +19,7 @@ public class Submitter {
 
     public static void main(String[] args) {
         /**
-         * 定义出HDFS的Bolt
+         * 定义写HDFS的Bolt
          */
         //输出字段分隔符
         RecordFormat format = new DelimitedRecordFormat().withFieldDelimiter("|");
