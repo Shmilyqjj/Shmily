@@ -3,7 +3,7 @@
  * 实现动态代理  需要继承InvocationHandler
  * 换其他类，因为是动态获取当前对象，forClass  所以代理类里面内容不用做任何更改
  */
-package com.proxy;
+package Reflect.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

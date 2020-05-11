@@ -1,4 +1,4 @@
-package com.proxy;
+package Reflect.proxy;
 
 /**
  * 动态代理

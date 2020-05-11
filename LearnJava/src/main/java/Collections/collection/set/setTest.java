@@ -20,7 +20,7 @@ public class  setTest {
         /**
          * hashSet
          */
-        Set<String> set = new HashSet<>();
+        Set<String> set = new HashSet<String>();
         set.add("tom");
         set.add("Tom");
         set.add("jack");
@@ -45,7 +45,7 @@ public class  setTest {
          * 它继承了AbstractSet抽象类，实现了NavigableSet<E>，Cloneable，Serializable接口
          * TreeSet是基于TreeMap实现的，TreeSet的元素支持2种排序方式：自然排序或者根据提供的Comparator进行排序
          */
-        Set s = new TreeSet<>();
+        Set s = new TreeSet<String>();
         s.add("qjj");
         System.out.println(s.contains("qjj"));
         System.out.println(s.size());

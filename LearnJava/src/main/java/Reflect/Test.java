@@ -1,3 +1,5 @@
+package Reflect;
+
 public class Test {
     public static void main(String[] args) throws ClassNotFoundException {
         Dog dog = new Dog("xiaobai",2,"black");
