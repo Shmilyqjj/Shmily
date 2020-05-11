@@ -50,6 +50,7 @@ auto-import.
 .idea/*.iml
 .idea/modules
 .iml
+*.iml
 .ipr
 
 # CMake
