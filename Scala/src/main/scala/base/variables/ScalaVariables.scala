@@ -91,7 +91,14 @@ qjj2
     println(tup1._2)
 
 
+    //类型转换  使用toXX
+    var num = 1;println("print" + num)  // num自动转为字符串
+    val char1: Char = 'a';println("a ascii: " + char1.toInt)  // char转int（ascii）
+    val char2 : Char = '2';println(char2.toDouble)
+    //Byte和Short运算时都转为Int类型运算
 
+    //标识符命名规范：首字符为字母，后续字符任意字母和数字，美元符号，可后接下划线_  数字不可以开头。   首字符为操作符(比如+ - * / )，后续字符也需跟操作符 ,至少一个  用反引号`....`包括的任意字符串，即使是关键字(39个)也可以 [比如true]
+    val ++ = 0;var +-*/ = 1; var $52ab_ = 0;var `true` = 1 //scala没有++ --运算符
 
 
 

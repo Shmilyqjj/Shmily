@@ -21,8 +21,13 @@ object ScalaOperators {
     //位运算符 ~,&,|,^分别为取反，按位与与，按位与或，按位与异或运算  >>右移  <<左移  >>>无符号右移
 
     //赋值运算符 = += -= *= /= %= <<=  >>=  &=  ^=   |=
-    a += b
     c >>= d
-    print(c)
+    println(c)
+
+    // 三目运算符
+    val boolVal = if(a == 1) true else false
+    println(boolVal)
+
+
   }
 }
