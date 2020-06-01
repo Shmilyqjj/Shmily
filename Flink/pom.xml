@@ -8,18 +8,28 @@
     <artifactId>Flink</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <flink.version>1.10.1</flink.version>
+        <hadoop.version>3.0.0</hadoop.version>
+        <mysql.version>5.1.38</mysql.version>
+        <fastjson.version>1.2.41</fastjson.version>
+        <encoding>UTF-8</encoding>
+    </properties>
+
     <dependencies>
         <!-- scope分两种compile和provided  ==> compile代表强依赖，打包会把依赖添加到jar包中  而provided依赖不添加到jar包中 -->
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-java</artifactId>
-            <version>1.9.0</version>
+            <version>${flink.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-java_2.12</artifactId>
-            <version>1.9.0</version>
+            <version>${flink.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -33,24 +43,24 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka-0.10_2.11</artifactId>
-            <version>1.9.0</version>
+            <version>${flink.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
-            <version>2.7.2</version>
+            <version>${hadoop.version}</version>
         </dependency>
         <!-- mysql的连接驱动依赖 -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.38</version>
+            <version>${mysql.version}</version>
         </dependency>
         <!-- fastjson依赖,解析JSON最快 -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.41</version>
+            <version>${fastjson.version}</version>
         </dependency>
     </dependencies>
 
