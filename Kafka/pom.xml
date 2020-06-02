@@ -7,6 +7,14 @@
     <groupId>com.qjj</groupId>
     <artifactId>Kafka</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <kafka.version>2.2.1</kafka.version>
+        <hadoop.version>3.0.0</hadoop.version>
+        <encoding>UTF-8</encoding>
+    </properties>
+
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
         <dependency>
@@ -24,7 +32,7 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <version>0.11.0.2</version>
+            <version>0.11.0.0</version>
         </dependency>
 
     </dependencies>
