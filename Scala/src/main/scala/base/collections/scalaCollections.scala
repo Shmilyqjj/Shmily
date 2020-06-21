@@ -8,6 +8,14 @@ package base.collections
 
 object scalaCollections {
   def main(args: Array[String]): Unit = {
-
+    val l = List(1,2,3,4,1)
+    l.foreach(print)
+    println()
+    val s = Set(1,2,3,4,1)
+    s.foreach(println(_))
+    val m = Map(1->"One", 2->"two", 3->"three")
+    m.foreach(println)
+    val o: Option[Int] = Some(5) // Some[A]是一定有值的可以用.get获取  Option可以有Some和None
+    o.foreach(print)
   }
 }
