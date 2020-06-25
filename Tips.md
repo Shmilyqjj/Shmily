@@ -35,3 +35,17 @@
 git rm -r --cached path
 git commit -m "rm-files"
 git push origin master
+
+## IDEA Plugins
+Alibaba Java Coding Guidelines
+Big Data Toole
+Key Promoter X
+Maven Helper
+Python
+Scala
+Docker
+Codeglance
+Nyan Progress Bar
+Rainbow Brackets
+Translation
+Easy Code
