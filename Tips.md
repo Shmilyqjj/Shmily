@@ -38,7 +38,7 @@ git push origin master
 
 ## IDEA Plugins
 Alibaba Java Coding Guidelines
-Big Data Toole
+Big Data Tool
 Key Promoter X
 Maven Helper
 Python
