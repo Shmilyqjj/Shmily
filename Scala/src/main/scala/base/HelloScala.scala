@@ -1,5 +1,7 @@
+package base
 
-import util.control.Breaks._ //._ 相当于java的.*
+
+import scala.util.control.Breaks._ //._ 相当于java的.*
 object Hello {   //创建一个Hello对象
   def main(args: Array[String]): Unit = { //对象里的方法  先写参数名称:后写参数类型Array(String) unit空类型
     print("hello\tscala\nhello\\world\n-----------------------\n") //分号可以不加
