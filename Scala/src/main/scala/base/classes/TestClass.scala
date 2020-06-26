@@ -20,7 +20,7 @@ class Point(xc:Int, yc:Int) {  //Scala 的类定义可以有参数，称为类�
   }
 }
 
-//类的继承
+//类的继承  Scala类继承只能单继承，可以使用Trait（特征）来继承多个父类实现多继承
 class Location(val xc:Int,val yc:Int,val zc:Int) extends Point(xc,yc){
   var z = zc
   def move(dx:Int,dy:Int,dz:Int):Unit={
