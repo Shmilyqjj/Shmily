@@ -1,7 +1,7 @@
 package base.classes
 
 /**
- * :Description:
+ * :Description:Scala类与对象
  * :Author: 佳境Shmily
  * :Create Time: 2020/6/25 14:50
  * :Site: shmily-qjj.top
