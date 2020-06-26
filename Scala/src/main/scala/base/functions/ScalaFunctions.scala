@@ -9,7 +9,7 @@ package base.functions
  * }
  */
 
-object scalaFunctions {
+object ScalaFunctions {
   def main(args: Array[String]): Unit = {
     println(addValue(1,2,3))
     println(addValue(1,2,3,4,5))
