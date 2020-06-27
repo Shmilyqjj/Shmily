@@ -1,11 +1,13 @@
 package com.study.spark.util
-import org.apache.hadoop.hbase.client.{Get, Put, Scan}
+
+import org.apache.hadoop.hbase.client.Get
 import org.apache.hadoop.hbase.util.Bytes
+
 import scala.collection.mutable.ListBuffer
 
 /**
-  * 对CategoryClickCount的Hbase表进行操作  操作过程调用HBaseUtils JavaAPI
-  */
+ * 对CategoryClickCount的Hbase表进行操作  操作过程调用HBaseUtils JavaAPI
+ */
 
 object CategoryClickCountDAO {
 
@@ -15,7 +17,7 @@ object CategoryClickCountDAO {
 
   //save方法 保存数据到Hbase(调用HbaseUtil
   def save(list:ListBuffer[CategoryClickCount]) = {
-  val table = HbaseUtils.getInstance().getHtable(tableName)  //得到Hbase的表
+    val table = HbaseUtils.getInstance().getTable(tableName)  //得到Hbase的表
     for (x <- list){
       //向table插入数据  incrementColumnValue值会自动累加
       table.incrementColumnValue(Bytes.toBytes(x.categoryId),Bytes.toBytes(cf),Bytes.toBytes(qulifier),x.clickCount)
@@ -26,7 +28,7 @@ object CategoryClickCountDAO {
 
   //获取数据方法
   def count(day_category:String) :Long = {
-    val table = HbaseUtils.getInstance().getHtable(tableName)
+    val table = HbaseUtils.getInstance().getTable(tableName)
     val get = new Get(Bytes.toBytes(day_category)) //通过rowkey获取  rowkey设计是day_category
 
     val value = table.get(get).getValue(Bytes.toBytes(cf),Bytes.toBytes(qulifier))
@@ -48,12 +50,12 @@ object CategoryClickCountDAO {
   def main(args: Array[String]): Unit = {
 
     //save方法测试
-//    val list = new ListBuffer[CategoryClickCount]
-//    list.append(CategoryClickCount("20190612_4",300))
-//    list.append(CategoryClickCount("20190612_5",600))
-//    list.append(CategoryClickCount("20190612_3",1128))
-//    save(list)
-//    println(count("20190612_4")+"-----"+count("20190612_5")+"-----"+count("20190612_3"))
+    //    val list = new ListBuffer[CategoryClickCount]
+    //    list.append(CategoryClickCount("20190612_4",300))
+    //    list.append(CategoryClickCount("20190612_5",600))
+    //    list.append(CategoryClickCount("20190612_3",1128))
+    //    save(list)
+    //    println(count("20190612_4")+"-----"+count("20190612_5")+"-----"+count("20190612_3"))
 
   }
 

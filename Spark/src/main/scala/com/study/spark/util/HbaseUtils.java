@@ -3,6 +3,8 @@ package com.study.spark.util;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
@@ -16,37 +18,39 @@ import java.util.Map;
  * 工具类一般是单例模式 单实例
  */
 public class HbaseUtils {
-    HBaseAdmin admin = null;
+    Admin admin = null;
     Configuration conf = null;
-    private HbaseUtils(){    //初始化工具类（通过私有构造方法）  单例只能通过名字获取里面的私有方法
-        conf = new Configuration();
-        conf.set("hbase.zookeeper.quorum","hadoop101:2181");
-        conf.set("hbase.rootdir","hdfs://hadoop101/hbase");
-
+    private HbaseUtils() {   //初始化工具类（通过私有构造方法）  单例只能通过名字获取里面的私有方法
+        conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.quorum", "cdh101,cdh102,cdh103");
+        conf.set("hbase.zookeeper.property.clientPort", "2181");
         try {
-            admin = new HBaseAdmin(conf);
+            admin = ConnectionFactory.createConnection(conf).getAdmin();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    private static HbaseUtils instance = null;  //设置取该类的私有变量instance
-    public static synchronized  HbaseUtils getInstance(){  //获得该类的公有方法 - 该方法静态的可直接通过类名调用
+
+    /**
+     * 单例模式   设置取该类的私有变量instance
+     */
+    private static HbaseUtils instance = null;
+    public static synchronized HbaseUtils getInstance(){  //获得该类的公有方法 - 该方法静态的可直接通过类名调用
         if(null == instance){
             instance = new HbaseUtils();
         }
         return instance;
     }
 
-
     /**
      * 根据表名获取Htable表的实例化对象
      * @param tableName 表名
-     * @return
+     * @return table对象
      */
-    public HTable getHtable(String tableName){
-        HTable table = null;
+    public Table getTable(String tableName){
+        Table table = null;
         try {
-            table = new HTable(conf,tableName);
+            table = admin.getConnection().getTable(TableName.valueOf(tableName));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,17 +67,20 @@ public class HbaseUtils {
      * @param value  对应列的值
      */
     public void put(String tableName,String rowKey,String cf,String column,String value){
-        HTable table = getHtable(tableName);
+        Table table = getTable(tableName);
+
         Put put = new Put(Bytes.toBytes(rowKey)); //创建Put对象先给它一个rowkey - 初始化
-        put.add(Bytes.toBytes(cf),Bytes.toBytes(column),Bytes.toBytes(value));
+
+        put.addColumn(Bytes.toBytes(cf),Bytes.toBytes(column),Bytes.toBytes(value));
+//        put.add(Bytes.toBytes(cf),Bytes.toBytes(column),Bytes.toBytes(value));
         //提交Put对象 完成插入
         try {
             table.put(put);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
+
 
     /**
      * 根据tableName和day查询数据
@@ -82,9 +89,9 @@ public class HbaseUtils {
      * @return Map类型结果
      */
     public Map<String,Long> query(String tableName,String day) throws IOException {
-        HTable hTable = new HTable(conf,tableName);
+        Table table = getTable(tableName);
         Scan scan = new Scan(); //得到用于扫描region的对象
-        ResultScanner resultScanner = hTable.getScanner(scan);
+        ResultScanner resultScanner = table.getScanner(scan);
         Map<String,Long> map = new HashMap<String, Long>();
         for (Result result:resultScanner){
             Cell[] cells = result.rawCells();
@@ -117,6 +124,5 @@ public class HbaseUtils {
 //        }
         //插入成功
     }
-
 
 }
