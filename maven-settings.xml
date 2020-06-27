@@ -181,6 +181,18 @@ under the License.
             <name>Nexus 163</name>
             <url>http://mirrors.163.com/maven/repository/maven-public/</url>
     </mirror>
+    <mirror>
+        <id>aliyunmaven</id>
+        <mirrorOf>*</mirrorOf>
+        <name>阿里云spring插件仓库</name>
+        <url>https://maven.aliyun.com/repository/spring-plugin</url>
+    </mirror>
+    <mirror>
+        <id>repo2</id>
+        <name>Mirror from Maven Repo2</name>
+        <url>https://repo.spring.io/plugins-release/</url>
+        <mirrorOf>central</mirrorOf>
+    </mirror>
   </mirrors>
 
   <!-- profiles
