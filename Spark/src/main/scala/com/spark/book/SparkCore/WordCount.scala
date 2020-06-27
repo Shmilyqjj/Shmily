@@ -17,7 +17,7 @@ object WordCount {
     val sc = new SparkContext(conf)
 
     //读取文件并WordCount
-    sc.textFile("hdfs://localhost:9000/datas/spark_test/WordCount.txt").flatMap(_.split(" ")).map((_,1)).reduceByKey(_ + _, 1).sortBy(_._2, false).saveAsTextFile("hdfs://localhost:9000/datas/spark_test/outputs/WordCount_out")
+    sc.textFile("hdfs://localhost:9000/Data/TestData/a.txt").flatMap(_.split(" ")).map((_,1)).reduceByKey(_ + _, 1).sortBy(_._2, false).saveAsTextFile("hdfs://localhost:9000/datas/spark_test/outputs/WordCount_out")
     //结果
 //    (CCI,14)
 //    (spark,9)
