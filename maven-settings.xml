@@ -193,6 +193,12 @@ under the License.
         <url>https://repo.spring.io/plugins-release/</url>
         <mirrorOf>central</mirrorOf>
     </mirror>
+    <mirror>
+        <id>confluent</id>
+        <name>Confluent</name>
+        <url>http://packages.confluent.io/maven/</url>
+        <mirrorOf>*</mirrorOf>
+    </mirror>
   </mirrors>
 
   <!-- profiles
