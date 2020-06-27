@@ -14,10 +14,10 @@
     </properties>
 
     <dependencies>
-    <dependency>
-        <groupId>org.apache.phoenix</groupId>
-        <artifactId>phoenix-core</artifactId>
-        <version>${hbase.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.phoenix</groupId>
+            <artifactId>phoenix-core</artifactId>
+            <version>${phoenix.version}</version>
+        </dependency>
     </dependencies>
 </project>
