@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>top.shmily.qjj</groupId>
-    <artifactId>WorkingPlatform</artifactId>
+    <artifactId>Spark</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
