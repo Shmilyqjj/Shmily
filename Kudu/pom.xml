@@ -25,7 +25,6 @@
             <groupId>org.apache.kudu</groupId>
             <artifactId>kudu-client</artifactId>
             <version>${kudu.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
