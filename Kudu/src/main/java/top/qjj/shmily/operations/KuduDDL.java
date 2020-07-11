@@ -95,7 +95,9 @@ class KuduDDLOperations {
     }
 
     /**
-     *
+     * 创建表
+     * 注意：Impala DDL对表字段名大小写不敏感，但Kudu层已经转为小写，且Kudu API中字段名必须小写；
+     * 注意：Impala DDL建表表名大小写敏感且到Kudu层表名不会被转成小写，且Kudu API对表名大小写敏感。
      * @param tableName 表名
      * @param schema Schema信息
      * @param tableOptions 建表参数 TableOptions对象
