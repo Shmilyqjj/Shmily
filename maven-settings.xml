@@ -199,6 +199,12 @@ under the License.
         <url>http://packages.confluent.io/maven/</url>
         <mirrorOf>*</mirrorOf>
     </mirror>
+    <mirror>
+        <id>cloudera</id>
+        <name>Cloudera</name>
+        <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+        <mirrorOf>*</mirrorOf>
+    </mirror>
   </mirrors>
 
   <!-- profiles
