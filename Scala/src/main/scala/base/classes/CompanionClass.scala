@@ -22,15 +22,15 @@ package base.classes
  */
 
 class CompanionClass(val name:String, val id:Int){
-  def hello = {println("Hello,my name is %s,my id is %s".format(name,id))}
-  def hello1 = {println(s"Hello,my name is ${name},my id is ${id}")}
+  def hello = {println("base.Hello,my name is %s,my id is %s".format(name,id))}
+  def hello1 = {println(s"base.Hello,my name is ${name},my id is ${id}")}
 }
 
 object CompanionClass {
   //object类名必须与class类完全一致
   private val version:Int = 1 //obj私有 version变量
   def apply(name: String, id: Int): CompanionClass = new CompanionClass(name, id)  //apply注入方法 new一个class对象
-  def say = println("Hello")
+  def say = println("base.Hello")
   def hello:Unit = new CompanionClass("qjj",1).hello
   //伴生类 object里面的属性和方法就可以看作是带有static标识的。所以object中定义的方法 sayHi 不用使用类的实例调用，只能用静态的方式调用。
 
