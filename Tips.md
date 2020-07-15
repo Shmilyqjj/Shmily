@@ -49,3 +49,4 @@ Nyan Progress Bar
 Rainbow Brackets
 Translation
 Easy Code
+Leetcode Editor
