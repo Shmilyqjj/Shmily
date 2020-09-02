@@ -1,4 +1,4 @@
-package main.java;
+
 
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;

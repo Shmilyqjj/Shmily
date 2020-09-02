@@ -1,4 +1,4 @@
-package main.java; /**
+/**
  * HDFS文件上传 - 本地上传到HDFS
  */
 

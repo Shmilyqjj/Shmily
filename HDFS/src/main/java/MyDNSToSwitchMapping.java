@@ -1,5 +1,3 @@
-package main.java;
-
 import org.apache.hadoop.net.DNSToSwitchMapping;
 
 import java.util.ArrayList;
