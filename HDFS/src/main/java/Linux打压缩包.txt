@@ -1,5 +1,5 @@
-zip + 压缩包名 +xxx.sh+xxx.txt+...   压缩为zip格式
-unzip +压缩包名.zip
+zip + 鍘嬬缉鍖呭悕 +xxx.sh+xxx.txt+...   鍘嬬缉涓簔ip鏍煎紡
+unzip +鍘嬬缉鍖呭悕.zip
 
-tar -zcvf xxx.tar.gz + 要压缩的内容     压缩成tar.gz的包
-tar -zxvf xxx.tar.gz -C 解压到的目录
+tar -zcvf xxx.tar.gz + 瑕佸帇缂╃殑鍐呭     鍘嬬缉鎴恡ar.gz鐨勫寘
+tar -zxvf xxx.tar.gz -C 瑙ｅ帇鍒扮殑鐩綍

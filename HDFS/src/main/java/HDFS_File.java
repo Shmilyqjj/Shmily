@@ -11,7 +11,7 @@ public class HDFS_File{
         // 1 创建配置信息对象
         Configuration configuration = new Configuration();
 
-        FileSystem fs = FileSystem.get(new URI("hdfs://hadoop101:9000"),configuration, "root");
+        FileSystem fs = FileSystem.get(new URI("hdfs://cdh101:8020"),configuration, "root");
 
         // 2 获取查询路径下的文件状态信息
         FileStatus[] listStatus = fs.listStatus(new Path("/"));
