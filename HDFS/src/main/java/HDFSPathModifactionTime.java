@@ -31,7 +31,7 @@ public class HDFSPathModifactionTime {
         try {
             FileStatus[] status = fs.listStatus(rootDir);
             for (FileStatus file : status) {
-                if (file.isDir()) {
+                if (file.isDirectory()) {
                     System.out.println("DIRECTORY:" + file.getPath() + " - 上次修改time:" + file.getModificationTime());
                     displayDirectoryContents(fs, file.getPath());
                 } else {
