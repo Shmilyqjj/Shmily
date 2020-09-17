@@ -37,7 +37,7 @@ public class HbaseTest {
 //        Connection connection = ConnectionFactory.createConnection(conf);
 ////        HBaseAdmin admin = new HBaseAdmin(conf);
 //        HBaseAdmin admin = (HBaseAdmin)connection.getAdmin();
-        return admin.tableExists(tableName);
+        return admin.tableExists(TableName.valueOf(tableName));
     }
 
     public static void createTable(String tableName,String... cfs) throws IOException {
