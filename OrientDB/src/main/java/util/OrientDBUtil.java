@@ -1,28 +1,54 @@
 package util;
-import com.google.common.collect.Lists;
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
-import com.orientechnologies.orient.core.db.ODatabaseSessionMetadata;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+
 import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
-import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable;
+import com.tinkerpop.blueprints.impls.orient.OrientVertexQuery;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
-import org.apache.hadoop.util.hash.Hash;
-
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * :Description: orientdb util
+ * :Author: Shmily
+ * :Create Time: 2020/9/25 09:50
+ * :Site: shmily-qjj.top
+ */
+
 public class OrientDBUtil {
+	private static final Logger logger = LoggerFactory.getLogger(OrientDBUtil.class);
 	private static String orientDBHost = "";
+	private static String orientDBUser = "admin";
+	private static String orientDBPassword = "admin";
+	private static boolean orientDBUsePool = true;
+	private static int orientDBMinPool = 1;
+	private static int orientDBMaxPool = 12;
 	private static Connection conn = null;
 	private static PreparedStatement ps = null;
 	private static ResultSet rs = null;
+
+	public OrientDBUtil(){}
+
+	public OrientDBUtil(String orientDBHost,String orientDBUser,String orientDBPassword){
+		OrientDBUtil.orientDBUser = orientDBHost;
+		OrientDBUtil.orientDBUser = orientDBUser;
+		OrientDBUtil.orientDBPassword = orientDBPassword;
+	}
+
+	public OrientDBUtil(String orientDBHost,String orientDBUser,String orientDBPassword,boolean usePool,int minPoolSize,int maxPoolSize){
+		OrientDBUtil.orientDBUser = orientDBHost;
+		OrientDBUtil.orientDBUser = orientDBUser;
+		OrientDBUtil.orientDBPassword = orientDBPassword;
+		OrientDBUtil.orientDBUsePool = usePool;
+		OrientDBUtil.orientDBMinPool = minPoolSize;
+		OrientDBUtil.orientDBMaxPool = maxPoolSize;
+	}
 
 	private static String trimString(String str, String delStr){
 		int delStrLength = delStr.length();
@@ -76,11 +102,11 @@ public class OrientDBUtil {
 	 */
 	public static Connection getConnection(String dbName) throws Exception {
 		Properties info = new Properties();
-		info.put("db.usePool", "true");
-		info.put("db.pool.min", 1);
-		info.put("db.pool.max", 5);
+		info.put("db.usePool", orientDBUsePool);
+		info.put("db.pool.min", orientDBMinPool);
+		info.put("db.pool.max", orientDBMaxPool);
 		String url = "jdbc:orient:remote:" + orientDBHost + "/" + dbName;
-		return getConnection(url,"admin","admin",info);
+		return getConnection(url,orientDBUser,orientDBPassword,info);
 	}
 
 	public static ResultSet select(String dbName,String sql) {
@@ -89,7 +115,7 @@ public class OrientDBUtil {
 			ps = conn.prepareStatement(sql);
 			rs = ps.executeQuery(sql);
 		} catch (SQLException e) {
-			System.out.println("查询数据异常:"+ e.getMessage());
+			logger.error("查询数据异常:"+ e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -113,7 +139,7 @@ public class OrientDBUtil {
 		} finally {
 			close();
 		}
-		System.out.println("Rows affected: "+num);
+		logger.info("Rows affected: "+num);
 		return num;
 	}
 
@@ -122,12 +148,10 @@ public class OrientDBUtil {
 	 * @param dbName 连接到的库名
 	 * @param userName 登录用户
 	 * @param passWord 登录密码
-	 * @param minPoolNum  连接池最小连接数
-	 * @param maxPoolNum  连接池最大连接数
 	 * @return
 	 */
-	public OrientBaseGraph getGraph(String dbName,String userName,String passWord,int minPoolNum,int maxPoolNum) {
-		OrientGraphFactory orientGraphFactory = new OrientGraphFactory("remote:" + orientDBHost + "/" + dbName, userName, passWord).setupPool(minPoolNum, maxPoolNum);
+	public OrientBaseGraph getGraph(String dbName,String userName,String passWord) {
+		OrientGraphFactory orientGraphFactory = new OrientGraphFactory("remote:" + orientDBHost + "/" + dbName, userName, passWord).setupPool(orientDBMinPool, orientDBMaxPool);
 		return orientGraphFactory.getTx();
 	}
 
@@ -169,7 +193,7 @@ public class OrientDBUtil {
 	 * @return ArrayList<Vertex>
 	 */
 	public static ArrayList<Vertex> getVertex(OrientBaseGraph graph, String className){
-		ArrayList<Vertex> arr = new ArrayList<>();
+		ArrayList<Vertex> arr = new ArrayList<Vertex>();
 		OrientDynaElementIterable orientDynaElementIterable  = (OrientDynaElementIterable)getObjectBySQL(graph, String.format("select from %s",className));
 		Iterator<Object> iterator =orientDynaElementIterable.iterator();
 		while (iterator.hasNext()){
@@ -187,7 +211,7 @@ public class OrientDBUtil {
 	 * @return ArrayList<Vertex>
 	 */
 	public static ArrayList<Vertex> getVertex(OrientBaseGraph graph, String className,String whereConditions){
-		ArrayList<Vertex> arr = new ArrayList<>();
+		ArrayList<Vertex> arr = new ArrayList<Vertex>();
 		OrientDynaElementIterable orientDynaElementIterable  = (OrientDynaElementIterable)getObjectBySQL(graph, String.format("select from %s %s",className,whereConditions));
 		Iterator<Object> iterator = orientDynaElementIterable.iterator();
 		while (iterator.hasNext()){
@@ -199,7 +223,7 @@ public class OrientDBUtil {
 
 
 	public static ArrayList<Edge> getEdges(OrientBaseGraph graph, String className){
-		ArrayList<Edge> arr = new ArrayList<>();
+		ArrayList<Edge> arr = new ArrayList<Edge>();
 		OrientDynaElementIterable orientDynaElementIterable  = (OrientDynaElementIterable)getObjectBySQL(graph, String.format("select from %s",className));
 		Iterator<Object> iterator = orientDynaElementIterable.iterator();
 		while (iterator.hasNext()){
@@ -239,7 +263,7 @@ public class OrientDBUtil {
 			}
 		}
 		String finalSql = trimString(sql.toString(),"and ");
-		System.out.println(finalSql);
+		logger.info(finalSql);
 		ResultSet select = select(dbName, finalSql);
 		if(select.next()){
 			return select.getString("@rid");
@@ -270,13 +294,13 @@ public class OrientDBUtil {
 				graph.commit();
 			}
 		}catch (ORecordDuplicatedException e) {
-			System.out.println("ORecordDuplicated: " + e.toString());
+			logger.info("ORecordDuplicated: " + e.toString());
 		}catch (OConcurrentModificationException e) {
 			Thread.sleep(3000);
 			commitGraph(graph);
 		}catch (Exception e) {
 			graph.rollback();
-			System.out.println("Failed to commit, graph rollback." + e.getMessage());
+			logger.error("Failed to commit, graph rollback." + e.getMessage());
 		}
 	}
 
@@ -286,7 +310,7 @@ public class OrientDBUtil {
 				graph.shutdown();
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 
