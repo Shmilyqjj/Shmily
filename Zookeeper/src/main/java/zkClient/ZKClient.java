@@ -14,6 +14,12 @@ import java.util.List;
 
 import static org.apache.zookeeper.ZooDefs.OpCode.exists;
 
+/**
+ * 参考
+ * https://blog.51cto.com/nileader/795265
+ *
+ */
+
 public class ZKClient {
     private ZooKeeper zk = null;
 
@@ -23,7 +29,7 @@ public class ZKClient {
     //0.连接zookeeper
     @Before
     public void connect() throws IOException {
-        String connect = "hadoop101:2181,hadoop102:2181,hadoop103:2181"; // 创建链接
+        String connect = "cdh101:2181,cdh102:2181,cdh103:2181"; // 创建链接
         int sessionTime = 2000; // 2s
 
         zk = new ZooKeeper(connect, sessionTime, new Watcher() {
