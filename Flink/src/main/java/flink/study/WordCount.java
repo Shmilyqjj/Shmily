@@ -1,11 +1,15 @@
 package flink.study;
-
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.api.java.utils.ParameterTool;
 /**
- * @Descriptioo:  第一个Flink程序 WordCount
- * @Owner: jiajing_qu
- * @Date: 2019/12/10 1:09
- * @Version: 1.0
+ * :Description:Flink demo to test EventTime
+ * :Author: 佳境Shmily
+ * :Create Time: 2021/3/6 15:32
+ * :Site: shmily-qjj.top
  */
 public class WordCount {
+    public static void main(String[] args) {
 
+    }
 }
