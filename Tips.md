@@ -42,7 +42,7 @@ Big Data Tool
 Key Promoter X
 Maven Helper
 Python
-Scala
+Scala plugin
 Docker
 Codeglance
 Nyan Progress Bar
