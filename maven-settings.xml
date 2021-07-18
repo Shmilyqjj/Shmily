@@ -32,7 +32,7 @@ under the License.
  |  2. Global Level. This settings.xml file provides configuration for all Maven
  |                 users on a machine (assuming they're all using the same Maven
  |                 installation). It's normally provided in
- |                 ${maven.conf}/settings.xml.
+ |                 ${maven.home}/conf/settings.xml.
  |
  |                 NOTE: This location can be overridden with the CLI option:
  |
@@ -49,7 +49,7 @@ under the License.
   <!-- localRepository
    | The path to the local repository maven will use to store artifacts.
    |
-   | Default: ${user.home}/.m2/repository
+   | Default: ~/.m2/repository
   <localRepository>/path/to/local/repo</localRepository>
   -->
   <localRepository>E:\Maven\Repository</localRepository>
@@ -80,7 +80,9 @@ under the License.
     <!-- pluginGroup
      | Specifies a further group identifier to use for plugin lookup.
     <pluginGroup>com.your.plugins</pluginGroup>
-    -->
+
+    <pluginGroup>com.rb.maven.plugin</pluginGroup>-->
+    <pluginGroup>org.mule.tools</pluginGroup>
   </pluginGroups>
 
   <!-- proxies
@@ -102,7 +104,17 @@ under the License.
       <port>80</port>
       <nonProxyHosts>local.net|some.host.com</nonProxyHosts>
     </proxy>
-    -->
+
+    <proxy>
+      <id>nomal</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <username>admin</username>
+      <password>admin123</password>
+      <host>http://192.168.2.168:8081/nexus</host>
+      <port>8081</port>
+      <nonProxyHosts>http://192.168.2.168:8081/nexus</nonProxyHosts>
+    </proxy>-->
   </proxies>
 
   <!-- servers
@@ -131,6 +143,21 @@ under the License.
       <passphrase>optional; leave empty if not used.</passphrase>
     </server>
     -->
+     <server>
+      <id>releases</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>
+    <server>
+      <id>snapshots</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>
+     <server>
+      <id>public</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>
   </servers>
 
   <!-- mirrors
@@ -155,56 +182,31 @@ under the License.
       <mirrorOf>repositoryId</mirrorOf>
       <name>Human Readable Name for this Mirror.</name>
       <url>http://my.repository.com/repo/path</url>
-    </mirror>
-     -->
-    <mirror>
-           <id>alimaven</id>
-           <name>aliyun maven</name>
-           <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-           <mirrorOf>central</mirrorOf>
-    </mirror>
-    <mirror>
-            <id>nexus-aliyun</id>
-            <mirrorOf>*</mirrorOf>
-            <name>Nexus aliyun</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
-    </mirror>
-    <mirror>
-            <id>net-cn</id>
-            <mirrorOf>central</mirrorOf>
-            <name>Human Readable Name for this Mirror.</name>
-            <url>http://maven.net.cn/content/groups/public/</url>
-    </mirror>
-    <mirror>
-            <id>nexus-163</id>
-            <mirrorOf>*</mirrorOf>
-            <name>Nexus 163</name>
-            <url>http://mirrors.163.com/maven/repository/maven-public/</url>
-    </mirror>
-    <mirror>
-        <id>aliyunmaven</id>
-        <mirrorOf>*</mirrorOf>
-        <name>阿里云spring插件仓库</name>
-        <url>https://maven.aliyun.com/repository/spring-plugin</url>
-    </mirror>
-    <mirror>
-        <id>repo2</id>
-        <name>Mirror from Maven Repo2</name>
-        <url>https://repo.spring.io/plugins-release/</url>
-        <mirrorOf>central</mirrorOf>
-    </mirror>
-    <mirror>
-        <id>confluent</id>
-        <name>Confluent</name>
-        <url>http://packages.confluent.io/maven/</url>
-        <mirrorOf>*</mirrorOf>
-    </mirror>
-    <mirror>
-        <id>cloudera</id>
-        <name>Cloudera</name>
-        <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
-        <mirrorOf>*</mirrorOf>
-    </mirror>
+    </mirror>-->
+
+<mirror>
+    <id>alimaven</id>
+    <name>aliyun maven</name>
+    <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+    <mirrorOf>central</mirrorOf>
+</mirror>
+
+
+
+ <mirror>
+    <id>repo2</id>
+    <name>Mirror from Maven Repo2</name>
+    <url>https://repo.spring.io/plugins-release/</url>
+    <mirrorOf>central</mirrorOf>
+ </mirror>
+
+ <mirror>
+   <id>cloudera</id>
+   <name>cloudera repo</name>
+   <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+   <mirrorOf>*</mirrorOf>
+ </mirror>
+
   </mirrors>
 
   <!-- profiles
@@ -293,14 +295,56 @@ under the License.
       </properties>
     </profile>
     -->
+
+     <profile>
+   	  <id>nexus</id>
+   	  <repositories>
+
+   	 <repository>
+			<id>releases</id>
+			<name>Releases</name>
+			<releases>
+            <enabled>true</enabled>
+            <checksumPolicy>warn</checksumPolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+          </snapshots>
+			<url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+			<layout>default</layout>
+   	    </repository>
+
+   	    <!-- <repository>
+   	      <id>snapshots</id>
+   	      <name>Snapshots</name>
+   	      <releases>
+            <enabled>false</enabled>
+            <checksumPolicy>warn</checksumPolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+          </snapshots>
+   	      <url>http://192.168.2.168:8081/nexus/content/repositories/snapshots/</url>
+   	    </repository>-->
+   	  </repositories>
+
+   	  <pluginRepositories>
+
+   	  </pluginRepositories>
+   	</profile>
   </profiles>
 
   <!-- activeProfiles
    | List of profiles that are active for all builds.
-   |
+   | -->
   <activeProfiles>
-    <activeProfile>alwaysActiveProfile</activeProfile>
-    <activeProfile>anotherAlwaysActiveProfile</activeProfile>
+   <!--<activeProfile>alwaysActiveProfile</activeProfile>
+    <activeProfile>anotherAlwaysActiveProfile</activeProfile>-->
+    <activeProfile>nexus</activeProfile>
   </activeProfiles>
-  -->
+
 </settings>
