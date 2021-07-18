@@ -14,7 +14,7 @@
         <flink.version>1.12.2</flink.version>
         <hadoop.version>3.0.0</hadoop.version>
         <kafka.version>2.2.1</kafka.version>
-        <mysql.version>5.1.38</mysql.version>
+        <mysql.version>8.0.16</mysql.version>
         <fastjson.version>1.2.41</fastjson.version>
         <encoding>UTF-8</encoding>
     </properties>
