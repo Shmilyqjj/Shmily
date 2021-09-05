@@ -17,6 +17,7 @@ class TestGroovyJDBCConnPoolHikariCP {
         while (rs.next()){
             System.out.println(rs.getString(1) + "--" + rs.getString(2));
         }
+        ds.close()
 
     }
 }
@@ -44,6 +45,11 @@ class DataSource{
 
     static Connection getConnection(String user, String pwd){
         return dataSource.getConnection(user, pwd)
+    }
+
+    static void close(){
+        dataSource.close()
+
     }
 }
 
