@@ -7,8 +7,35 @@
     <groupId>com.qjj</groupId>
     <artifactId>Hbase</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>7</source>
+                    <target>7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>hbase-2.1.4</id>
+            <properties>
+                <hbase.version>2.1.4</hbase.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>hbase-1.0.0-cdh5.4.7</id>
+            <properties>
+                <hbase.version>1.0.0-cdh5.4.7</hbase.version>
+            </properties>
+        </profile>
+
+    </profiles>
     <properties>
-        <hbase.version>2.1.4</hbase.version>
+        <hbase.version>1.0.0-cdh5.4.7</hbase.version>
         <hadoop.version>3.0.0</hadoop.version>
         <encoding>UTF-8</encoding>
     </properties>
@@ -18,6 +45,28 @@
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-server</artifactId>
             <version>${hbase.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mortbay.jetty</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-common</artifactId>
+            <version>${hbase.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet.jsp</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
