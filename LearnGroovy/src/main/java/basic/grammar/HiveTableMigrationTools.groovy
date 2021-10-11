@@ -18,11 +18,13 @@ class HiveTableMigrationTools {
         def hive_password="pwd"
         String src_hdfs_addr="hdfs://source_hdfs_nameservice_name"
         String tgt_hdfs_addr="hdfs://target_activeNN_ip:target_activeNN_port"
+        String src_hdfs_ns = "nameservice-hive"
+        String tgt_hdfs_ns = "nameservice1"
         def oldConn = getHiveConn(old_hive_url, hive_user, hive_password)
         def newConn = getHiveConn(new_hive_url, hive_user, hive_password)
         tables.each {table ->
             println("#################Hive表${table}开始迁移####################")
-            Migrate(oldConn, newConn, table, src_hdfs_addr, tgt_hdfs_addr)
+            Migrate(oldConn, newConn, table, src_hdfs_addr, tgt_hdfs_addr, src_hdfs_ns, tgt_hdfs_ns)
             println("#################Hive表${table}已成功迁移到新集群####################")
         }
     }
@@ -36,7 +38,7 @@ class HiveTableMigrationTools {
         }
     }
 
-    static void Migrate(oldConn, newConn, tableName, String srcHDFSAddr, String tgtHDFSAddr){
+    static void Migrate(oldConn, newConn, tableName, String srcHDFSAddr, String tgtHDFSAddr, String srcHDFSNs, String tgtHDFSNs){
         String createSQL = oldConn.firstRow("show create table " + tableName).get("createtab_stmt")
         // 先删除新集群该表
         newConn.execute("drop table if exists " + tableName)
@@ -58,7 +60,7 @@ class HiveTableMigrationTools {
         // 先删除新集群数据目录 避免建表报错
         tableDataDelete(path, srcHDFSAddr, tgtHDFSAddr)
         // 新集群建表
-        newConn.execute(createSQL)
+        newConn.execute(createSQL.replace(srcHDFSNs, tgtHDFSNs))
 
         // 数据迁移
         if (path){
