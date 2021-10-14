@@ -41,7 +41,19 @@ class HiveTableMigrationTools {
     static void Migrate(oldConn, newConn, tableName, String srcHDFSAddr, String tgtHDFSAddr, String srcHDFSNs, String tgtHDFSNs){
         String createSQL = oldConn.firstRow("show create table " + tableName).get("createtab_stmt")
         // 先删除新集群该表
-        newConn.execute("drop table if exists " + tableName)
+        try {
+            newConn.execute("drop table if exists " + tableName)
+        }catch (Exception e){
+            if(e.toString().contains("Cannot drop a view with DROP TABLE")){
+                // 如果是视图就创建视图
+                newConn.execute("drop view " + tableName)
+                newConn.execute(createSQL.replace(srcHDFSNs, tgtHDFSNs))
+                return
+            }
+            else{
+                throw e
+            }
+        }
         // println(createSQL)
 
 
