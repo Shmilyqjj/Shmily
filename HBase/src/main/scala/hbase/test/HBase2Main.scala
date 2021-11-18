@@ -1,33 +1,35 @@
-package com.smy.hbase2.util
+package hbase.test
 
 import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.hbase.{CellUtil, HBaseConfiguration, TableName}
 import org.apache.hadoop.hbase.client._
 import org.apache.hadoop.hbase.util.Bytes
+import org.apache.hadoop.hbase.{CellUtil, HBaseConfiguration, TableName}
 import org.apache.hadoop.security.UserGroupInformation
 
 import java.util
 
 /**
-  * HBaseConfiguration	用于连接hbase数据库，获取连接connection（DataBase)
-
-  * connection.get获取对应的操作对象
-		HBaseAdmin		创建表，删除表，列出表项，使表有效或无效，以及添加或删除表列簇成员等
-		HTable 				表内容操作对象：表内容的增删改查  HTable可以用来和 HBase 表直接通信  并非线程安全
-
+ * HBase 2.x API
+ *
+ * HBaseConfiguration	用于连接hbase数据库，获取连接connection（DataBase)
+ *
+ * connection.get获取对应的操作对象
+ * HBaseAdmin		创建表，删除表，列出表项，使表有效或无效，以及添加或删除表列簇成员等
+ * HTable 				表内容操作对象：表内容的增删改查  HTable可以用来和 HBase 表直接通信  并非线程安全
+ *
  * ColumnFamilyDescriptorBuilder		列簇修饰符 维护着关于列簇的信息，例如版本号，压缩设置等。它通常在创建表或者为表添加列 簇的时候使用。列簇被创建后不能直接修改，只能通过删除然后重新创建的方式
-
+ *
  * TableDescriptorBuilder 		  表的列簇操作，增加删除列簇，设置表级别的参数，入表的压缩级别，存储时间等
-
+ *
  * 四大对数据增删改查api，由HTable对象调用
-		HTable.
-				Put 用来对单个行执行添加操作
-				Get 用来获取单个行的相关信息
-				Delete 用来封装一个要删除的信息
-				Scan 用来封装一个作为查询条件的信息
+ * HTable.
+ * Put 用来对单个行执行添加操作
+ * Get 用来获取单个行的相关信息
+ * Delete 用来封装一个要删除的信息
+ * Scan 用来封装一个作为查询条件的信息
  * 处理返回结果集
-		Result         存储 Get 或者 Scan 操作后获取表的单行值。使用此类提供的方法可以直接获取值或者各种 Map 结构（key-value 对）
-		ResultScanner  ResultScanner类把扫描操作转换为类似的get操作，它将每一行数据封装成一个Result实例，并将所有的Result实例放入一个迭代器中。
+ * Result         存储 Get 或者 Scan 操作后获取表的单行值。使用此类提供的方法可以直接获取值或者各种 Map 结构（key-value 对）
+ * ResultScanner  ResultScanner类把扫描操作转换为类似的get操作，它将每一行数据封装成一个Result实例，并将所有的Result实例放入一个迭代器中。
  */
 
 object HBase2Main {
@@ -37,7 +39,7 @@ object HBase2Main {
     val conf: Configuration = HBaseConfiguration.create()
     conf.set("hbase.zookeeper.quorum", "hbasezk1,hbasezk2,hbasezk3")
     conf.set("hbase.zookeeper.property.clientPort", "2181")
-    System.setProperty("java.security.krb5.conf", "D:\\Programming\\Env\\Keytabs\\krb5.conf")
+    System.setProperty("java.security.krb5.conf", "/opt/Env/Kerberos/krb5.conf")
 
     conf.set("hadoop.security.authentication", "Kerberos")
     conf.set("hbase.security.authentication", "Kerberos")
@@ -45,7 +47,7 @@ object HBase2Main {
     conf.set("hbase.regionserver.kerberos.principal", "hbase/_HOST@HIVETEST.COM")
 
     UserGroupInformation.setConfiguration(conf)
-    UserGroupInformation.loginUserFromKeytab("hbase","D:\\Programming\\Env\\Keytabs\\hbase.keytab")
+    UserGroupInformation.loginUserFromKeytab("hbase", "/opt/Env/Kerberos/hbase.keytab")
     HBaseAdmin.available(conf)
 
 
@@ -73,6 +75,7 @@ object HBase2Main {
    * 在新API中,HTableDescriptor和HColumnDescriptor会逐渐被TableDescriptorBuilder和ColumnFamilyDescriptorBuilder取代
    * TableDescriptorBuilder 表描述生成器
    * ColumnFamilyDescriptorBuilder 列簇描述生成器
+   *
    * @param conf
    * @param tablename
    * @param columnFamily
@@ -105,6 +108,7 @@ object HBase2Main {
 
   /**
    * 增加CF
+   *
    * @param conf
    * @param tableName
    * @param ColumnFamily
@@ -131,6 +135,7 @@ object HBase2Main {
 
   /**
    * 删表
+   *
    * @param conf
    * @param tablename
    */
@@ -152,6 +157,7 @@ object HBase2Main {
 
   /**
    * 插入数据
+   *
    * @param conf
    * @param tableName
    * @param rowkey
@@ -178,6 +184,7 @@ object HBase2Main {
 
   /**
    * 查询表信息
+   *
    * @param conf
    * @param tableName
    */
@@ -221,6 +228,7 @@ object HBase2Main {
 
   /**
    * 根据rowkey获取值
+   *
    * @param conf
    * @param tableName
    * @param RowKey
@@ -258,6 +266,7 @@ object HBase2Main {
 
   /**
    * 删除指定row
+   *
    * @param conf
    * @param tableName
    * @param RowKey
