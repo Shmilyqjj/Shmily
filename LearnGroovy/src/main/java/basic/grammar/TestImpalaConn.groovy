@@ -1,4 +1,4 @@
-package com.smydp.tests
+package basic.grammar
 import groovy.sql.Sql
 
 import java.sql.DriverManager
