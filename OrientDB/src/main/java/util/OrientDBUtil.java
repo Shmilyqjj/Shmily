@@ -8,7 +8,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexQuery;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
+//import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.sql.*;
@@ -150,10 +150,10 @@ public class OrientDBUtil {
 	 * @param passWord 登录密码
 	 * @return
 	 */
-	public OrientBaseGraph getGraph(String dbName,String userName,String passWord) {
-		OrientGraphFactory orientGraphFactory = new OrientGraphFactory("remote:" + orientDBHost + "/" + dbName, userName, passWord).setupPool(orientDBMinPool, orientDBMaxPool);
-		return orientGraphFactory.getTx();
-	}
+//	public OrientBaseGraph getGraph(String dbName,String userName,String passWord) {
+//		OrientGraphFactory orientGraphFactory = new OrientGraphFactory("remote:" + orientDBHost + "/" + dbName, userName, passWord).setupPool(orientDBMinPool, orientDBMaxPool);
+//		return orientGraphFactory.getTx();
+//	}
 
 	/**
 	 * @param graph

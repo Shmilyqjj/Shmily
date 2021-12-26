@@ -13,7 +13,6 @@
         <module>Flink</module>
         <module>Hadoop</module>
         <module>HBase</module>
-        <module>HDFS</module>
         <module>Hive</module>
         <module>Kafka</module>
         <module>Kudu</module>
@@ -22,7 +21,7 @@
         <module>OrientDB</module>
         <module>Phoenix</module>
         <module>Presto</module>
-        <module>Scala</module>
+        <module>LearnScala</module>
         <module>Spark</module>
         <module>Storm</module>
         <module>Zookeeper</module>
