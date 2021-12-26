@@ -1,0 +1,14 @@
+用Maven建立一个项目（idea工程）
+然后在src/main里建scala文件夹
+然后右键scala文件夹->Mark Directory as -> Source root
+File->Add Framework Support->选scala->选scala文件夹或者插件
+新建scala文件 scala class -> Object
+
+
+Scala code templates:
+/**
+:Description:
+:Author: 佳境Shmily
+:Create Time: ${DATE} ${TIME}
+:Site: shmily-qjj.top
+*/
