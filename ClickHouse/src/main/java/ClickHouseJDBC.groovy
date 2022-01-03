@@ -34,6 +34,8 @@ class ClickHouseJDBC {
             System.out.println("res: " + rs1)
         }
         rs1.close()
+        stmt.close()
+        conn.close()
     }
 
     static void connClickHouseCluster(){
@@ -58,6 +60,8 @@ class ClickHouseJDBC {
             System.out.println("res: " + rs1)
         }
         rs1.close()
+        stmt.close()
+        conn.close()
     }
 
 }
