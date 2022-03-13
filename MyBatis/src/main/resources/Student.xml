@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- parameterType：要求输入参数的类型 -->
+<!-- resultType：输出的类型 -->
+
+
+<!-- namespace：在MyBatis中，Mapper中的namespace用于绑定Dao接口的，即面向接口编程。 它的好处在于当使用了namespace之后就可以不用写接口实现类，业务逻辑会直接通过这个绑定寻找到相对应的SQL语句进行对应的数据处理 -->
+
+<mapper namespace="test">
+    <!-- 查 -->
+    <select id="listStudent" resultType="Student">
+        select * from  student
+    </select>
+
+    <!-- 增 -->
+    <insert id="addStudent" parameterType="Student">
+        insert into student (id, studentID, name) values (#{id},#{studentID},#{name})
+    </insert>
+
+    <!-- 删 -->
+    <delete id="deleteStudent" parameterType="Student">
+        delete from student where id = #{id}
+    </delete>
+
+    <!-- 查 -->
+    <select id="getStudent" parameterType="_int" resultType="Student">
+        select * from student where id= #{id}
+    </select>
+
+    <!-- 改 -->
+    <update id="updateStudent" parameterType="Student">
+        update student set name=#{name} where id=#{id}
+    </update>
+
+    <!-- 模糊查询 -->
+    <!-- <select> 标签对中 SQL 语句的 “${}” 符号，表示拼接 SQL 串，
+    将接受的参数内容不加任何修饰地拼接在 SQL 中，
+    在 “${}” 中只能使用 value 来代表其中的参数 -->
+    <!-- 关于ResultMap和ResultType、ParameterMap和ParameterType，它们都是存在于mybatis的应用中。
+    ResultMap和ResultType，它们都是用来表示查询结果集与java对象之间的一种关系，将查询结果集，按照某种关系映射到java对象
+    ResultMap：将查询结果集中的列一一映射到java对象的各个属性上去，此处的这个映射关系，是根据用户在“resultMap”的子标签中的配置来决定的，灵活多变，常用于多表查询以及查询时使用别名的情况
+    ParameterMap和ResultMap类似，设置入参字段映射，很少使用
+    一般使用parameterType直接将查询结果列值类型自动对应到java对象属性类型上，不再配置映射关系一一对应。
+    -->
+    <select id="findStudentByName" parameterType="java.lang.String" resultType="Student">
+        SELECT * FROM student WHERE name LIKE '%${value}%'
+    </select>
+
+    <!-- 动态SQL -->
+    <!-- if
+         choose (when, otherwise)
+         trim (where, set)
+         foreach
+     -->
+
+    <!-- 动态拼接SQL  Select -->
+    <select id="dynamicSelectIf" parameterType="Student" resultType="Student">
+            SELECT * FROM student
+        <!-- 通过trim格式化标记set或where功能 对于set自动删除最后一个“,”，对于where自动删除最后一个“and|or” -->
+        <!-- prefix：前缀  prefixOverride：去掉第一个and或者是or -->
+        <!-- suffixOverride：去掉最后一个逗号（也可以是其他的标记，就像是上面前缀中的and一样） suffix：后缀 -->
+        <trim prefix="WHERE" suffixOverrides="AND|OR">
+            <if test="id != null">
+                id = #{id} AND
+            </if>
+            <if test="studentID != null">
+                studentID = #{studentID} AND
+            </if>
+            <if test="name != null">
+                name = #{name} AND
+            </if>
+        </trim>
+    </select>
+
+    <!-- 动态拼接SQL  Select -->
+    <select id="dynamicSelectChoose" parameterType="Student" resultType="Student">
+        SELECT * FROM student
+        <trim prefix="WHERE" suffixOverrides="AND|OR">
+            <!-- 有些时候，我们不想用到所有的条件语句，而只想从中择其一二。针对这种情况，MyBatis 提供了 choose 元素，它有点像 Java 中的 switch 语句。 -->
+            <choose>
+                <when test="id != null">
+                    id = #{id} AND
+                </when>
+                <when test="name != null">
+                    name = #{name} AND
+                </when>
+                <when test="name != null">
+                    name = #{name} AND
+                </when>
+                <otherwise>
+                    studentID = #{studentID} AND
+                </otherwise>
+            </choose>
+        </trim>
+    </select>
+
+    <!-- 动态拼接SQL  Update -->
+    <!-- 类似的用于动态更新语句的解决方案叫做 set。set 元素可以被用于动态包含需要更新的列，而舍去其他的。 -->
+    <!-- 这里，set 元素会动态前置 SET 关键字，同时也会消除无关的逗号，因为用了条件语句之后很可能就会在生成的赋值语句的后面留下这些逗号。 -->
+    <update id="dynamicUpdateSet">
+        update student
+        <set>
+            <if test="name != null">name=#{name},</if>
+            <if test="studentID != null">studentID=#{studentID},</if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!-- 构建in操作 foreach -->
+    <!-- 动态 SQL 的另外一个常用的必要操作是需要对一个集合进行遍历，通常是在构建 IN 条件语句的时候。 -->
+    <!-- foreach 元素的功能是非常强大的，它允许你指定一个集合，声明可以用在元素体内的集合项和索引变量。
+    它也允许你指定开闭匹配的字符串以及在迭代中间放置分隔符。这个元素是很智能的，因此它不会偶然地附加多余的分隔符。 -->
+    <!-- 可以将一个 List 实例或者数组作为参数对象传给 MyBatis，当你这么做的时候，MyBatis 会自动将它包装在一个 Map 中并以名称为键。
+    List 实例将会以"list"作为键，而数组实例的键将是"array" -->
+    <!-- foreach元素的属性主要有item，index，collection，open，separator，close。 -->
+    <!--
+    item：集合中元素迭代时的别名，该参数为必选。
+    index：在list和数组中,index是元素的序号，在map中，index是元素的key，该参数可选
+    open：foreach代码的开始符号，一般是(和close=")"合用。常用在in(),values()时。该参数可选
+    separator：元素之间的分隔符，例如在in()的时候，separator=","会自动在元素中间用“,“隔开，避免手动输入逗号导致sql错误，如in(1,2,)这样。该参数可选。
+    close: foreach代码的关闭符号，一般是)和open="("合用。常用在in(),values()时。该参数可选。
+    collection: 要做foreach的对象，作为入参时，List对象默认用"list"代替作为键，数组对象有"array"代替作为键，Map对象没有默认的键。当然在作为入参时可以使用@Param("keyName")来设置键，设置keyName后，list,array将会失效。 除了入参这种情况外，还有一种作为参数对象的某个字段的时候。举个例子：如果User有属性List ids。入参是User对象，那么这个collection = "ids".如果User有属性Ids ids;其中Ids是个对象，Ids有个属性List id;入参是User对象，那么collection = "ids.id"
+    -->
+    <select id="dynamicSelectForeach" parameterType="list" resultType="Student">
+        SELECT *
+        FROM student s
+        WHERE id in
+        <foreach item="item" index="index" collection="list"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

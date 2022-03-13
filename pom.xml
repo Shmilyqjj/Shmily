@@ -27,5 +27,6 @@
         <module>Storm</module>
         <module>Zookeeper</module>
         <module>ClickHouse</module>
+        <module>MyBatis</module>
     </modules>
 </project>

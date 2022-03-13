@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <!-- 别名 -->
+    <typeAliases>
+<!--  MyBatis中如果每次配置类名都要写全称也太不友好了，我们可以通过在主配置文件中配置别名，就不再需要指定完整的包名了 -->
+<!--        <typeAlias type="test.pojo.Student" alias="Student"/>-->
+
+<!--  但是如果每一个实体类都这样配置还是有点麻烦这时我们可以直接指定package的名字， mybatis会自动扫描指定包下面的javabean，并且默认设置一个别名，默认的名字为： javabean 的首字母小写的非限定类名来作为它的别名（其实别名是不去分大小写的）。也可在javabean 加上注解@Alias 来自定义别名， 例如： @Alias(student) -->
+        <package name="test.pojo"/>
+    </typeAliases>
+
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/test?serverTimezone=UTC"/>
+                <property name="username" value="root"/>
+                <property name="password" value="123456"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="Student.xml"/>
+    </mappers>
+</configuration>
