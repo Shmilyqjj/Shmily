@@ -132,4 +132,17 @@
         </foreach>
     </select>
 
+    <!-- include 包含sql-->
+    <sql id="selectInclude">
+        select id, name from student
+    </sql>
+
+    <select id="includeTest" parameterType="list" resultType="Student">
+        <include refid="selectInclude"/>
+        <where>
+            <if test="id != null">id = #{id}</if>
+        </where>
+    </select>
+
+
 </mapper>
