@@ -1,5 +1,8 @@
 package JavaAPIs;
 
+import com.sun.deploy.util.StringUtils;
+import org.testng.util.Strings;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -92,5 +95,51 @@ public class Stream {
         // 统计
         IntSummaryStatistics summary = java.util.stream.Stream.of(3, 2, 2, 3, 7, 3, 5).mapToInt((x) -> x).summaryStatistics();
         System.out.println(String.format("AVG:%s Count:%s Sum:%s Max:%s Min:%s", summary.getAverage(), summary.getCount(), summary.getSum(), summary.getMax(),summary.getMin()));
+
+        System.out.println("##########################################################");
+        // 批量修改过滤和修改Map中的元素（包括过滤value、修改key）
+        final Map<String,String> map =  new HashMap<String, String>(10){
+            {
+                put("p__aa", "value1");
+                put("p__bb", "value2");
+                put("p__cc", "value3");
+                put("p_dd", "value4");
+                put("p_ee", "value5");
+                put("p_ff", "value6");
+                put("date", "value7");
+                put("nullVal1", null);
+                put("nullVal2", null);
+            }
+        };
+        // 需求： 批量将map的key中 p__x变为$_x，p_x变为x，value为null的去掉
+        //        HashMap<String,String> out = new HashMap<>(map.size());
+        //        for (Map.Entry<String,String> e:map.entrySet()) {
+        //            if(e.getValue() == null )
+        //                continue;
+        //            out.put(e.getKey().replace("p__","$_").replace("p_",""), e.getValue());
+        //        }
+        //        out.forEach((key, value) -> System.out.println(key + "---" + value));
+
+        Map<String, String> collect1 = map.entrySet().stream().filter(e -> e.getValue() != null).collect(Collectors.toMap(e -> (e.getKey().replace("p__", "$_").replace("p_", "")), Map.Entry::getValue));
+        collect1.forEach((k, v) -> System.out.println(k + "===" + v));
+
+        System.out.println("##########################################################");
+
+        // value为Object类型时处理   Map<String,Object> 转换为 Map<String,String>
+        final Map<String,Object> map1 =  new HashMap<String, Object>(10){
+            {
+                put("p__aa", "value1");
+                put("p__bb", 12);
+                put("p__cc", true);
+                put("p_dd", "value2");
+                put("p_ee", "value3");
+                put("p_ff", 4);
+                put("date", 5);
+                put("nullVal1", null);
+                put("nullVal2", null);
+            }
+        };
+        Map<String, String> collect2 = map1.entrySet().parallelStream().filter(e -> e.getValue() != null).collect(Collectors.toMap(e -> (e.getKey().replace("p__", "$")), e -> (String.valueOf(e.getValue()))));
+        collect2.forEach((k,v) -> System.out.println(k + "==" + v));
     }
 }
