@@ -10,7 +10,7 @@
 
     <properties>
         <hive.version>2.1.1</hive.version>
-        <hadoop.version>3.0.0</hadoop.version>
+        <hadoop.version>3.2.3</hadoop.version>
         <encoding>UTF-8</encoding>
     </properties>
 
