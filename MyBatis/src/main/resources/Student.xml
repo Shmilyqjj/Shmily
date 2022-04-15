@@ -144,5 +144,11 @@
         </where>
     </select>
 
+    <!-- resultType是HashMap时，返回结果的每行数据作为一个map mapKey是字段名，value是字段值 -->
+    <select id="Select2ColumnAndReturnMap" resultType="java.util.HashMap">
+        <include refid="selectInclude"/>
+        limit 10
+    </select>
+
 
 </mapper>

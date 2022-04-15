@@ -8,7 +8,9 @@ import test.pojo.Student;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -63,6 +65,8 @@ public class TestMyBatis {
         dynamicSelect(session);
         System.out.println("=============================");
         dynamicUpdate(session);
+        System.out.println("=============================");
+        select2ColumnAndReturnMap(session);
         // 关闭 session
         session.close();
     }
@@ -129,6 +133,19 @@ public class TestMyBatis {
         List<Student> students2 = session.selectList("dynamicSelectForeach",ids);
         for (Student s:students2) {
             System.out.println(String.format("%s %s %s", s.getId(), s.getStudentID(), s.getName()));
+        }
+    }
+
+    /**
+     * 查询两个字段，返回两个字段作为key和value的map
+     */
+    public static void select2ColumnAndReturnMap(SqlSession session){
+        // 查询student表的id,name两个字段，返回id为key，name为value的map
+        List<Map<String,Object>> select2ColumnAndReturnMap = session.selectList("Select2ColumnAndReturnMap");
+        Map<Integer,String> result = new HashMap<Integer, String>();
+        select2ColumnAndReturnMap.stream().forEach(x -> result.put(Integer.valueOf(String.valueOf(x.get("id"))), String.valueOf(x.get("name"))));
+        for (Integer id:result.keySet()) {
+            System.out.println("id:" + id + " name:" + result.get(id));
         }
     }
 
