@@ -11,6 +11,8 @@ package String;
  *
  * final修饰String类型的好处 1.安全，不用担心被修改  2.效率：只有字符串是不可变时，才能实现字符串常量池，提高效率。
  *
+ * String和StringBuffer区别；1.String是final修饰的字符串常量，StringBuffer是字符串变量 2.String拼接是创建新对象，StringBuffer拼接是对对象本身操作，大量拼接尽量用StringBuffer  3.String拼接会自动优化，不存在拼接过程，只创建一次新对象
+ *
  */
 public class CreateString {
     public static void main(String[] args) {
