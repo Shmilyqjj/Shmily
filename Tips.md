@@ -3,19 +3,21 @@
 ## FileTemplates
 ### Java
 /**
- * Description: 
- * Date: ${DATE} ${TIME}
- * Author: 佳境Shmily
- * Site: shmily-qjj.top
+ * @Description:
+ * @CreateTime: ${DATE} ${TIME}
+ * @Site: shmily-qjj.top
+ * @author 佳境Shmily
  */
+
+
  
 ### Scala
 /**
- * Description: 
- * Date: ${DATE} ${TIME}
- * Author: 佳境Shmily
- * Site: shmily-qjj.top
- */
+* @Description:
+* @CreateTime: ${DATE} ${TIME}
+* @Site: shmily-qjj.top
+* @author 佳境Shmily
+  */
  
 ### Python
 ```
