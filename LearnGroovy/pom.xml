@@ -12,18 +12,19 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <hbase.version>2.1.0</hbase.version>
+        <groovy.version>3.0.8</groovy.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>3.0.8</version>
+            <version>${groovy.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>3.0.8</version>
+            <version>${groovy.version}</version>
             <scope>compile</scope>
             <type>pom</type>
         </dependency>
