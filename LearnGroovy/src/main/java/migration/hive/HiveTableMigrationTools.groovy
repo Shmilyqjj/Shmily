@@ -1,11 +1,11 @@
-import com.sun.org.apache.xpath.internal.operations.Bool
+package migration.hive
 import groovy.sql.Sql
 
 import java.sql.Connection
 
 /**
  * 从旧集群迁移指定Hive表到新集群
- * groovy -cp "/hadoop/bigdata/common/lib/*" HiveTableMigrationTools.groovy  db1.tableName1 db1.tableName2 db2.tableName..N
+ * groovy -cp "/hadoop/bigdata/common/lib/*" migration.hive.HiveTableMigrationTools.groovy  db1.tableName1 db1.tableName2 db2.tableName..N
  * Author:Shmily
  */
 
