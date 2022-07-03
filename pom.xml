@@ -28,5 +28,6 @@
         <module>Zookeeper</module>
         <module>ClickHouse</module>
         <module>MyBatis</module>
+        <module>Openldap</module>
     </modules>
 </project>
