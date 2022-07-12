@@ -39,5 +39,22 @@ class TestGroovyClosure {
         // Map使用闭包 遍历
         def map = [1:"qjj"/* 这是个map 也可以叫dict */, 2: /* 注释 */"abc"]
         map.each {println("key: ${it.key} value: ${it.value}")}
+
+        // 闭包跳出循环
+        def l = [1,2,3]
+        l.each {
+            if(it == 1){
+                println("Matched.Continue.")
+                return true  // return true在each闭包操作中起到continue的作用 跳过本轮循环后续的代码 继续下一轮循环
+            }
+            println("Not Match.")
+        }
+        l.find{
+            if(it == 2){
+                println("Matched.Break.")
+                return true // return true在find闭包操作中起到break的作用 跳出整个循环
+            }
+            println("Not Match.")
+        }
     }
 }
