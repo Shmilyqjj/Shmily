@@ -12,64 +12,87 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <scala.binary.version>2.12</scala.binary.version>
-        <flink.version>1.12.2</flink.version>
+        <flink.version>1.13.6</flink.version>
         <hadoop.version>3.0.0</hadoop.version>
         <kafka.version>2.2.1</kafka.version>
         <mysql.version>5.1.38</mysql.version>
-        <fastjson.version>1.2.41</fastjson.version>
+        <fastjson.version>1.2.71</fastjson.version>
         <encoding>UTF-8</encoding>
+        <!--
+          scope分两种: compile和provided
+            compile代表强依赖，打包会把依赖添加到jar包中
+            provided依赖不添加到jar包中
+          原则；集群环境已有的依赖，scope设为provided避免jar冲突；集群环境中没有的依赖，scope设为compile避免依赖缺失
+          对于常用的依赖比如jdbc，将其jar放入Flink lib目录，程序启动会自动将其加载到ClassPath，scope可设为provided
+        -->
+        <!-- 编译程序jar并上线时，scope.type改为provided，目的是编译阶段将Flink基础库排除在项目jar外
+         避免提交到线上的jar过大，以及类冲突-->
+        <!-- 本地运行调试时，scope.type指定为compile，解决本地可能无法运行的问题 -->
+        <!-- 线上环境没有的依赖包，需要把依赖引入jar包，此时手动指定相应依赖包的scope为compile -->
+        <scope.type>compile</scope.type>
     </properties>
 
-    <!-- scope分两种compile和provided  ==> compile代表强依赖，打包会把依赖添加到jar包中  而provided依赖不添加到jar包中 -->
     <dependencies>
+        <!-- Flink Java项目依赖 -->
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-java</artifactId>
             <version>${flink.version}</version>
-            <scope>compile</scope>
+            <scope>${scope.type}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <scope>compile</scope>
+            <scope>${scope.type}</scope>
         </dependency>
+
+        <!-- Flink Scala项目依赖 -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-clients_${scala.binary.version}</artifactId>
+            <artifactId>flink-scala_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <scope>compile</scope>
+            <scope>${scope.type}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-scala_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <scope>compile</scope>
+            <scope>${scope.type}</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-clients_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+            <scope>${scope.type}</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-json</artifactId>
             <version>${flink.version}</version>
-            <scope>compile</scope>
+            <scope>${scope.type}</scope>
         </dependency>
+
         <!--Flink Table API -->
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-table-planner-blink_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <scope>compile</scope>
+            <scope>${scope.type}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-table-api-scala-bridge_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <scope>compile</scope>
+            <scope>${scope.type}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-table-common</artifactId>
             <version>${flink.version}</version>
-            <scope>compile</scope>
+            <scope>${scope.type}</scope>
         </dependency>
 
         <!-- Flink JDBC -->
@@ -77,7 +100,7 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-jdbc_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <scope>compile</scope>
+            <scope>${scope.type}</scope>
         </dependency>
 
         <!-- 导入scala的依赖 -->
@@ -87,7 +110,8 @@
             <version>2.12.8</version>
         </dependency>
 
-        <!-- 支持Kafka -->
+        <!-- Flink Connector Libs -->
+        <!-- Kafka Connector -->
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
@@ -99,11 +123,19 @@
             <version>${kafka.version}</version>
         </dependency>
 
+        <!-- Iceberg support -->
+        <dependency>
+            <groupId>org.apache.iceberg</groupId>
+            <artifactId>iceberg-flink-runtime</artifactId>
+            <version>0.12.1</version>
+        </dependency>
+
         <!-- MySQL -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- ClickHouse -->
@@ -111,6 +143,7 @@
             <groupId>ru.yandex.clickhouse</groupId>
             <artifactId>clickhouse-jdbc</artifactId>
             <version>0.2.6</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- HDFS依赖 -->
@@ -118,6 +151,7 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
             <version>${hadoop.version}</version>
+            <scope>compile</scope>
         </dependency>
 
 
@@ -126,6 +160,7 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>${fastjson.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
     <build>

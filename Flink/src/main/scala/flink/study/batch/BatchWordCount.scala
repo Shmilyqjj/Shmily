@@ -15,7 +15,7 @@ object BatchWordCount {
 
   def main(args: Array[String]): Unit = {
     // 获取 批处理 执行环境  (批处理获取执行环境用ExecutionEnvironment，流处理获取环境用StreamExecutionEnvironment)
-    val env = ExecutionEnvironment.getExecutionEnvironment
+    val env:ExecutionEnvironment = ExecutionEnvironment.getExecutionEnvironment
     env.setParallelism(1)
 
     //批处理后的数据是DataSet，流处理后的数据是DataStream.
