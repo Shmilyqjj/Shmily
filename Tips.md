@@ -60,6 +60,8 @@ MybatisX
 Lombok
 GitToolBox
 Big Data Tools
+visualGC
+VisualVM Launcher
 
 ## IDEA Optimize
 1.vmoptions
