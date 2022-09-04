@@ -14,6 +14,7 @@
         <scala.binary.version>2.12</scala.binary.version>
         <flink.version>1.13.6</flink.version>
         <hadoop.version>3.0.0</hadoop.version>
+        <hive.version>2.1.1</hive.version>
         <kafka.version>2.2.1</kafka.version>
         <mysql.version>5.1.38</mysql.version>
         <fastjson.version>1.2.71</fastjson.version>
@@ -154,6 +155,25 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- Hive依赖 -->
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-common</artifactId>
+            <version>${hive.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-cli</artifactId>
+            <version>${hive.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-metastore</artifactId>
+            <version>${hive.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- fastjson依赖,解析JSON最快 -->
         <dependency>
