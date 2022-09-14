@@ -27,6 +27,8 @@ import org.apache.iceberg.types.Types;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.apache.flink.streaming.api.CheckpointingMode.EXACTLY_ONCE;
+
 /**
  * @author 佳境Shmily
  * @Description: Kafka etl to Iceberg Table
@@ -43,6 +45,8 @@ public class KafkaSinkIceberg {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         // 1.设置checkpoint ,Flink向Iceberg中写入数据时当checkpoint发生后，才会commit数据。
+        // 一定设置Checkpoint 因为Flink依赖checkpoint、savepoint提交数据 没开启就查不到数据
+        // env.enableCheckpointing(3000L, EXACTLY_ONCE);
         env.enableCheckpointing(5000);
 
         // 2.连接kafka数据源
@@ -72,8 +76,8 @@ public class KafkaSinkIceberg {
         }
 
         // append datastream to hadoop catalog iceberg table
-        String tablePath = "hdfs://nameservice/user/hive/warehouse/iceberg_db.db/hive_iceberg_table_flink";
-//        sinkToIceberg(conf, tablePath, dataStream);
+        String warehousePath = "hdfs://nameservice/user/hive/warehouse";
+//        sinkToIceberg(conf, warehousePath, dataStream);
 
         // HiveConf参数
         String hiveResources = "E:\\CDH-Conf\\core-site.xml,E:\\CDH-Conf\\hdfs-site.xml,E:\\CDH-Conf\\hive-site.xml";
@@ -82,19 +86,24 @@ public class KafkaSinkIceberg {
             hiveConf.addResource(new Path(sourceFile));
         }
 
+        dataStream.print();
         // append datastream to hive catalog iceberg table
         sinkToIceberg(hiveConf, dataStream);
 
         env.execute("Test Iceberg DataStream");
     }
 
-    public static void sinkToIceberg(Configuration hadoopConf, String tablePath, SingleOutputStreamOperator<RowData> dataStream){
+    public static void sinkToIceberg(Configuration hadoopConf, String warehousePath, SingleOutputStreamOperator<RowData> dataStream){
         // 加载HadoopCatalog的Iceberg表
-        Catalog catalog = new HadoopCatalog(hadoopConf,"hdfs://nameservice/user/hive/warehouse/");
+        Catalog catalog = new HadoopCatalog(hadoopConf, warehousePath);
+
+        // 设置要写入的库名表名
+        String dbName = "default";
+        String tableName = "flink_sql_iceberg_table";
 
 
         //配置iceberg 库名和表名
-        TableIdentifier name = TableIdentifier.of("iceberg_db.db", "hadoop_iceberg_table_flink");
+        TableIdentifier name = TableIdentifier.of(dbName, tableName);
 
         //创建Iceberg表Schema
         Schema schema = new Schema(
@@ -103,7 +112,7 @@ public class KafkaSinkIceberg {
 
         //如果有分区指定对应分区，这里“loc”列为分区列，可以指定unpartitioned 方法不设置表分区
         PartitionSpec spec = PartitionSpec.unpartitioned();
-        // PartitionSpec spec = PartitionSpec.builderFor(schema).identity("loc").build();
+//         PartitionSpec spec = PartitionSpec.builderFor(schema).identity("name").build();
 
         //指定Iceberg表数据格式化为Parquet存储
         Map<String, String> props = ImmutableMap.<String,String>builder()
@@ -121,7 +130,7 @@ public class KafkaSinkIceberg {
             table = catalog.loadTable(name);
         }
 
-        TableLoader tableLoader = TableLoader.fromHadoopTable("hdfs://nameservice/user/hive/warehouse/iceberg_db.db/hadoop_iceberg_table_flink", hadoopConf);
+        TableLoader tableLoader = TableLoader.fromHadoopTable(warehousePath + "/" + dbName + "/" + tableName, hadoopConf);
 
         //通过DataStream Api 向Iceberg中写入数据
         FlinkSink.forRowData(dataStream)
