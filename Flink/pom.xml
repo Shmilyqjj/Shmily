@@ -125,10 +125,15 @@
         </dependency>
 
         <!-- Iceberg support -->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.iceberg</groupId>-->
+<!--            <artifactId>iceberg-flink-runtime</artifactId>-->
+<!--            <version>0.12.1</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.iceberg</groupId>
-            <artifactId>iceberg-flink-runtime</artifactId>
-            <version>0.12.1</version>
+            <artifactId>iceberg-flink-runtime-1.13</artifactId>
+            <version>0.14.1</version>
         </dependency>
 
         <!-- MySQL -->
