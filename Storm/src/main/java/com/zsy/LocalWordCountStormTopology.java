@@ -83,7 +83,7 @@ public class LocalWordCountStormTopology {
      * 主函数
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 //            使用TopologyBuilder根据Spout和Bolt构建Topology
         TopologyBuilder builder = new TopologyBuilder();
 //            设置Bolt和Spout  设置Spout和Bolt的关联关系

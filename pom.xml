@@ -29,5 +29,6 @@
         <module>ClickHouse</module>
         <module>MyBatis</module>
         <module>Openldap</module>
+        <module>Trino</module>
     </modules>
 </project>

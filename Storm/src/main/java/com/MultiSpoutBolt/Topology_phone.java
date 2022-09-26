@@ -6,11 +6,11 @@ import org.apache.storm.generated.AlreadyAliveException;
 import org.apache.storm.generated.AuthorizationException;
 import org.apache.storm.generated.InvalidTopologyException;
 import org.apache.storm.generated.StormTopology;
+import org.apache.storm.thrift.TException;
 import org.apache.storm.topology.TopologyBuilder;
 
 public class Topology_phone {
-    public static void main(String[] args) throws InterruptedException, InvalidTopologyException, AuthorizationException, AlreadyAliveException
-    {
+    public static void main(String[] args) throws Exception {
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("Spout_1",new Spout_1(),2);
         builder.setSpout("Spout_2",new Spout_2(),2);

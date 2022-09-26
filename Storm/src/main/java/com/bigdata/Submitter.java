@@ -13,11 +13,12 @@ import org.apache.storm.hdfs.bolt.rotation.FileRotationPolicy;
 import org.apache.storm.hdfs.bolt.rotation.FileSizeRotationPolicy;
 import org.apache.storm.hdfs.bolt.sync.CountSyncPolicy;
 import org.apache.storm.hdfs.bolt.sync.SyncPolicy;
+import org.apache.storm.thrift.TException;
 import org.apache.storm.topology.TopologyBuilder;
 
 public class Submitter {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         /**
          * 定义写HDFS的Bolt
          */
