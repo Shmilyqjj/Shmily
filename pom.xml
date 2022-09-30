@@ -28,7 +28,9 @@
         <module>Zookeeper</module>
         <module>ClickHouse</module>
         <module>MyBatis</module>
+        <module>SpringBoot</module>
         <module>Openldap</module>
         <module>Trino</module>
+        <module>Iceberg</module>
     </modules>
 </project>
