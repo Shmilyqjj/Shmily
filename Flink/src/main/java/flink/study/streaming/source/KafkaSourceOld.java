@@ -14,7 +14,7 @@ import java.util.Properties;
  * :Site: shmily-qjj.top
  * kafka-console-producer --broker-list cdh101:9092,cdh102:9092,cdh103:9092,cdh104:9092 --topic flink_topic1
  */
-public class KafkaSource {
+public class KafkaSourceOld {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 

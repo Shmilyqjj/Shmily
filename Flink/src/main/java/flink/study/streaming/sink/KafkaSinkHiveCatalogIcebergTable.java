@@ -1,9 +1,12 @@
 package flink.study.streaming.sink;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.configuration.RestOptions;
+import org.apache.flink.connector.kafka.source.KafkaSource;
+import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -74,13 +77,16 @@ public class KafkaSinkHiveCatalogIcebergTable {
 
         // 2.连接kafka数据源
         String topicName = "t_kafka2iceberg";
-        Properties kafkaConnProperties = new Properties();
-        kafkaConnProperties.setProperty("bootstrap.servers", "cdh101:9092,cdh102:9092,cdh103:9092,cdh104:9092");
-        kafkaConnProperties.setProperty("group.id", "flink-source-cg");
-        kafkaConnProperties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        kafkaConnProperties.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        kafkaConnProperties.setProperty("auto.offset.reset", "latest");
-        DataStreamSource<String> kafkaStreamSource = env.addSource(new FlinkKafkaConsumer<String>(topicName, new SimpleStringSchema(), kafkaConnProperties));
+        String groupId = "flink-source-cg";
+        String brokers = "cdh101:9092,cdh102:9092,cdh103:9092,cdh104:9092";
+        KafkaSource<String> source = KafkaSource.<String>builder()
+                .setBootstrapServers(brokers)
+                .setTopics(topicName)
+                .setGroupId(groupId)
+                .setValueOnlyDeserializer(new SimpleStringSchema())
+                .setStartingOffsets(OffsetsInitializer.latest())
+                .build();
+        DataStreamSource<String> kafkaStreamSource = env.fromSource(source, WatermarkStrategy.noWatermarks(),"KafkaSource");
 
         // 3.根据清洗逻辑，将DataStreamSource<String>包装成RowData对象
         SingleOutputStreamOperator<RowData> dataStream = kafkaStreamSource.map((MapFunction<String, RowData>) s -> {
