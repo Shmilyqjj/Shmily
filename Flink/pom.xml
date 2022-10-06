@@ -13,7 +13,9 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <scala.binary.version>2.12</scala.binary.version>
         <flink.version>1.14.5</flink.version>
+        <flink.major.version>1.14</flink.major.version>
         <hadoop.version>3.0.0</hadoop.version>
+        <iceberg.version>0.14.1</iceberg.version>
         <hive.version>2.1.1</hive.version>
         <kafka.version>2.2.1</kafka.version>
         <mysql.version>5.1.38</mysql.version>
@@ -68,6 +70,12 @@
             <version>${flink.version}</version>
             <scope>${scope.type}</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-runtime-web_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -77,15 +85,33 @@
         </dependency>
 
         <!--Flink Table API -->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.flink</groupId>-->
+<!--            <artifactId>flink-table-planner-blink_${scala.binary.version}</artifactId>-->
+<!--            <version>1.13.6</version>-->
+<!--            <scope>${scope.type}</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-planner-blink_${scala.binary.version}</artifactId>
+            <artifactId>flink-table-api-scala-bridge_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
             <scope>${scope.type}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-api-scala-bridge_${scala.binary.version}</artifactId>
+            <artifactId>flink-table-api-java</artifactId>
+            <version>${flink.version}</version>
+            <scope>${scope.type}</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-api-java-bridge_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+            <scope>${scope.type}</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-runtime_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
             <scope>${scope.type}</scope>
         </dependency>
@@ -125,16 +151,17 @@
         </dependency>
 
         <!-- Iceberg support -->
+        <dependency>
+            <groupId>org.apache.iceberg</groupId>
+            <artifactId>iceberg-flink-runtime-${flink.major.version}</artifactId>
+            <version>${iceberg.version}</version>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.apache.iceberg</groupId>-->
 <!--            <artifactId>iceberg-flink-runtime</artifactId>-->
 <!--            <version>0.12.1</version>-->
 <!--        </dependency>-->
-        <dependency>
-            <groupId>org.apache.iceberg</groupId>
-            <artifactId>iceberg-flink-runtime-1.13</artifactId>
-            <version>0.14.1</version>
-        </dependency>
+
 
         <!-- MySQL -->
         <dependency>
