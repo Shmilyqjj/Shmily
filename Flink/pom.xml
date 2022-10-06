@@ -121,6 +121,19 @@
             <version>${flink.version}</version>
             <scope>${scope.type}</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-planner_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+            <scope>${scope.type}</scope>
+        </dependency>
+        <!--Solve could not find any factory for identifier 'csv' that implements... error -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-csv</artifactId>
+            <version>${flink.version}</version>
+            <scope>${scope.type}</scope>
+        </dependency>
 
         <!-- Flink JDBC -->
         <dependency>

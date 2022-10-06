@@ -34,6 +34,13 @@ import java.util.Properties;
  * // kafka-topics --create --zookeeper cdh101:2181 --replication-factor 2 --partitions 1 --topic t_kafka2iceberg
  * // kafka-topics --zookeeper cdh101:2181 --list
  * // kafka-console-producer --broker-list cdh101:9092,cdh102:9092,cdh103:9092,cdh104:9092 --topic t_kafka2iceberg
+ * Hive映射表
+  create external table iceberg_db.flink_hadoop_iceberg_table (
+  id INT,
+  name STRING
+  ) STORED BY 'org.apache.iceberg.mr.hive.HiveIcebergStorageHandler'
+  LOCATION 'hdfs://nameservice/user/iceberg/warehouse/iceberg_db/flink_hadoop_iceberg_table'
+  tblproperties ('iceberg.catalog'='location_based_table');
  */
 public class KafkaSinkHadoopCatalogIcebergTable {
     public static void main(String[] args) throws Exception {
