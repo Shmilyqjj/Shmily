@@ -1,4 +1,4 @@
-package flink.study.streaming.sink;
+package flink.study.streaming.sink.iceberg;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;

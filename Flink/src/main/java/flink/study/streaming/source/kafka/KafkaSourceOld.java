@@ -1,4 +1,4 @@
-package flink.study.streaming.source;
+package flink.study.streaming.source.kafka;
 
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
