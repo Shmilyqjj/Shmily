@@ -16,6 +16,8 @@ import org.apache.spark.{SparkConf, SparkContext}
 /**
  * Iceberg Table Maintenance Using Spark
  * References: https://iceberg.apache.org/docs/latest/maintenance/
+ *
+ * 目前有bug 会卡住 2022.10
  */
 object SparkIcebergTableMaintenance {
   def main(args: Array[String]): Unit = {
@@ -27,7 +29,7 @@ object SparkIcebergTableMaintenance {
     }
 
     // 清理过期快照
-    expireSnapshots(spark, 5L, conf)
+    expireSnapshots(spark, 20L, 3, conf)
 //    removeOrphanFiles(spark, conf)
 //    compactDataFiles(spark, 128L, conf)
 //    rewriteManifests(spark, 10L, conf)
@@ -46,11 +48,11 @@ object SparkIcebergTableMaintenance {
    * @param spark sparkSession
    * @param snapRetainMinutes 快照保留时间
    */
-  def expireSnapshots(spark: SparkSession, snapRetainMinutes: Long, conf: Configuration): Unit = {
+  def expireSnapshots(spark: SparkSession, snapRetainMinutes: Long, snapRetainLastMinNum: Int, conf: Configuration): Unit = {
     val tsToExpire = System.currentTimeMillis() - (1000 * 60 * snapRetainMinutes)  //设置清理时间
     val catalog = getHadoopCatalog(conf, "hdfs://nameservice/user/iceberg/warehouse")
     val table = catalog.loadTable(TableIdentifier.of("iceberg_db", "flink_hadoop_iceberg_table"))
-    val result = SparkActions.get(spark).expireSnapshots(table).expireOlderThan(tsToExpire).execute()
+    val result = SparkActions.get(spark).expireSnapshots(table).expireOlderThan(tsToExpire).retainLast(snapRetainLastMinNum).execute()
     println(s"#ExpireSnapshots Delete Data Files Count:${result.deletedDataFilesCount()}")
     println(s"#ExpireSnapshots Delete Manifest Files Count:${result.deletedManifestsCount()}")
   }
