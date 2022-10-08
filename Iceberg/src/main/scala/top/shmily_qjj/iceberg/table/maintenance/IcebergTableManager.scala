@@ -9,7 +9,7 @@ import org.apache.iceberg.hadoop.HadoopCatalog
 object IcebergTableManager {
   def main(args: Array[String]): Unit = {
 
-    // oss://xldw-cdh/data/iceberg/warehouse/iceberg_db/hadoop_iceberg_table_flink_sql
+
 
     //expire过期快照
     val icebergWarehousePath = "hdfs://nameservice/user/iceberg/warehouse"
