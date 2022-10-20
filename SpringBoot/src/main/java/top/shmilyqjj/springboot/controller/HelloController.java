@@ -36,11 +36,24 @@ public class HelloController {
         return "Hello " + name + age;
     }
 
+    //前端请求传Json对象则后端使用@RequestParam
+    //前端请求传Json对象的字符串则后端使用@RequestBody
     @ResponseBody
     @PostMapping("/hello")
     public String hello(@RequestBody Map<String, Object> params) throws UnsupportedEncodingException {
         //  curl -H "Content-Type: application/x-www-form-urlencoded" -X POST "http://localhost:8080/hello" -d "name=qjj&age=24"
         // curl -H "Content-Type: application/json;charset=utf-8" -X POST "http://localhost:8080/hello" -d '{"name": "qjj", "age": "24"}'
+        String name = String.valueOf(params.get("name"));
+        int age = Integer.parseInt(String.valueOf(params.get("age")));
+        return "Hello " + name + age;
+    }
+
+    //前端请求传Json对象则后端使用@RequestParam
+    //前端请求传Json对象的字符串则后端使用@RequestBody
+    @ResponseBody
+    @PostMapping("/form")
+    public String form(@RequestParam Map<String, String> params) throws UnsupportedEncodingException {
+        //  curl -H "Content-Type: application/x-www-form-urlencoded" -X POST "http://localhost:8080/form" -d "name=qjj&age=24"
         String name = String.valueOf(params.get("name"));
         int age = Integer.parseInt(String.valueOf(params.get("age")));
         return "Hello " + name + age;
