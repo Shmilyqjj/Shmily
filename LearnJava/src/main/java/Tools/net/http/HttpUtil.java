@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class HttpUtil {
     private static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);
-    private static PoolingHttpClientConnectionManager connectionManager;
+    private static final PoolingHttpClientConnectionManager connectionManager;
     private static final HttpClientBuilder httpBuilder;
     private static final RequestConfig requestConfig;
 
