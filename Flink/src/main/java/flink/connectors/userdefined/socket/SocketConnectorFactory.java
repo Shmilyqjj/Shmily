@@ -11,6 +11,7 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.ReadableConfig;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
+import org.apache.flink.streaming.api.functions.sink.SocketClientSink;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.table.connector.ChangelogMode;
@@ -26,6 +27,11 @@ import org.apache.flink.table.factories.*;
 import org.apache.flink.table.runtime.connector.sink.SinkRuntimeProviderContext;
 import org.apache.flink.table.types.DataType;
 import org.apache.flink.types.RowKind;
+import org.apache.flink.util.NetUtils;
+import org.apache.flink.util.Preconditions;
+import org.apache.flink.util.SerializableObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -46,11 +52,13 @@ import java.util.Set;
 
 /**
  * 类路径写入META-INF/services/org.apache.flink.table.factories.Factory文件， Java 的服务提供者接口 (SPI)可发现SocketConnectorFactory类
- * source-step3. create factory class implements DynamicTableSourceFactory
+ * source-step1. create factory class implements DynamicTableSourceFactory
  * sink-step1   create factory class implements DynamicTableSinkFactory
  * @author Shmily
  */
 public class SocketConnectorFactory implements DynamicTableSourceFactory, DynamicTableSinkFactory {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SocketClientSink.class);
 
     private static final String FACTORY_IDENTIFIER = "socket";
 
@@ -64,7 +72,14 @@ public class SocketConnectorFactory implements DynamicTableSourceFactory, Dynami
 
     public static final ConfigOption<Integer> BYTE_DELIMITER = ConfigOptions.key("byte-delimiter")
             .intType()
-            .defaultValue(10); // corresponds to '\n'
+            .defaultValue(10)
+            .withDescription("corresponds to '\\n'"); //
+
+    //TODO: Limit max retries num.
+//    public static final ConfigOption<Integer> MAX_RETRIES = ConfigOptions.key("max-retries")
+//            .intType()
+//            .defaultValue(-1)
+//            .withDescription("Max retry times per message.-1 for inf times");
 
     @Override
     public Set<ConfigOption<?>> requiredOptions() {
@@ -103,6 +118,7 @@ public class SocketConnectorFactory implements DynamicTableSourceFactory, Dynami
         final ReadableConfig options = helper.getOptions();
         final String hostname = options.get(HOST);
         final int port = options.get(PORT);
+        Preconditions.checkArgument(NetUtils.isValidClientPort(port), "port is out of range");
         final byte byteDelimiter = (byte) (int) options.get(BYTE_DELIMITER);
 
         // derive the produced data type (excluding computed columns) from the catalog table
@@ -136,6 +152,7 @@ public class SocketConnectorFactory implements DynamicTableSourceFactory, Dynami
         final ReadableConfig options = helper.getOptions();
         final String hostname = options.get(HOST);
         final int port = options.get(PORT);
+        Preconditions.checkArgument(NetUtils.isValidClientPort(port), "port is out of range");
         final byte byteDelimiter = (byte) (int) options.get(BYTE_DELIMITER);
 
         // derive the produced data type (excluding computed columns) from the catalog table
@@ -204,7 +221,7 @@ public class SocketConnectorFactory implements DynamicTableSourceFactory, Dynami
     }
 
     /**
-     *  source-step1.Create Socket Source Function
+     *  source-step3.Create Socket Source Function
      *  extends RichSourceFunction<RowData> implements ResultTypeQueryable<RowData>
      */
     private static class SocketSourceFunction extends RichSourceFunction<RowData> implements ResultTypeQueryable<RowData> {
@@ -252,7 +269,7 @@ public class SocketConnectorFactory implements DynamicTableSourceFactory, Dynami
                         }
                     }
                 } catch (Throwable t) {
-                    t.printStackTrace(); // print and continue
+                    LOG.error("Failed to get data from socket source.", t);
                 }
                 Thread.sleep(1000);
             }
@@ -269,6 +286,9 @@ public class SocketConnectorFactory implements DynamicTableSourceFactory, Dynami
         }
     }
 
+    /**
+     * sink-step2. create DynamicTableSink class implements DynamicTableSink
+     */
     private static class SocketDynamicTableSink implements DynamicTableSink{
 
         private final String hostname;
@@ -326,8 +346,9 @@ public class SocketConnectorFactory implements DynamicTableSourceFactory, Dynami
 
 
     /**
-     *  sink-step1.Create Socket Sink Function
+     *  sink-step3.Create Socket Sink Function
      *  extends RichSinkFunction<RowData>
+     *  override these functions: open\invoke\close
      */
     private static class SocketSinkFunction extends RichSinkFunction<RowData> {
         private final String hostname;
@@ -335,45 +356,108 @@ public class SocketConnectorFactory implements DynamicTableSourceFactory, Dynami
         private final byte byteDelimiter;
         private final SerializationSchema<RowData> serializer;
 
+        private final SerializableObject lock;
         private Socket currentSocket;
+        private OutputStream outputStream;
 
         public SocketSinkFunction(String hostname, int port, byte byteDelimiter, SerializationSchema<RowData> serializer){
             this.hostname = hostname;
             this.port = port;
             this.byteDelimiter = byteDelimiter;
             this.serializer = serializer;
+            this.lock = new SerializableObject();
         }
 
         @Override
-        public void open(Configuration parameters) {}
+        public void open(Configuration parameters) throws IOException {
+            // 初始化socket连接
+            try {
+                synchronized(this.lock) {
+                    this.createConnection();
+                }
+            } catch (IOException var5) {
+                throw new IOException("Cannot connect to socket server at " + this.hostname + ":" + this.port, var5);
+            }
 
+        }
 
         @Override
-        public void invoke(RowData rowdata) throws Exception {
-                try (final Socket socket = new Socket()){
-                    currentSocket = socket;
-                    socket.connect(new InetSocketAddress(hostname, port), 3);
-                    try (OutputStream outputStream = this.currentSocket.getOutputStream()){
-                        System.out.println(rowdata.toString());
-                        byte[] serialize = serializer.serialize(rowdata);
-                        outputStream.write(serialize);
-                        outputStream.write(byteDelimiter);
-                        outputStream.flush();
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
+        public void invoke(RowData rowdata) {
+            try {
+                byte[] serialize = serializer.serialize(rowdata);
+                this.outputStream.write(serialize);
+                this.outputStream.write(byteDelimiter);
+                this.outputStream.flush();
+            } catch (Exception e) {
+                LOG.error("Failed to send message to socket.", e);
+                // 发送失败 持续重新建立连接并重新发消息
+                synchronized (this.lock){
+                    while(true){
+                        try {
+                            this.reConnect();
+                            byte[] serialize = serializer.serialize(rowdata);
+                            this.outputStream.write(serialize);
+                            this.outputStream.write(byteDelimiter);
+                            this.outputStream.flush();
+                        }catch (Exception e1){
+                            // 重发失败， 继续尝试重发
+                            LOG.error("Failed to resend message to socket.Try again.", e1);
+                            continue;
+                        }
+                        // 成功 跳出循环
+                        LOG.debug("Resend message successfully.");
+                        break;
                     }
                 }
-
+            }
         }
 
         @Override
         public void close() {
-            try {
-                currentSocket.close();
-            } catch (Throwable t) {
-                // ignore
+            synchronized(this.lock) {
+                this.lock.notifyAll();
+                try {
+                    if (this.outputStream != null) {
+                        this.outputStream.close();
+                    }
+                    if (this.currentSocket != null) {
+                        this.currentSocket.close();
+                    }
+                } catch (Exception e){
+                    LOG.error("Error occurs when close socket sink", e);
+                }
             }
         }
 
+        private void createConnection() throws IOException {
+            this.currentSocket = new Socket(this.hostname, this.port);
+            this.currentSocket.setKeepAlive(true);
+            this.currentSocket.setTcpNoDelay(true);
+            this.outputStream = this.currentSocket.getOutputStream();
+        }
+
+        private void reConnect() {
+                try {
+                    if (this.outputStream != null) {
+                        this.outputStream.close();
+                    }
+                } catch (IOException ioe) {
+                    LOG.error("Could not close output stream from failed write attempt.", ioe);
+                }
+
+                try {
+                    if (this.currentSocket != null) {
+                        this.currentSocket.close();
+                    }
+                } catch (IOException ioe) {
+                    LOG.error("Could not close socket from failed write attempt.", ioe);
+                }
+
+                try {
+                    this.createConnection();
+                }catch (Exception e){
+                    LOG.error("Failed to recreate a socket connection.", e);
+                }
+        }
     }
 }
