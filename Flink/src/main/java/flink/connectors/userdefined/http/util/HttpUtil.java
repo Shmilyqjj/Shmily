@@ -1,4 +1,4 @@
-package Tools.net.http;
+package flink.connectors.userdefined.http.util;
 
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;

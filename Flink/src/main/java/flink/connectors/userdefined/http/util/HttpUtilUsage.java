@@ -1,4 +1,4 @@
-package Tools.net.http;
+package flink.connectors.userdefined.http.util;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
