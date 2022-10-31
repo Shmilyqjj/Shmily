@@ -1,1 +1,2 @@
 flink.connectors.userdefined.socket.SocketConnectorFactory
+flink.connectors.userdefined.http.HttpConnectorFactory
