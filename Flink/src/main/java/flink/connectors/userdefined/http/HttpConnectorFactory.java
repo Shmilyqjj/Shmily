@@ -21,6 +21,13 @@ import java.util.*;
 import static org.apache.flink.configuration.ConfigOptions.key;
 
 //TODO: 完善HTTP Source (implements DynamicTableSourceFactory )
+/**
+ * Http Connector
+ * 实现DynamicTableSourceFactory, DynamicTableSinkFactory接口以实现connector
+ * DynamicTableSourceFactory和DynamicTableSinkFactory提供连接器特定的逻辑，用于将CatalogTable的元数据转换为DynamicTableSource和DynamicTableSink的实例。
+ * 在大多数情况下，工厂模式的目的是验证参数选项
+ * 参考文档 <a href="https://nightlies.apache.org/flink/flink-docs-release-1.14/docs/dev/table/sourcessinks/">User-defined Sources & Sinks </a>
+ */
 public class HttpConnectorFactory implements DynamicTableSinkFactory {
     // 定义sink name
     public static final String IDENTIFIER = "http";
