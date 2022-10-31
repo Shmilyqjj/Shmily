@@ -190,8 +190,7 @@ public class HttpConnectorFactory implements DynamicTableSinkFactory {
             try {
                 // 取第一个字段的值 作为http请求参数
                 String args = rowdata.getString(0).toString();
-                String res = httpRequest(args);
-                LOG.debug("Http sink succeed. Response: " + res);
+                httpRequest(args);
             } catch (Exception e) {
                 LOG.error("Failed to sink http.", e);
                 // 发送失败 持续重新建立连接并重新发消息 retry
@@ -234,14 +233,14 @@ public class HttpConnectorFactory implements DynamicTableSinkFactory {
             String result = null;
             switch (this.method) {
                 case "get":
-                    // TODO: 完善http get请求代码
-                    // TODO: 完善http 其他类型请求代码
-                    // TODO: 完善http 参数类型
+                    // TODO: 完善http get请求功能
+                    // TODO: 完善http 其他类型请求功能
+                    // TODO: 完善http 参数类型多样化
 //                    result = HttpUtil.httpGetResult(url, new HashMap<>());
                 case "post":
                     result = HttpUtil.httpPostResult(this.url, args);
             }
-            LOG.info("Http sink result: " + result);
+            LOG.debug("Http sink result: " + result);
             return result;
         }
 
