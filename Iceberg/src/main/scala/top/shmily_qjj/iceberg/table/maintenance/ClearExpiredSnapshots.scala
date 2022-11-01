@@ -6,12 +6,12 @@ import org.apache.iceberg.Table
 import org.apache.iceberg.catalog.TableIdentifier
 import org.apache.iceberg.hadoop.HadoopCatalog
 
-object IcebergTableMaintenance {
+object ClearExpiredSnapshots {
   def main(args: Array[String]): Unit = {
 
     val icebergWarehousePath = "hdfs://nameservice/user/iceberg/warehouse"
-    val snapRetainMinutes = 100L
-    val snapRetainLastMinNum = 30
+    val snapRetainMinutes = 100L  // 快照保留时间 min
+    val snapRetainLastMinNum = 30 // 快照保留个数
 
     val expireOlderThanTimestamp = System.currentTimeMillis() - (1000 * 60 * snapRetainMinutes)
     val conf = new Configuration
