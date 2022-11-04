@@ -6,6 +6,9 @@ import org.apache.iceberg.Table
 import org.apache.iceberg.catalog.TableIdentifier
 import org.apache.iceberg.hadoop.HadoopCatalog
 
+/**
+ * 单线程执行Iceberg表快照过期操作
+ */
 object ClearExpiredSnapshots {
   def main(args: Array[String]): Unit = {
 
