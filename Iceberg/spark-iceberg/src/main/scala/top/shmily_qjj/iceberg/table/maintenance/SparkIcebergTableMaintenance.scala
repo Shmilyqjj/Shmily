@@ -31,25 +31,26 @@ object SparkIcebergTableMaintenance {
     // kerberos认证
     setKerberos(conf, "/etc/krb5.conf", "/opt/keytabs/hdfs.keytab")
 
+    val catalogType = "hive"
     // 获取表对象
-    val hadoopTable = getTable(conf, "hdfs://shmily:8020/user/iceberg/warehouse", "iceberg_db", "hadoop_iceberg_partitioned_table")
-//    val hiveTable = getTable(conf, "http://shmily:9083", "hdfs://shmily:8020/user/hive/warehouse", "iceberg_db", "hive_iceberg_partitioned_table")
+    val table = catalogType match {
+      case "hive" => getTable(conf, "http://shmily:9083", "hdfs://shmily:8020/user/hive/warehouse", "iceberg_db", "hive_iceberg_partitioned_table")
+      case "hadoop" | "location_based_table" => getTable(conf, "hdfs://shmily:8020/user/iceberg/warehouse", "iceberg_db", "hadoop_iceberg_partitioned_table")
+      case _ => throw new NotImplementedError(s"Catalog type ${catalogType} is not supported.")
+    }
+
 
     // 合并数据文件到目标大小
-    compactDataFiles(spark, hadoopTable, 128L)
-//    compactDataFiles(spark, hiveTable, 128L)
+    compactDataFiles(spark, table, 128L)
 
     // 清理过期快照
-    expireSnapshots(spark, hadoopTable, 20L, 5)
-//    expireSnapshots(spark, hiveTable, 20L, 5)
+    expireSnapshots(spark, table, 20L, 5)
 
     // 重写Manifest
-    rewriteManifests(spark, hadoopTable, 10L)
-//    rewriteManifests(spark, hiveTable, 10L)
+    rewriteManifests(spark, table, 10L)
 
     // 清理孤立文件
-    removeOrphanFiles(spark, hadoopTable)
-//    removeOrphanFiles(spark, hiveTable)
+    removeOrphanFiles(spark, table)
   }
 
   def setKerberos(conf: Configuration, krb5Path: String,keytabPath: String) : Unit = {

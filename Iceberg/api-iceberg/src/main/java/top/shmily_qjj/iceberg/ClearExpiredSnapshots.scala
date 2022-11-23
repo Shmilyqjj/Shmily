@@ -1,4 +1,4 @@
-package top.shmily_qjj.iceberg.table.maintenance
+package top.shmily_qjj.iceberg
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -7,13 +7,13 @@ import org.apache.iceberg.catalog.TableIdentifier
 import org.apache.iceberg.hadoop.HadoopCatalog
 
 /**
- * 单线程执行Iceberg表快照过期操作
+ * 使用Iceberg原生API 单线程执行Iceberg表快照过期操作
  */
 object ClearExpiredSnapshots {
   def main(args: Array[String]): Unit = {
 
     val icebergWarehousePath = "hdfs://nameservice/user/iceberg/warehouse"
-    val snapRetainMinutes = 100L  // 快照保留时间 min
+    val snapRetainMinutes = 100L // 快照保留时间 min
     val snapRetainLastMinNum = 30 // 快照保留个数
 
     val expireOlderThanTimestamp = System.currentTimeMillis() - (1000 * 60 * snapRetainMinutes)
