@@ -60,7 +60,6 @@ object SparkIcebergTableMaintenance {
     import org.apache.hadoop.security.UserGroupInformation
     UserGroupInformation.setConfiguration(conf)
     UserGroupInformation.loginUserFromKeytab("hdfs", keytabPath)
-
   }
 
   // 获取HadoopCatalogTable对象
@@ -130,7 +129,6 @@ object SparkIcebergTableMaintenance {
         totalRewrittenFileCnt += r.rewrittenDataFilesCount()
         totalAddedFileCnt += r.addedDataFilesCount()
       })
-      import org.apache.iceberg.util.JsonUtil.mapper
       logger.info(s"CompactDataFiles RewrittenDataFilesCount: $totalAddedFileCnt AddedDataFilesCount: $totalAddedFileCnt}")
     }
   }
