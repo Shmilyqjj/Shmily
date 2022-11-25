@@ -31,6 +31,8 @@ object SparkIcebergTableMaintenance {
     // kerberos认证
     setKerberos(conf, "/etc/krb5.conf", "/opt/keytabs/hdfs.keytab")
 
+    spark.sql("SET `spark.sql.iceberg.handle-timestamp-without-timezone`=`true`")
+
     val catalogType = "hive"
     // 获取表对象
     val table = catalogType match {
