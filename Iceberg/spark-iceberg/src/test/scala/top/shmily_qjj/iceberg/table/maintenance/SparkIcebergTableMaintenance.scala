@@ -41,12 +41,11 @@ object SparkIcebergTableMaintenance {
       case _ => throw new NotImplementedError(s"Catalog type ${catalogType} is not supported.")
     }
 
+    // 清理过期快照
+    expireSnapshots(spark, table, 20L, 5)
 
     // 合并数据文件到目标大小
     compactDataFiles(spark, table, 128L)
-
-    // 清理过期快照
-    expireSnapshots(spark, table, 20L, 5)
 
     // 重写Manifest
     rewriteManifests(spark, table, 10L)
@@ -79,7 +78,7 @@ object SparkIcebergTableMaintenance {
   }
 
   /**
-   * 清理过期快照 避免快照过多
+   * 清理过期快照 避免快照过多  (会删除未被快照引用的数据文件 所以放在数据合并步骤之后运行)
    * @param spark sparkSession
    * @param snapRetainMinutes 快照保留时间
    * @param snapRetainLastMinNum 快照保留数量

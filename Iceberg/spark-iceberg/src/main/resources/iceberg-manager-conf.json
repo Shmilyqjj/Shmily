@@ -1,0 +1,41 @@
+{
+  "tables": {
+    "iceberg_db.location_iceberg_partitioned_table": {
+      "catalog_type": "location_based_table",
+      "warehouse": "hdfs://shmily:8020/user/iceberg/warehouse/",
+      "target_datafile_mb": "128",
+      "snap_retain_num": "10",
+      "snap_retain_minutes": "20",
+      "rewrite_manifest_mb": "10",
+      "remove_orphan_files": "true",
+      "interval_minutes": "1440"
+    },
+    "iceberg_db.hadoop_iceberg_table": {
+      "catalog_type": "hadoop",
+      "warehouse": "hdfs://shmily:8020/user/iceberg/warehouse/",
+      "target_datafile_mb": "128",
+      "snap_retain_num": "10",
+      "snap_retain_minutes": "20",
+      "rewrite_manifest_mb": "10",
+      "remove_orphan_files": "true",
+      "interval_minutes": "1440"
+    },
+    "iceberg_db.hive_iceberg_catalog_partitioned_table": {
+      "catalog_type": "hive",
+      "warehouse": "hdfs://shmily:8020/user/hive/warehouse",
+      "target_datafile_mb": "128",
+      "snap_retain_num": "10",
+      "snap_retain_minutes": "20",
+      "rewrite_manifest_mb": "10",
+      "remove_orphan_files": "true",
+      "interval_minutes": "1440"
+    }
+  },
+  "hadoop_config": "/etc/hadoop-conf/core-site.xml,/etc/hadoop-conf/hdfs-site.xml",
+  "krb5_path": "/etc/krb5.conf",
+  "keytab_path": "/opt/keytabs/hdfs.keytab",
+  "login_user": "hdfs",
+  "metastore_uri": "http://shmily:9083",
+  "default_warehouse": "hdfs://shmily:8020/user/hive/warehouse",
+  "pool_size": "6"
+}

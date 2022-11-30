@@ -91,7 +91,6 @@ fabric.properties
 # Eclipse.gitignore global
 #############################################
 .metadata
-bin/
 tmp/
 *.tmp
 *.bak
