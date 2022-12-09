@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+
+import top.shmilyqjj.springboot.models.DemoReq;
 import top.shmilyqjj.springboot.services.impl.JsonServiceImpl;
 
 
@@ -65,6 +67,13 @@ public class HelloController {
         // curl -H "Content-Type: application/json;charset=utf-8" -X POST "http://localhost:8080/json" -d '{"name": "qjj", "age": "24", "version": "2.0"}'
         String version = jsonObject.has("version") ? jsonObject.get("version").getAsString() : "1.0";
         return "version: "+ version + " data: "+ jsonService.getJsonString(jsonObject);
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/demo")
+    public String demo(@RequestBody DemoReq req) {
+        // curl -H "Content-Type: application/json;charset=utf-8" -X POST "http://localhost:8080/demo" -d '{"name": "qjj", "age": "24"}'
+        return "Hello "+ req.getName() + " age: "+ req.getAge();
     }
 
 }
