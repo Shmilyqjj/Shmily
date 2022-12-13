@@ -1,6 +1,5 @@
 package flink.study.streaming.sink.iceberg.maintenance;
 
-import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.hadoop.fs.Path;
 import org.apache.iceberg.actions.RewriteDataFilesActionResult;
@@ -19,6 +18,9 @@ import java.io.IOException;
  * @Description: 使用Flink合并Iceberg数据文件
  * @CreateTime: 2022/10/4 12:22
  * @Site: shmily-qjj.top
+ *
+ * Iceberg provides API to rewrite small files into large files by submitting flink batch job.
+ * The behavior of this flink action is the same as the spark’s rewriteDataFiles.
  */
 public class FlinkCombineIcebergDataFiles {
     public static void main(String[] args) throws IOException {
