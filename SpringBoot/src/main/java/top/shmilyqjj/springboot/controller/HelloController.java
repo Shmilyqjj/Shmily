@@ -10,9 +10,13 @@ import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
+import org.springframework.web.multipart.MultipartFile;
 import top.shmilyqjj.springboot.models.DemoReq;
 import top.shmilyqjj.springboot.services.impl.JsonServiceImpl;
 
@@ -74,6 +78,32 @@ public class HelloController {
     public String demo(@RequestBody DemoReq req) {
         // curl -H "Content-Type: application/json;charset=utf-8" -X POST "http://localhost:8080/demo" -d '{"name": "qjj", "age": "24"}'
         return "Hello "+ req.getName() + " age: "+ req.getAge();
+    }
+
+    @ResponseBody
+    @PostMapping("/file/upload")
+    public String upload(@RequestParam("file") MultipartFile file){
+        if (file.isEmpty()){
+            return "未选择文件";
+        }
+        //获取上传文件原来的名称
+        String filename = file.getOriginalFilename();
+        String filePath = "/tmp/";
+        File temp = new File(filePath);
+        if (!temp.exists()){
+            temp.mkdirs();
+        }
+        File localFile = new File(filePath + filename);
+        try {
+            file.transferTo(localFile); //把上传的文件保存至本地
+            System.out.println(file.getOriginalFilename()+" 成功上传到服务端文件: " + filePath + filename);
+        }catch (IOException e){
+            e.printStackTrace();
+            return "上传失败" + e;
+        }
+
+        return "上传成功";
+
     }
 
 }
