@@ -8,7 +8,16 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 
-
+/**
+ * Author: Shmily
+ * Notes:
+ * 最好只使用一个共享的OkHttpClient实例，将所有的网络请求都通过这个实例处理。
+ * 因为每个OkHttpClient实例都有自己的连接池和线程池，重用这个实例能降低延时，减少内存消耗,而重复创建新实例则会浪费资源。
+ * OkHttpClient的线程池和连接池在空闲的时候会自动释放，所以一般情况下不需要手动关闭，但是如果出现极端内存不足的情况，可以使用以下代码释放内存：
+ * client.dispatcher().executorService().shutdown();   //清除并关闭线程池
+ * client.connectionPool().evictAll();                 //清除并关闭连接池
+ * client.cache().close();                             //清除cache
+ */
 public class OkHttpClientDemo {
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -46,12 +55,17 @@ public class OkHttpClientDemo {
                 // 添加头信息
                 .addHeader("Content-Type", "text/plain")
                 .build();
-        //2.将 Request 封装为 Call
+        //2.将 Request 封装为 Call [Call对象表示一个已经准备好可以执行的请求，用这个对象可以查询请求的执行状态，或者取消当前请求。]
         Call call = httpClient.newCall(request);
         //3.执行请求 (同步或异步)
         // 同步
         Response response = call.execute();
+        //   ResponseBody只能被消费一次，也就是string(),bytes(),byteStream()或 charStream()方法只能调用其中一个。
+        //   如果ResponseBody中的数据很大，则不应该使用bytes() 或 string()方法，它们会将结果一次性读入内存
+        //   而应该使用byteStream()或 charStream()，以流的方式读取数据
         System.out.println("Get同步请求 结果: " + response.body().string());
+        // 4. ResponseBody必须关闭，不然可能造成资源泄漏
+        response.close();
         // 异步
 //        call.enqueue(new Callback() {
 //            @Override
@@ -95,6 +109,7 @@ public class OkHttpClientDemo {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String body = response.body().string();
                 System.out.println("异步Post请求 " + call.request().url() + " 的响应结果为 " + body);
+                response.close();
             }
         });
 
@@ -119,7 +134,6 @@ public class OkHttpClientDemo {
         Call uploadCall = httpClient.newCall(uploadRequest);
         Response uploadRes = uploadCall.execute();
         System.out.println("同步Post请求文件上传 结果: " + uploadRes.body().string());
-
-
+        uploadRes.close();
     }
 }
