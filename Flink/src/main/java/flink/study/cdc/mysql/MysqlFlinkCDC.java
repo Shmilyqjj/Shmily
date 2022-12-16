@@ -1,11 +1,17 @@
 package flink.study.cdc.mysql;
 
+import com.ververica.cdc.connectors.mysql.source.MySqlSource;
+import com.ververica.cdc.connectors.mysql.table.StartupOptions;
+import com.ververica.cdc.debezium.DebeziumSourceFunction;
+import com.ververica.cdc.debezium.StringDebeziumDeserializationSchema;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.RestOptions;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.ExecutionCheckpointingOptions;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
@@ -53,7 +59,7 @@ public class MysqlFlinkCDC {
         env.enableCheckpointing(10000);
         env.getConfig().setAutoWatermarkInterval(200);
         // 指定重启策略
-//        env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, 2000L));
+//        env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, 10000L));
 
         // 设置Flink SQL环境
         EnvironmentSettings tableEnvSettings = EnvironmentSettings.newInstance().useBlinkPlanner().inStreamingMode().build();
@@ -63,9 +69,12 @@ public class MysqlFlinkCDC {
         // 设置checkpoint间隔
         tableEnv.getConfig().getConfiguration().set(ExecutionCheckpointingOptions.CHECKPOINTING_INTERVAL, Duration.ofMinutes(1));
 
-        // FlinkSQL CDC Demo
-        flinkSqlCDC(tableEnv);
+        // 1.FlinkSQL CDC Demo
+//        flinkSqlCDC(tableEnv);
 //        flinkSqlCDC(tableEnv, env);
+
+        // 2.Flink DataStream CDC Demo
+        flinkDataStreamCDC(env);
 
     }
 
@@ -81,6 +90,9 @@ public class MysqlFlinkCDC {
         tableEnv.executeSql("CREATE DATABASE IF NOT EXISTS default_catalog.cdc");
         tableEnv.executeSql("DROP TABLE IF EXISTS cdc.flink_cdc_test");
         tableEnv.executeSql("CREATE TABLE cdc.flink_cdc_test(\n" +
+                "    db_name STRING METADATA FROM 'database_name' VIRTUAL,\n" +
+                "    table_name STRING METADATA  FROM 'table_name' VIRTUAL,\n" +
+                "    operation_ts TIMESTAMP_LTZ(3) METADATA FROM 'op_ts' VIRTUAL,\n" +
                 "    id INT PRIMARY KEY,\n" +
                 "    name STRING,\n" +
                 "    age INT,\n" +
@@ -100,6 +112,9 @@ public class MysqlFlinkCDC {
         // 输出到printTable
         tableEnv.executeSql("CREATE DATABASE IF NOT EXISTS default_catalog.print");
         tableEnv.executeSql("CREATE TABLE print.print_table (\n" +
+                "  db_name STRING,\n" +
+                "  table_name STRING,\n" +
+                "  operation_ts TIMESTAMP_LTZ(3),\n" +
                 "  id INT,\n" +
                 "  name STRING,\n" +
                 "  age INT,\n" +
@@ -109,7 +124,7 @@ public class MysqlFlinkCDC {
                 "  'connector' = 'print'\n" +
                 ")");
 
-        tableEnv.executeSql("insert into print.print_table select id,name,age,create_time,FROM_UNIXTIME(UNIX_TIMESTAMP(CAST(create_time AS STRING)), 'yyyy-MM-dd HH:mm:ss') from cdc.flink_cdc_test");
+        tableEnv.executeSql("insert into print.print_table select db_name,table_name,operation_ts,id,name,age,create_time,FROM_UNIXTIME(UNIX_TIMESTAMP(CAST(create_time AS STRING)), 'yyyy-MM-dd HH:mm:ss') from cdc.flink_cdc_test");
 
     }
 
@@ -124,6 +139,9 @@ public class MysqlFlinkCDC {
         tableEnv.executeSql("CREATE DATABASE IF NOT EXISTS default_catalog.cdc");
         tableEnv.executeSql("DROP TABLE IF EXISTS cdc.flink_cdc_test");
         tableEnv.executeSql("CREATE TABLE cdc.flink_cdc_test(\n" +
+                "    db_name STRING METADATA FROM 'database_name' VIRTUAL,\n" +
+                "    table_name STRING METADATA  FROM 'table_name' VIRTUAL,\n" +
+                "    operation_ts TIMESTAMP_LTZ(3) METADATA FROM 'op_ts' VIRTUAL,\n" +
                 "    id INT PRIMARY KEY,\n" +
                 "    name STRING,\n" +
                 "    age INT,\n" +
@@ -144,8 +162,29 @@ public class MysqlFlinkCDC {
         Table table = tableEnv.sqlQuery("select * from cdc.flink_cdc_test");
         DataStream<Tuple2<Boolean, Row>> retractStream = tableEnv.toRetractStream(table, Row.class);
         retractStream.print();
-        env.execute();
+        env.execute("Flink SQL MySql CDC");
 
+    }
+
+    public static void flinkDataStreamCDC(StreamExecutionEnvironment env) throws Exception {
+        MySqlSource<String> mySqlSource = MySqlSource.<String>builder()
+                .hostname("localhost")
+                .port(3306)
+                .username("root")
+                .password("root")
+                .serverTimeZone("UTC")
+                .databaseList("test")  // 可指定多个db
+                .tableList("test.flink_cdc_test", "test.flink_cdc_test1")   // 可指定多个table
+                .deserializer(new StringDebeziumDeserializationSchema())
+                .startupOptions(StartupOptions.initial())
+                .build();
+
+        env.fromSource(mySqlSource, WatermarkStrategy.noWatermarks(), "MySQL Binlog")
+                // set 4 parallel source tasks
+                .setParallelism(4)
+                // use parallelism 1 for sink to keep message ordering
+                .print().setParallelism(1);
+        env.execute("DataStream MySql CDC");
     }
 
 
