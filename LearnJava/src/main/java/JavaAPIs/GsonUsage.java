@@ -73,11 +73,11 @@ public class GsonUsage {
                 System.out.println("[JsonPrimitive] k=" + key + " v=" + value.getAsString());
             }else if(value.isJsonArray()){
                 // []形式
-                System.out.println("[JsonArray] k=" + key + " value is JsonArray");
+                System.out.println("[JsonArray] k=" + key + " value is JsonArray. Value: " + value.toString());
                 value.getAsJsonArray().forEach(ee -> ee.getAsJsonObject().entrySet().forEach(System.out::println));
             }else if(value.isJsonObject()){
                 // Json嵌套 形式
-                System.out.println("[JsonObject] k=" + key + " value is jsonObject");
+                System.out.println("[JsonObject] k=" + key + " value is jsonObject. Value: " + value.toString());
                 value.getAsJsonObject().entrySet().forEach(e -> System.out.println(e.getKey() + " " + e.getValue()));
             }else {
                 // JsonNull 形式
