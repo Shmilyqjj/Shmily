@@ -44,6 +44,18 @@ import java.time.Duration;
  * https://github.com/ververica/flink-cdc-connectors
  * https://ververica.github.io/flink-cdc-connectors/master/
  * https://ververica.github.io/flink-cdc-connectors/master/content/connectors/mysql-cdc.html
+ *
+ * MySQL操作:
+ * create table test.flink_cdc_test (id int,name varchar(255),age int,create_time timestamp);
+ * desc test.flink_cdc_test;
+ * insert into test.flink_cdc_test(id,name,age) values (0,'init',0);
+ * select * from test.flink_cdc_test;
+ * insert into test.flink_cdc_test(id,name,age) values (1,'qjj',24);
+ * insert into test.flink_cdc_test(id,name,age) values (2,'abc',24);
+ * insert into test.flink_cdc_test(id,name,age) values (3,'def',24);
+ * insert into test.flink_cdc_test(id,name,age) values (4,'ghi',24);
+ * insert into test.flink_cdc_test(id,name,age) values (5,'jkl',24);
+ * delete from test.flink_cdc_test where id = 4;
  */
 public class MysqlFlinkCDC {
     public static void main(String[] args) throws Exception {

@@ -16,8 +16,8 @@
         <flink.major.version>1.14</flink.major.version>
         <flink.cdc.version>2.3.0</flink.cdc.version>
         <hadoop.version>3.0.0</hadoop.version>
-        <iceberg.version>0.14.1</iceberg.version>
-        <hive.version>2.1.1</hive.version>
+        <iceberg.version>1.1.0</iceberg.version>
+        <hive.version>3.1.2</hive.version>
         <kafka.version>2.2.1</kafka.version>
         <mysql.version>8.0.27</mysql.version>
         <fastjson.version>1.2.71</fastjson.version>
@@ -236,7 +236,17 @@
             <version>${fastjson.version}</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- zstd compressor support -->
+        <dependency>
+            <groupId>com.github.luben</groupId>
+            <artifactId>zstd-jni</artifactId>
+            <version>1.5.2-3</version>
+        </dependency>
     </dependencies>
+
+
+
     <build>
         <sourceDirectory>src/main/scala</sourceDirectory>
         <testSourceDirectory>src/test/scala</testSourceDirectory>
