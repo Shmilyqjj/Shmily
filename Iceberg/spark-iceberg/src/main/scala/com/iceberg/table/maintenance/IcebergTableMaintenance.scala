@@ -7,7 +7,7 @@ import org.apache.iceberg.{ManifestFile, Table}
 import org.apache.iceberg.catalog.TableIdentifier
 import org.apache.iceberg.hadoop.HadoopCatalog
 import org.apache.iceberg.hive.HiveCatalog
-import org.apache.iceberg.spark.actions.SparkActions
+import org.apache.iceberg.spark.actions.{RewriteDataFilesSparkAction, SparkActions}
 import org.apache.spark.sql.SparkSession
 
 import java.io.File
@@ -17,7 +17,6 @@ import org.apache.commons.io.FileUtils
 import org.apache.hadoop.fs.Path
 import org.apache.iceberg.exceptions.NoSuchTableException
 
-
 import java.util
 import java.util.concurrent.{Executors, TimeUnit}
 
@@ -26,6 +25,7 @@ import java.util.concurrent.{Executors, TimeUnit}
 case class IcebergTableConf(catalog_type: String,
                             warehouse: String,
                             target_datafile_mb: String,
+                            filter: String,
                             snap_retain_num: String,
                             snap_retain_minutes: String,
                             rewrite_manifest_mb: String,
@@ -134,7 +134,7 @@ object IcebergTableMaintenance {
       expireSnapshots(spark, table, tableConfig.snap_retain_minutes.toLong, tableConfig.snap_retain_num.toInt)
 
       // 合并数据文件到目标大小
-      compactDataFiles(spark, table, tableConfig.target_datafile_mb.toLong)
+      compactDataFiles(spark, table, tableConfig.target_datafile_mb.toLong, tableConfig.filter)
 
       // 重写Manifest
       rewriteManifests(spark, table, tableConfig.rewrite_manifest_mb.toLong)
@@ -221,13 +221,26 @@ object IcebergTableMaintenance {
    * and small data files causes an unnecessary amount of metadata and less efficient queries from file open costs.
    * TODO: 该方法是合并全表数据文件的,会扫描全表所有分区并按分区合并,是串行执行的;每次执行都扫描全部数据文件,代价很大,随着分区和文件数增多,耗时越来越长;可以优化为按分区合并,每次只扫描指定范围分区的数据;可利用filter(Expressions.equal("ds", "20221130"))划定合并范围
    */
-  def compactDataFiles(spark: SparkSession, table: Table, targetFileSizeMb: Long): Unit = {
+  def compactDataFiles(spark: SparkSession, table: Table, targetFileSizeMb: Long, filters: String): Unit = {
     logger.info("Start CompactDataFiles job for table " + table.name())
     val st = System.currentTimeMillis()
-    val result = SparkActions
+    val action: RewriteDataFilesSparkAction = SparkActions
       .get(spark)
       .rewriteDataFiles(table)
-      //      .filter(Expressions.equal("date", "2020-08-18"))
+
+    def applyFilters(filtersString: String, action: RewriteDataFilesSparkAction): RewriteDataFilesSparkAction = {
+      if (!"".equals(filtersString)){
+        filtersString.split(",")
+        // TODO: add filters
+        action
+      }else{
+        action
+      }
+    }
+
+    val result =
+      action
+    //      .filter(Expressions.equal("date", "2020-08-18"))
       .option("target-file-size-bytes", (targetFileSizeMb * 1024 * 1024).toString)
       .option("rewrite-all", "true")  // 避免清理得不干净 如果不加该参数 清理后可能还会有部分小文件
       .execute()
