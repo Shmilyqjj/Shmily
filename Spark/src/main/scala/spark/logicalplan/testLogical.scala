@@ -4,7 +4,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.catalyst.analysis.UnresolvedRelation
-import org.apache.spark.sql.catalyst.plans.logical.{Aggregate, Deduplicate, DeserializeToObject, Distinct, Filter, Generate, GlobalLimit, InsertIntoTable, Join, LocalLimit, LogicalPlan, MapElements, MapPartitions, Project, Repartition, RepartitionByExpression, SerializeFromObject, SubqueryAlias, TypedFilter, Union, Window}
+import org.apache.spark.sql.catalyst.plans.logical.{Aggregate, Deduplicate, DeserializeToObject, Distinct, Filter, Generate, GlobalLimit, InsertAction, Join, LocalLimit, LogicalPlan, MapElements, MapPartitions, Project, Repartition, RepartitionByExpression, SerializeFromObject, SubqueryAlias, TypedFilter, Union, Window}
 import org.apache.spark.sql.execution.datasources.CreateTable
 
 
@@ -42,9 +42,9 @@ object testLogical {
       case createTable: CreateTable => resolveLogicalPlan(createTable.query.get)
       case distinct: Distinct => resolveLogicalPlan(distinct.child)
       case subqueryAlias: SubqueryAlias => resolveLogicalPlan(subqueryAlias.child)
-      case insertIntoTable: InsertIntoTable =>
-        resolveLogicalPlan(insertIntoTable.table)
-        resolveLogicalPlan(insertIntoTable.query)
+//      case insertIntoTable: InsertAction =>
+//        resolveLogicalPlan(insertIntoTable.ch)
+//        resolveLogicalPlan(insertIntoTable.query)
       case join: Join =>
         resolveLogicalPlan(join.left)
         resolveLogicalPlan(join.right)

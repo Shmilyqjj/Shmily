@@ -1,7 +1,7 @@
 package com.spark.structrued.streaming
 
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.streaming.ProcessingTime
+import org.apache.spark.sql.streaming.Trigger.ProcessingTime
 import org.apache.spark.sql.types.StructType
 
 /**
