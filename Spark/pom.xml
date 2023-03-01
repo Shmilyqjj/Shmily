@@ -16,7 +16,7 @@
         <spark.version>3.3.1</spark.version>
         <iceberg.version>1.1.0</iceberg.version>
         <spark.major.version>3.3</spark.major.version>
-        <hadoop.version>3.2.2</hadoop.version>
+        <hadoop.version>3.2.4</hadoop.version>
         <hive.version>3.1.2</hive.version>
         <hbase.version>2.1.0</hbase.version>
         <kafka.version>2.2.1</kafka.version>
