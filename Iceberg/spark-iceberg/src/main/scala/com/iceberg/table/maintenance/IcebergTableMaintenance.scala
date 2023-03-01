@@ -16,6 +16,7 @@ import com.google.gson.Gson
 import org.apache.commons.io.FileUtils
 import org.apache.hadoop.fs.Path
 import org.apache.iceberg.exceptions.NoSuchTableException
+import org.apache.iceberg.expressions.Expressions
 
 import java.util
 import java.util.concurrent.{Executors, TimeUnit}
@@ -224,22 +225,46 @@ object IcebergTableMaintenance {
   def compactDataFiles(spark: SparkSession, table: Table, targetFileSizeMb: Long, filters: String): Unit = {
     logger.info("Start CompactDataFiles job for table " + table.name())
     val st = System.currentTimeMillis()
-    val action: RewriteDataFilesSparkAction = SparkActions
-      .get(spark)
-      .rewriteDataFiles(table)
 
     def applyFilters(filtersString: String, action: RewriteDataFilesSparkAction): RewriteDataFilesSparkAction = {
+      var actionOut = action
       if (!"".equals(filtersString)){
-        filtersString.split(",")
-        // TODO: add filters
-        action
+        filtersString.split(",").foreach(kv =>{
+          if(kv.contains("=")){
+            val key: String = kv.split("=")(0)
+            val value: String = kv.split("=")(1)
+            if (key != null && value != null && !"".equals(key)) actionOut  = actionOut.filter(Expressions.equal(key, value))
+          }else if(kv.contains(">")){
+            val key: String = kv.split(">")(0)
+            val value: String = kv.split(">")(1)
+            if (key != null && value != null && !"".equals(key)) actionOut  = actionOut.filter(Expressions.greaterThan(key, value))
+          }else if(kv.contains("<")){
+            val key: String = kv.split("<")(0)
+            val value: String = kv.split("<")(1)
+            if (key != null && value != null && !"".equals(key)) actionOut  = actionOut.filter(Expressions.lessThan(key, value))
+          }else if(kv.contains(">=")){
+            val key: String = kv.split(">=")(0)
+            val value: String = kv.split(">=")(1)
+            if (key != null && value != null && !"".equals(key)) actionOut  = actionOut.filter(Expressions.greaterThanOrEqual(key, value))
+          }else if(kv.contains("<=")){
+            val key: String = kv.split("<=")(0)
+            val value: String = kv.split("<=")(1)
+            if (key != null && value != null && !"".equals(key)) actionOut  = actionOut.filter(Expressions.lessThanOrEqual(key, value))
+          }else{
+            logger.warn(s"Ignore unsupported filter config: $kv")
+          }
+        })
+        actionOut
       }else{
         action
       }
     }
+    val action: RewriteDataFilesSparkAction = SparkActions
+      .get(spark)
+      .rewriteDataFiles(table)
 
     val result =
-      action
+      applyFilters(filters, action)
     //      .filter(Expressions.equal("date", "2020-08-18"))
       .option("target-file-size-bytes", (targetFileSizeMb * 1024 * 1024).toString)
       .option("rewrite-all", "true")  // 避免清理得不干净 如果不加该参数 清理后可能还会有部分小文件
