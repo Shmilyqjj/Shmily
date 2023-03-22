@@ -18,13 +18,14 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 import top.shmilyqjj.springboot.models.DemoReq;
+import top.shmilyqjj.springboot.services.JsonService;
 import top.shmilyqjj.springboot.services.impl.JsonServiceImpl;
 
 
 @Controller
 public class HelloController {
     @Autowired
-    JsonServiceImpl jsonService;
+    JsonService jsonService;
 
     @ResponseBody
     @GetMapping("/hello/{name}")
