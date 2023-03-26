@@ -12,4 +12,4 @@ export SPARK_HOME=/usr/local/complat/spark
 --num-executors 20 \
 --conf spark.driver.host=xx.xx.xx.xx \
 --class com.iceberg.table.maintenance.IcebergTableMaintenance \
-/usr/local/complat/iceberg-table-manager/iceberg-spark-1.0.jar
+/usr/local/complat/iceberg-table-manager/spark-iceberg-1.0.jar
