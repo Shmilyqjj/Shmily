@@ -1,4 +1,4 @@
-package flink.study.streaming.sink.iceberg.sql;
+package flink.iceberg.sink.sql;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;

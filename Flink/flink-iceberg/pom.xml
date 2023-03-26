@@ -2,44 +2,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>Flink</artifactId>
+        <groupId>com.qjj.flink</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.qjj.flink</groupId>
-    <artifactId>Flink</artifactId>
-    <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <modules>
-        <module>flink-cdc</module>
-        <module>flink-iceberg</module>
-    </modules>
+    <artifactId>flink-iceberg</artifactId>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <scala.binary.version>2.12</scala.binary.version>
         <flink.version>1.14.5</flink.version>
         <flink.major.version>1.14</flink.major.version>
         <flink.cdc.version>2.3.0</flink.cdc.version>
-        <hadoop.version>3.0.0</hadoop.version>
+        <hadoop.version>3.2.1</hadoop.version>
         <iceberg.version>1.1.0</iceberg.version>
         <hive.version>3.1.2</hive.version>
         <kafka.version>2.2.1</kafka.version>
         <mysql.version>8.0.27</mysql.version>
         <fastjson.version>1.2.71</fastjson.version>
         <encoding>UTF-8</encoding>
-        <!--
-          scope分两种: compile和provided
-            compile代表强依赖，打包会把依赖添加到jar包中
-            provided依赖不添加到jar包中
-          原则；集群环境已有的依赖，scope设为provided避免jar冲突；集群环境中没有的依赖，scope设为compile避免依赖缺失
-          对于常用的依赖比如jdbc，将其jar放入Flink lib目录，程序启动会自动将其加载到ClassPath，scope可设为provided
-        -->
-        <!-- 编译程序jar并上线时，scope.type改为provided，目的是编译阶段将Flink基础库排除在项目jar外
-         避免提交到线上的jar过大，以及类冲突-->
-        <!-- 本地运行调试时，scope.type指定为compile，解决本地可能无法运行的问题 -->
-        <!-- 线上环境没有的依赖包，需要把依赖引入jar包，此时手动指定相应依赖包的scope为compile -->
-        <scope.type>compile</scope.type>
     </properties>
+
 
     <dependencies>
         <!-- Flink Java项目依赖 -->
@@ -150,6 +137,62 @@
             <version>2.12.8</version>
         </dependency>
 
+
+        <!-- Iceberg support -->
+        <dependency>
+            <groupId>org.apache.iceberg</groupId>
+            <artifactId>iceberg-flink-runtime-${flink.major.version}</artifactId>
+            <version>${iceberg.version}</version>
+        </dependency>
+        <!-- Hive依赖 -->
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-common</artifactId>
+            <version>${hive.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-cli</artifactId>
+            <version>${hive.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-metastore</artifactId>
+            <version>${hive.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- fastjson依赖,解析JSON最快 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- zstd compressor support -->
+        <dependency>
+            <groupId>com.github.luben</groupId>
+            <artifactId>zstd-jni</artifactId>
+            <version>1.5.2-3</version>
+        </dependency>
+
+        <!-- HDFS依赖 -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>${hadoop.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-auth</artifactId>
+            <version>${hadoop.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- Kafka Connector -->
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -168,107 +211,5 @@
             <version>${kafka.version}</version>
         </dependency>
 
-        <!-- HDFS依赖 -->
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-client</artifactId>
-            <version>${hadoop.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-auth</artifactId>
-            <version>${hadoop.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- MySQL -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- ClickHouse -->
-        <dependency>
-            <groupId>ru.yandex.clickhouse</groupId>
-            <artifactId>clickhouse-jdbc</artifactId>
-            <version>0.2.6</version>
-            <scope>compile</scope>
-        </dependency>
-
     </dependencies>
-
-
-
-    <build>
-        <sourceDirectory>src/main/scala</sourceDirectory>
-        <testSourceDirectory>src/test/scala</testSourceDirectory>
-        <plugins>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>3.2.2</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <args>
-                                <!-- <arg>-make:transitive</arg> -->
-                                <arg>-dependencyfile</arg>
-                                <arg>${project.build.directory}/.scala_dependencies</arg>
-                            </args>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.18.1</version>
-                <configuration>
-                    <useFile>false</useFile>
-                    <disableXmlReport>true</disableXmlReport>
-                    <includes>
-                        <include>**/*Test.*</include>
-                        <include>**/*Suite.*</include>
-                    </includes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.3</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.apache.spark.WordCount</mainClass>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

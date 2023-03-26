@@ -1,4 +1,4 @@
-package flink.study.streaming.sink.iceberg.cdc;
+package flink.iceberg.sink.cdc;
 
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.RestOptions;

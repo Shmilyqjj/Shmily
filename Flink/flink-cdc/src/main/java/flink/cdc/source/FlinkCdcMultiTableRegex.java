@@ -1,4 +1,4 @@
-package flink.study.streaming.sink.iceberg.cdc;
+package flink.cdc.source;
 
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.configuration.ConfigConstants;
@@ -32,7 +32,7 @@ public class FlinkCdcMultiTableRegex {
         Configuration configuration = new Configuration();
 
         // StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();  // 线上ENV
-        configuration.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, true);configuration.setInteger(RestOptions.PORT,8050);StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration); // 测试ENV
+        configuration.setInteger(RestOptions.PORT,8050);StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration); // 测试ENV
         env.setParallelism(4);
         env.enableCheckpointing(10000);
         env.getConfig().setAutoWatermarkInterval(200);
@@ -65,7 +65,7 @@ public class FlinkCdcMultiTableRegex {
                 "    PRIMARY KEY(id) NOT ENFORCED\n" +
                 ")WITH (\n" +
                 "    'connector' = 'mysql-cdc',\n" +
-                "    'hostname' = '10.2.5.100',\n" +
+                "    'hostname' = 'node1.shmily-qjj.top',\n" +
                 "    'port' = '3306',\n" +
                 "    'username' = 'root',\n" +
                 "    'password' = '123456',\n" +

@@ -1,4 +1,4 @@
-package flink.study.cdc.mysql;
+package flink.cdc.source;
 
 import com.ververica.cdc.connectors.mysql.source.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
@@ -61,10 +61,8 @@ import java.time.Duration;
 public class MysqlFlinkCDC {
     public static void main(String[] args) throws Exception {
 //        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        // 本地debug用env  webui：localhost:8050
         org.apache.flink.configuration.Configuration flinkConf = new org.apache.flink.configuration.Configuration();
-        flinkConf.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, true);
-        flinkConf.setInteger(RestOptions.PORT, 8050);
+        flinkConf.setInteger(RestOptions.PORT, 8050);  // 本地debug用env  webui：localhost:8050
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(flinkConf);
         // 设置并发
         env.setParallelism(4);

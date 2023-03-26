@@ -1,4 +1,4 @@
-package flink.study.streaming.sink.iceberg.maintenance;
+package flink.iceberg.maintaince;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.hadoop.fs.Path;

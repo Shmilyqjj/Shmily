@@ -1,4 +1,4 @@
-package flink.study.streaming.sink.iceberg;
+package flink.iceberg.sink;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
@@ -66,7 +66,6 @@ public class KafkaSinkHiveCatalogIcebergTable {
 //        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         // 本地debug用env  webui：localhost:8050
         org.apache.flink.configuration.Configuration flinkConf = new org.apache.flink.configuration.Configuration();
-        flinkConf.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, true);
         flinkConf.setInteger(RestOptions.PORT, 8050);
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(flinkConf);
 

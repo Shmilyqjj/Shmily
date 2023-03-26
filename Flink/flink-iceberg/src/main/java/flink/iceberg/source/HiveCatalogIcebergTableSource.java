@@ -1,4 +1,4 @@
-package flink.study.streaming.source.iceberg;
+package flink.iceberg.source;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.flink.api.common.functions.MapFunction;
