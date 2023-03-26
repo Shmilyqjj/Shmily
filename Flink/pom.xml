@@ -11,6 +11,7 @@
     <modules>
         <module>flink-cdc</module>
         <module>flink-iceberg</module>
+        <module>flink-jdbc</module>
     </modules>
 
     <properties>
