@@ -243,6 +243,12 @@
             <artifactId>zstd-jni</artifactId>
             <version>1.5.2-3</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.iceberg</groupId>
+            <artifactId>iceberg-spark-runtime-3.3_2.12</artifactId>
+            <version>${iceberg.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 
