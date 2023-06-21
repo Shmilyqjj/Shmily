@@ -1,9 +1,6 @@
 package Collections.collection.list;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * 集合  ArrayList  Vector  LinkedList
@@ -16,6 +13,7 @@ public class ListTest {
         arrayList();
         vector();
         linkedList();
+        listAdd();
     }
 
     /**
@@ -28,9 +26,11 @@ public class ListTest {
      * 6  线程不安全，适合在单线程访问时使用
      */
     public static void arrayList(){
-        List<String> list = new ArrayList(30);  //只允许String类型的list - 为了防止数组动态扩充次数太多，建议创建ArrayList时，给定初始容量
+        // 为了防止数组动态扩充次数太多，建议创建ArrayList时，给定初始容量
+        //ArrayList是继承List的类
+        List<String> list = new ArrayList<>(30);
         list.add("aa");
-        list.add("bb");  //ArrayList是继承List的类
+        list.add("bb");
         list.add("cc");
         list.add("dd");
         list.add("ee");
@@ -51,7 +51,8 @@ public class ListTest {
      *5  线程安全，适合在多线程访问时使用，效率较低
      */
     public static void vector(){
-        Vector<String> v = new Vector(10);//为了防止数组动态扩充次数太多，建议创建Vector时，给定初始容量
+        //为了防止数组动态扩充次数太多，建议创建Vector时，给定初始容量
+        Vector<String> v = new Vector(10);
         v.add("aa");
         v.add("bb");
         v.add("cc");
@@ -81,6 +82,16 @@ public class ListTest {
         }
         System.out.println();
         System.out.println(l.toString());
+    }
+
+    public static void listAdd(){
+        List<String> l1 = Arrays.asList("a","b","c","d","e","f","g");
+        List<String> l2 = Arrays.asList("h","i","j","k","l","m","n");
+        List<String> all = new ArrayList<>();
+        all.addAll(l1);
+        all.addAll(l2);
+        all.forEach(System.out::printf);
+        System.out.println("");
     }
 }
 
