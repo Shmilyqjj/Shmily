@@ -28,7 +28,9 @@ public class Trans2StreamExample {
         });
 
         adults.print();
+        System.out.println(env.getExecutionPlan());
         env.execute();
+
     }
 
 
