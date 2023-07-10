@@ -3,6 +3,7 @@
  * Date/Time:2018.11.12
  */
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 public class ArraysTest {
     public static void main(String[] args) {
@@ -95,6 +96,15 @@ public class ArraysTest {
         System.out.println(Arrays.toString(arr1));
         Arrays.fill(arr2,2,4,10);//下标2，3填充
         System.out.println(Arrays.toString(arr2));
+
+        // null-safe equals
+        int a = 1;
+        int b = 1;
+        String as = "aaa";
+        String bs = null;
+        System.out.println(Objects.equals(a, b));
+        System.out.println(Objects.equals(as, bs));
+
     }
 
 //函数的可变参数
