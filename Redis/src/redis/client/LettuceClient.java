@@ -45,6 +45,18 @@ public class LettuceClient {
         redisCommands.del(key);
     }
 
+    public void hSet(String key, String field, String value) {
+        redisCommands.hset(key, field, value);
+    }
+
+    public String hGet(String key, String field) {
+        return redisCommands.hget(key,field);
+    }
+
+    public Long hDelete(String key, String... fields) {
+        return redisCommands.hdel(key,fields);
+    }
+
     public void close() {
         connection.close();
         redisClient.shutdown();
@@ -64,6 +76,9 @@ public class LettuceClient {
         lettuceClient.delete("key");
         exists = lettuceClient.exists("key");
         System.out.println("Exists: " + exists);
+
+        lettuceClient.hSet("key", "col", "111");
+        System.out.println(lettuceClient.hGet("key", "col"));
 
         lettuceClient.close();
     }

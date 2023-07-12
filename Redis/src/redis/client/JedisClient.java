@@ -24,6 +24,18 @@ public class JedisClient {
         return jedis.get(key);
     }
 
+    public void hSet(String key, String field, String value) {
+        jedis.hset(key, field, value);
+    }
+
+    public String hGet(String key, String field) {
+        return jedis.hget(key,field);
+    }
+
+    public Long hDelete(String key, String... fields) {
+        return jedis.hdel(key,fields);
+    }
+
     public boolean exists(String key) {
         return jedis.exists(key);
     }
@@ -50,6 +62,10 @@ public class JedisClient {
         redisUtils.delete("key");
         exists = redisUtils.exists("key");
         System.out.println("Exists: " + exists);
+
+        redisUtils.hSet("key", "col", "111");
+        System.out.println(redisUtils.hGet("key", "col"));
+
 
         redisUtils.close();
     }
