@@ -53,6 +53,10 @@ public class LettuceClient {
         return redisCommands.hget(key,field);
     }
 
+    public boolean hExists(String key, String field) {
+        return redisCommands.hexists(key, field);
+    }
+
     public Long hDelete(String key, String... fields) {
         return redisCommands.hdel(key,fields);
     }
@@ -78,6 +82,7 @@ public class LettuceClient {
         System.out.println("Exists: " + exists);
 
         lettuceClient.hSet("key", "col", "111");
+        System.out.println("hExists: " + lettuceClient.hExists("key", "col"));
         System.out.println(lettuceClient.hGet("key", "col"));
 
         lettuceClient.close();

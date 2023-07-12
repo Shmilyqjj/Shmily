@@ -32,6 +32,10 @@ public class JedisClient {
         return jedis.hget(key,field);
     }
 
+    public boolean hExists(String key, String field) {
+        return jedis.hexists(key,field);
+    }
+
     public Long hDelete(String key, String... fields) {
         return jedis.hdel(key,fields);
     }
@@ -64,6 +68,7 @@ public class JedisClient {
         System.out.println("Exists: " + exists);
 
         redisUtils.hSet("key", "col", "111");
+        System.out.println("hExists: " + redisUtils.hExists("key", "col"));
         System.out.println(redisUtils.hGet("key", "col"));
 
 
