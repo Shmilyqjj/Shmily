@@ -28,8 +28,13 @@ import java.util.HashMap;
 public class FastJsonUsage {
     public static void main(String[] args) {
         String json = "[{\"class\":\"org.apache.spark.sql.catalyst.plans.logical.Filter\",\"num-children\":1,\"condition\":[{\"class\":\"org.apache.spark.sql.catalyst.expressions.Not\",\"num-children\":1,\"child\":0},{\"class\":\"org.apache.spark.sql.catalyst.expressions.InSubquery\",\"num-children\":2,\"values\":[0],\"query\":1},{\"class\":\"org.apache.spark.sql.catalyst.analysis.UnresolvedAttribute\",\"num-children\":0,\"nameParts\":\"[cust_no]\"},{\"class\":\"org.apache.spark.sql.catalyst.expressions.ListQuery\",\"num-children\":0,\"plan\":[{\"class\":\"org.apache.spark.sql.catalyst.plans.logical.GlobalLimit\",\"num-children\":1,\"limitExpr\":[{\"class\":\"org.apache.spark.sql.catalyst.expressions.Literal\",\"num-children\":0,\"value\":\"3\",\"dataType\":\"integer\"}],\"child\":0},{\"class\":\"org.apache.spark.sql.catalyst.plans.logical.LocalLimit\",\"num-children\":1,\"limitExpr\":[{\"class\":\"org.apache.spark.sql.catalyst.expressions.Literal\",\"num-children\":0,\"value\":\"3\",\"dataType\":\"integer\"}],\"child\":0},{\"class\":\"org.apache.spark.sql.catalyst.plans.logical.Project\",\"num-children\":1,\"projectList\":[[{\"class\":\"org.apache.spark.sql.catalyst.analysis.UnresolvedAlias\",\"num-children\":1,\"child\":0},{\"class\":\"org.apache.spark.sql.catalyst.expressions.Literal\",\"num-children\":0,\"value\":\"1\",\"dataType\":\"integer\"}]],\"child\":0},{\"class\":\"org.apache.spark.sql.catalyst.analysis.UnresolvedRelation\",\"num-children\":0,\"tableIdentifier\":{\"product-class\":\"org.apache.spark.sql.catalyst.TableIdentifier\",\"table\":\"bbb\"}}],\"children\":[],\"exprId\":{\"product-class\":\"org.apache.spark.sql.catalyst.expressions.ExprId\",\"id\":0,\"jvmId\":\"24b2d349-197c-4181-a687-e54e2f8398e6\"},\"childOutputs\":[]}],\"child\":0},{\"class\":\"org.apache.spark.sql.catalyst.analysis.UnresolvedRelation\",\"num-children\":0,\"tableIdentifier\":{\"product-class\":\"org.apache.spark.sql.catalyst.TableIdentifier\",\"table\":\"aaa\"}}]";
-        JSONObject jsonObject = (JSONObject)JSON.parseObject(json);
+        JSONArray ja = JSON.parseArray(json);
 
+        Object o = null;
+        String jsonString = JSON.toJSONString(o);
+        System.out.println(jsonString==null);
+        System.out.println("null".equals(jsonString));
+        System.out.println(jsonString);
 
 
     }
