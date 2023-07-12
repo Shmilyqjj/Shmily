@@ -23,6 +23,8 @@
         <module>Phoenix</module>
         <module>Presto</module>
         <module>LearnScala</module>
+        <module>LearnGroovy</module>
+        <module>Redis</module>
         <module>Spark</module>
         <module>Storm</module>
         <module>Zookeeper</module>
