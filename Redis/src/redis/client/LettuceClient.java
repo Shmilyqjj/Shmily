@@ -37,6 +37,19 @@ public class LettuceClient {
         return redisCommands.get(key);
     }
 
+
+    public boolean setTtl(String key,long ttlSeconds) {
+        return redisCommands.expire(key, ttlSeconds);
+    }
+
+    public boolean rmTtl(String key) {
+        return redisCommands.persist(key);
+    }
+
+    public long getTtl(String key) {
+        return redisCommands.ttl(key);
+    }
+
     public boolean exists(String key) {
         return redisCommands.exists(key) != 0;
     }
@@ -84,6 +97,12 @@ public class LettuceClient {
         lettuceClient.hSet("key", "col", "111");
         System.out.println("hExists: " + lettuceClient.hExists("key", "col"));
         System.out.println(lettuceClient.hGet("key", "col"));
+
+        System.out.println("TTL: " + lettuceClient.getTtl("key"));
+        System.out.println(lettuceClient.setTtl("key", 20));
+        System.out.println("TTL After set: " + lettuceClient.getTtl("key"));
+        System.out.println(lettuceClient.rmTtl("key"));
+        System.out.println("TTL After rm: " + lettuceClient.getTtl("key"));
 
         lettuceClient.close();
     }

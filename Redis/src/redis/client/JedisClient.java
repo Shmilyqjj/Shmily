@@ -24,6 +24,19 @@ public class JedisClient {
         return jedis.get(key);
     }
 
+
+    public long setTtl(String key,long ttlSeconds) {
+        return jedis.expire(key, ttlSeconds);
+    }
+
+    public long rmTtl(String key) {
+        return jedis.persist(key);
+    }
+
+    public long getTtl(String key) {
+        return jedis.ttl(key);
+    }
+
     public void hSet(String key, String field, String value) {
         jedis.hset(key, field, value);
     }
@@ -70,6 +83,11 @@ public class JedisClient {
         redisUtils.hSet("key", "col", "111");
         System.out.println("hExists: " + redisUtils.hExists("key", "col"));
         System.out.println(redisUtils.hGet("key", "col"));
+        System.out.println("TTL: " + redisUtils.getTtl("key"));
+        System.out.println(redisUtils.setTtl("key", 20));
+        System.out.println("TTL After set: " + redisUtils.getTtl("key"));
+        System.out.println(redisUtils.rmTtl("key"));
+        System.out.println("TTL After rm: " + redisUtils.getTtl("key"));
 
 
         redisUtils.close();
