@@ -5,6 +5,7 @@ import redis.clients.jedis.Jedis;
 
 /**
  * @author shmily
+ * Notice: Jedis是非线程安全的，多线程下会连接失败导致无法查询缓存 （报错如attempting to read from a broken connection）
  */
 public class JedisClient {
     private final Jedis jedis;
