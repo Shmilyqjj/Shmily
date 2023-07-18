@@ -1,22 +1,33 @@
 package redis.client;
 
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisException;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.*;
 
 /**
  * @author shmily
  */
 public class LettuceClient {
-    private final RedisClient redisClient;
-    private final StatefulRedisConnection<String, String> connection;
-    private final RedisCommands<String, String> redisCommands;
+    private RedisClient redisClient;
+    private StatefulRedisConnection<String, String> connection;
+    private RedisCommands<String, String> redisCommands;
+
+    private final String host;
+    private final int port;
+    private final CharSequence password;
+    private final int timeoutSeconds;
 
     public LettuceClient(String host, int port, CharSequence password, int timeoutSeconds){
+        this.host = host;
+        this.port = port;
+        this.password = password;
+        this.timeoutSeconds = timeoutSeconds;
         RedisURI redisUri = RedisURI.builder()
                 .withHost(host)
                 .withPort(port)
@@ -79,9 +90,26 @@ public class LettuceClient {
         redisClient.shutdown();
     }
 
+    public void reconnect() {
+        // io.lettuce.core.RedisCommandTimeoutException: Command timed out after 1 second(s)
+        // 捕获异常RedisCommandTimeoutException并调用重连
+        if (connection.isOpen()) {
+            close();
+        }
+        RedisURI redisUri = RedisURI.builder()
+                .withHost(host)
+                .withPort(port)
+                .withPassword(password)
+                .withTimeout(Duration.of(timeoutSeconds, ChronoUnit.SECONDS))
+                .build();
+        redisClient = RedisClient.create(redisUri);
+        connection = redisClient.connect();
+        redisCommands = connection.sync();
+    }
+
 
     public static void main(String[] args) {
-        LettuceClient lettuceClient = new LettuceClient("localhost", 6379, "123456", 10);
+        LettuceClient lettuceClient = new LettuceClient("localhost", 6379, "123456", 6);
 
         lettuceClient.set("key", "value");
         String value = lettuceClient.get("key");
@@ -104,7 +132,12 @@ public class LettuceClient {
         System.out.println(lettuceClient.rmTtl("key"));
         System.out.println("TTL After rm: " + lettuceClient.getTtl("key"));
 
+        lettuceClient.set("a","b");
         lettuceClient.close();
+        lettuceClient.reconnect();
+        lettuceClient.set("aaa", "bbb");
+        System.out.println("After reconnect:" + lettuceClient.get("aaa"));
+
     }
 
 }
