@@ -70,8 +70,14 @@ public class HelloController {
     @PostMapping(value = "/json", produces = "application/json;charset=utf-8")
     public String json(@RequestBody JsonObject jsonObject) {
         // curl -H "Content-Type: application/json;charset=utf-8" -X POST "http://localhost:8080/json" -d '{"name": "qjj", "age": "24", "version": "2.0"}'
-        String version = jsonObject.has("version") ? jsonObject.get("version").getAsString() : "1.0";
-        return "version: "+ version + " data: "+ jsonService.getJsonString(jsonObject);
+        String res;
+        if (jsonObject.has("version")) {
+            res = "version: "+ jsonObject.get("version").getAsString() + " #JSON_DATA: "+ jsonService.getJsonString(jsonObject);
+        }else {
+            res = "#JSON_DATA: "+ jsonService.getJsonString(jsonObject);
+        }
+        System.out.println(res);
+        return res;
     }
 
     @ResponseBody
