@@ -4,12 +4,12 @@ import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonWriter;
+import org.apache.commons.io.output.StringBuilderWriter;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 佳境Shmily
@@ -20,12 +20,12 @@ import java.util.Map;
 public class GsonUsage {
     private static transient Gson gson;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         gson =  new GsonBuilder()
-                .setLenient()// json宽松
+//                .setLenient()// json宽松
                 .enableComplexMapKeySerialization()//支持Map的key为复杂对象的形式
 //                .serializeNulls() //智能null
-                .setPrettyPrinting()// 调教格式
+//                .setPrettyPrinting()// 调教格式
                 .disableHtmlEscaping() //默认是GSON把HTML 转义的
                 .create();
 
@@ -87,6 +87,38 @@ public class GsonUsage {
         }
 
 
+        // 3. JsonWriter
+        Map<String,String> m = new HashMap<>(4);
+        m.put("a", "aa");
+        m.put("b", "bb");
+        m.put("c", "cc");
+        m.put("d", "dd");
+        List<String> l = new ArrayList<>();
+        l.add("a");
+        l.add("b");
+        l.add("c");
+        l.add("d");
+        StringBuilderWriter ext = new StringBuilderWriter();
+        JsonWriter writer = new JsonWriter(ext);
+        writer.beginObject();
+        writer.name("json_data").jsonValue(gson.toJson(m));
+        writer.name("key").value("value");
+        writer.name("array");
+        writer.beginArray();
+        for (String s : l) {
+            writer.value(s);
+        }
+        writer.endArray();
+        writer.endObject();
+        writer.close();
+        A a = new A();
+        a.je = JsonParser.parseString(ext.toString());
+        System.out.println(gson.toJson(a));
+    }
+
+
+    static class A {
+        public JsonElement je;
 
     }
 
