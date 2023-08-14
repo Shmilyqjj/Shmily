@@ -1,5 +1,7 @@
 package faceObjects;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 public class ObjectTest {
     public static void main(String[] args) {
         Student s = new Student(1,"Zs",14);
@@ -14,6 +16,11 @@ public class ObjectTest {
         System.out.println(s0.equals(s1));
 
         System.out.println(s0.getClass());  //返回此object运行时的类名
+
+        // 判断对象是否为null 或者其内容为空
+        System.out.println(ObjectUtils.isEmpty(null));
+        System.out.println(ObjectUtils.isEmpty(""));
+        System.out.println(ObjectUtils.isEmpty(s0));
     }
 }
 
