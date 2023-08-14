@@ -114,6 +114,24 @@ public class GsonUsage {
         A a = new A();
         a.je = JsonParser.parseString(ext.toString());
         System.out.println(gson.toJson(a));
+
+
+        // 4. List<Object> 序列化与反序列化
+        List<Object> lo = new ArrayList<>();
+        lo.add("a");
+        lo.add(1);
+        lo.add("b");
+        lo.add(2);
+        lo.add(3.1);
+        lo.add(4L);
+        lo.add('c');
+        String value = gson.toJson(lo);
+        System.out.println(value);
+        List list = gson.fromJson(value, List.class);
+        List<Object> anotherList = new ArrayList<Object>(list);
+        anotherList.forEach(System.out::println);
+//        List<Object> lo1 = gson.fromJson(value, List.class);
+//        lo1.forEach(System.out::println);
     }
 
 
