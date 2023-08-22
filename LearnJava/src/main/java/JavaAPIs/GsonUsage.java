@@ -132,7 +132,20 @@ public class GsonUsage {
         anotherList.forEach(System.out::println);
 //        List<Object> lo1 = gson.fromJson(value, List.class);
 //        lo1.forEach(System.out::println);
+
+        // 5.JsonArray
+        String jaStr = "[{\"ttl\":\"60\",\"dateStyle\":\"y_M_d\",\"datePattern\":\"date_sub\",\"sort\":\"none\"}]";
+        JsonArray ja = gson.fromJson(jaStr, JsonArray.class);
+        JsonObject joINja = ja.get(0).getAsJsonObject();
+        // addProperty是按key覆盖value的
+        joINja.addProperty("ttl", 110);
+        joINja.addProperty("ttl", 120);
+        joINja.addProperty("ttl", 130);
+        ja.set(0, joINja);
+        System.out.println(gson.toJson(ja));
     }
+
+
 
 
     static class A {
