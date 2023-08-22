@@ -71,6 +71,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+// https://segmentfault.com/a/1190000039197916
 
 public class HttpRequestWithKerberos {
     public static void main(String[] args) throws IOException, LoginException {
