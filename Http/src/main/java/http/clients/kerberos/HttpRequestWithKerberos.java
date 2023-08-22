@@ -72,6 +72,7 @@ import java.util.Map;
 import java.util.Set;
 
 // https://segmentfault.com/a/1190000039197916
+// https://blog.csdn.net/weixin_41609807/article/details/115304325?utm_source=app&app_version=4.5.3
 
 public class HttpRequestWithKerberos {
     public static void main(String[] args) throws IOException, LoginException {
