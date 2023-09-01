@@ -62,7 +62,14 @@ public class GsonUsage {
         System.out.println(userList);
         // 嵌套Json反序列化
         System.out.println("========================================================");
-        String nestedJson = "{\"k1\": \"v1\",\"k2\": \"v2\", \"k3\": {\"v3k1\": \"v3v1\", \"v3k2\": \"v3v2\"}, \"k4\": [{\"k4k1\": \"k4v1\"},{\"k4k2\": \"k4v2\"}]}\n";
+        String nestedJson = "{ \"$lib\": \"Android\", \"$stacks\": \"[{\\\"duration\\\":440,\\\"stack\\\":\\\"android.os.MessageQueue.nativePollOnce(Native Method)\\\\r\\\\nandroid.os.MessageQueue.next(MessageQueue.java:336)\\\\r\\\\nandroid.os.Looper.loop(Looper.java:174)\\\\r\\\\ncom.xx.cockroach.a.g(Cockroach.java:216)\\\\r\\\\ncom.xx.cockroach.a.c(Cockroach.java:24)\\\\r\\\\ncom.xx.cockroach.a$1.uncaughtException(Cockroach.java:71)\\\\r\\\\xx.xx.xx.xx.xx.xx.h.uncaughtException(JavaCrashHandler.java:123)\\\\r\\\\njava.lang.ThreadGroup.uncaughtException(ThreadGroup.java:1073)\\\\r\\\\njava.lang.ThreadGroup.uncaughtException(ThreadGroup.java:1068)\\\\r\\\\njava.lang.Thread.dispatchUncaughtException(Thread.java:2187)\\\\r\\\\n\\\"}]\", \"$wifi\": false, \"$event_type\": \"$Jank\", \"$time\": 1693555430326 }";
+        // 兼容嵌套json
+        nestedJson = nestedJson.replace("\\n","")
+                .replace("\\", "")
+                .replace("\"{","{")
+                .replace("}\"", "}")
+                .replace("\"[","[")
+                .replace("]\"", "]");
         System.out.print(nestedJson);
         JsonObject jo = JsonParser.parseString(nestedJson).getAsJsonObject();
         for (Map.Entry<String, JsonElement> entry : jo.entrySet()) {
