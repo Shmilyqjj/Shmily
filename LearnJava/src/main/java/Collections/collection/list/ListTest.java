@@ -38,6 +38,14 @@ public class ListTest {
             System.out.print(list.get(i)+" ");
         }
         System.out.println();
+
+        // ArrayList 初始化
+        ArrayList<String> list1 = new ArrayList<String>() {{
+            add("aaa");
+            add("bbb");
+            add("ccc");
+        }};
+        list1.forEach(System.out::println);
     }
 
 
