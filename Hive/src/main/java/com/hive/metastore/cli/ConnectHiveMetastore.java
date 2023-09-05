@@ -6,13 +6,20 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.IMetaStoreClient;
 import org.apache.hadoop.hive.metastore.RetryingMetaStoreClient;
+import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.MetaException;
+import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
+import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 连接HiveMetaStore
@@ -39,6 +46,26 @@ public class ConnectHiveMetastore {
         client.getAllDatabases("hive").forEach(System.out::println);
         System.out.println("--------------------获取catalog为hive,database为default下的所有table-------------------------------");
         client.getAllTables("default").forEach(System.out::println);
+
+        System.out.println("--------------------修改表注释及字段的注释-------------------------------");
+        Table table = client.getTable("db_name", "table_name");
+        // 表注释
+        Map<String, String> parameters = table.getParameters();
+        parameters.put("comment","表注释");
+        table.setParameters(parameters);
+
+        // 字段注释
+        StorageDescriptor sd = table.getSd();
+        List<FieldSchema> cols = sd.getCols();
+        List<FieldSchema> afterModifyColumns = cols.stream().map(col -> {
+            if ("要修改的字段".equals(col.getName())) {
+                col.setComment("要修改的comment");
+            }
+            return col;
+        }).collect(Collectors.toList());
+        sd.setCols(afterModifyColumns);
+        table.setSd(sd);
+        client.alter_table("qjj_test", "qjj_test", table);
 
     }
 
