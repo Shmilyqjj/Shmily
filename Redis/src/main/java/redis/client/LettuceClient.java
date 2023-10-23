@@ -48,6 +48,10 @@ public class LettuceClient {
         return redisCommands.get(key);
     }
 
+    public String setWithTtl(String key, String value, long ttlSeconds) {
+        // 同时设置key和ttl 原子操作
+        return redisCommands.setex(key, ttlSeconds, value);
+    }
 
     public boolean setTtl(String key,long ttlSeconds) {
         return redisCommands.expire(key, ttlSeconds);
@@ -121,6 +125,9 @@ public class LettuceClient {
         lettuceClient.delete("key");
         exists = lettuceClient.exists("key");
         System.out.println("Exists: " + exists);
+
+        System.out.println(lettuceClient.setWithTtl("kt","vt", 10));
+        System.out.println(lettuceClient.get("kt"));
 
         lettuceClient.hSet("key", "col", "111");
         System.out.println("hExists: " + lettuceClient.hExists("key", "col"));
