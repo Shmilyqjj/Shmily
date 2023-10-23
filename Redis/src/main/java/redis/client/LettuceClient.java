@@ -48,9 +48,9 @@ public class LettuceClient {
         return redisCommands.get(key);
     }
 
-    public String setWithTtl(String key, String value, long ttlSeconds) {
+    public boolean setWithTtl(String key, String value, long ttlSeconds) {
         // 同时设置key和ttl 原子操作
-        return redisCommands.setex(key, ttlSeconds, value);
+        return "OK".equals(redisCommands.setex(key, ttlSeconds, value));
     }
 
     public boolean setTtl(String key,long ttlSeconds) {
@@ -115,10 +115,12 @@ public class LettuceClient {
     public static void main(String[] args) {
         LettuceClient lettuceClient = new LettuceClient("localhost", 6379, "123456", 6);
 
+        System.out.println("=======set=======");
         lettuceClient.set("key", "value");
         String value = lettuceClient.get("key");
         System.out.println("Value: " + value);
 
+        System.out.println("=======exists=======");
         boolean exists = lettuceClient.exists("key");
         System.out.println("Exists: " + exists);
 
@@ -126,19 +128,23 @@ public class LettuceClient {
         exists = lettuceClient.exists("key");
         System.out.println("Exists: " + exists);
 
+        System.out.println("=======setex=======");
         System.out.println(lettuceClient.setWithTtl("kt","vt", 10));
         System.out.println(lettuceClient.get("kt"));
 
+        System.out.println("=======hset=======");
         lettuceClient.hSet("key", "col", "111");
         System.out.println("hExists: " + lettuceClient.hExists("key", "col"));
         System.out.println(lettuceClient.hGet("key", "col"));
 
+        System.out.println("=======ttl=======");
         System.out.println("TTL: " + lettuceClient.getTtl("key"));
         System.out.println(lettuceClient.setTtl("key", 20));
         System.out.println("TTL After set: " + lettuceClient.getTtl("key"));
         System.out.println(lettuceClient.rmTtl("key"));
         System.out.println("TTL After rm: " + lettuceClient.getTtl("key"));
 
+        System.out.println("=======reconnect=======");
         lettuceClient.set("a","b");
         lettuceClient.close();
         lettuceClient.reconnect();
