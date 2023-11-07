@@ -138,5 +138,56 @@ public class Stream {
         };
         Map<String, String> collect2 = map1.entrySet().parallelStream().filter(e -> e.getValue() != null).collect(Collectors.toMap(e -> (e.getKey().replace("p__", "$")), e -> (String.valueOf(e.getValue()))));
         collect2.forEach((k,v) -> System.out.println(k + "==" + v));
+
+        // 按条件修改list中的对象
+        List<Field> cols = new ArrayList<>();
+        cols.add(new Field("a","A"));
+        cols.add(new Field("b","x"));
+        cols.add(new Field("c","C"));
+        cols.add(new Field("d","y"));
+        cols.forEach(c -> {
+            if ("b".equals(c.getName())) {
+                c.setComment("B");
+            }
+            if ("d".equals(c.getName())) {
+                c.setComment("D");
+            }
+        });
+        cols.forEach(System.out::println);
+
     }
 }
+
+class Field {
+    String name;
+    String comment;
+
+    public Field(String name, String comment){
+        this.name = name;
+        this.comment = comment;
+    }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    @Override
+    public String toString() {
+        return "Field{" +
+                "name='" + name + '\'' +
+                ", comment='" + comment + '\'' +
+                '}';
+    }
+}
+

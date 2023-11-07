@@ -1,59 +1,17 @@
+import com.google.common.base.Splitter;
+import com.google.common.util.concurrent.RateLimiter;
+
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Test {
-    public static void main(String[] args) {
-        List<Field> cols = new ArrayList<>();
-        cols.add(new Field("a","A"));
-        cols.add(new Field("b","x"));
-        cols.add(new Field("c","C"));
-        cols.add(new Field("d","y"));
-        List<Field> lo = cols.stream().map(col -> {
-            if ("b".equals(col.getName())) {
-                col.setComment("B");
-            }
-            if ("d".equals(col.getName())) {
-                col.setComment("D");
-            }
-            return col;
-        }).collect(Collectors.toList());
+    public static void main(String[] args) throws SQLException, InterruptedException {
 
-        lo.forEach(System.out::println);
     }
-
 
 }
 
-class Field {
-    String name;
-    String comment;
-
-    public Field(String name, String comment){
-        this.name = name;
-        this.comment = comment;
-    }
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    @Override
-    public String toString() {
-        return "Field{" +
-                "name='" + name + '\'' +
-                ", comment='" + comment + '\'' +
-                '}';
-    }
-}
