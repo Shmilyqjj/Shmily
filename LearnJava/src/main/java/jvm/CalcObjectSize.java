@@ -1,10 +1,13 @@
 package jvm;
 
-import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+
+import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
+import org.apache.lucene.util.RamUsageEstimator;
+import org.openjdk.jol.info.ClassLayout;
 import sun.misc.Unsafe;
 
 /**
@@ -13,11 +16,11 @@ import sun.misc.Unsafe;
  */
 
 public class CalcObjectSize {
-    private static Instrumentation inst;
 
     public static void main(String[] args) throws IllegalAccessException {
         String s = "adadad";
         ArrayList<String> arr = new ArrayList<>();
+        // unsafe方法获取对象大小 内存开销大
         ClassInspector inspector = new ClassInspector();
         ClassInspector.ObjectInfo oInfo = inspector.introspect(s);
         System.out.println(oInfo.getDeepSize());
@@ -28,12 +31,46 @@ public class CalcObjectSize {
         ClassInspector.ObjectInfo oInfo3 = inspector.introspect(new Object());
         System.out.println(oInfo3.getDeepSize());
         System.out.println(inspector.introspect(new HashSet<>()).getDeepSize());
+        System.out.println("========================================");
+
+        // 对象大,数据量大建议使用这种方式  unsafe方法获取对象大小 内存开销大
+        System.out.println(getObjectSize(s));
+        System.out.println(getObjectSize(arr));
+        System.out.println(getObjectSize(2));
+        System.out.println(getObjectSize(new Object()));
+        System.out.println(getObjectSize(new HashSet<>()));
+        System.out.println("========================================");
+
+        System.out.println(getObjectSize1(s));
+        System.out.println(getObjectSize1(arr));
+        System.out.println(getObjectSize1(2));
+        System.out.println(getObjectSize1(new Object()));
+        System.out.println(getObjectSize1(new HashSet<>()));
+
+        System.out.println("========================================");
+        getObjectInfo(s);
+    }
+
+
+    public static long getObjectSize(Object o) {
+        // 推荐 资源消耗小
+        // System.setProperty("java.vm.name","Java HotSpot(TM) "); // 使用这种jdk8方式时，Open JDK 不是天然支持的，需要set一下环境变量
+        return ObjectSizeCalculator.getObjectSize(o);
+    }
+
+    public static long getObjectSize1(Object o){
+        return RamUsageEstimator.sizeOf(o);
+    }
+
+    public static void getObjectInfo(Object o) {
+        // 添加JVM参数 -Djol.tryWithSudo=true
+        System.out.println(ClassLayout.parseInstance(o).toPrintable());
     }
 
 }
 
  class ClassInspector {
-
+    // unsafe方法获取对象大小 内存开销大
     private static final Unsafe unsafe;
     /** Size of any Object reference */
     private static final int objectRefSize;
