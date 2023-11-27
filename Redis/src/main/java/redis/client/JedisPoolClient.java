@@ -22,6 +22,9 @@ public class JedisPoolClient {
     }
 
     public void set(String key, String value) {
+        if(key == null || value == null){
+            return;
+        }
         Jedis jedis = jedisPool.getResource();
         try {
             jedis.set(key, value);
@@ -31,6 +34,9 @@ public class JedisPoolClient {
     }
 
     public void set(byte[] key, byte[] value) {
+        if(key == null || value == null){
+            return;
+        }
         Jedis jedis = jedisPool.getResource();
         try {
             jedis.set(key, value);
@@ -40,6 +46,9 @@ public class JedisPoolClient {
     }
 
     public String get(String key) {
+        if(key == null){
+            return "";
+        }
         Jedis jedis = jedisPool.getResource();
         try {
             return jedis.get(key);
@@ -49,6 +58,9 @@ public class JedisPoolClient {
     }
 
     public byte[] get(byte[] key) {
+        if(key == null){
+            return null;
+        }
         Jedis jedis = jedisPool.getResource();
         try {
             return jedis.get(key);
@@ -58,6 +70,9 @@ public class JedisPoolClient {
     }
 
     public boolean setWithTtl(String key, String value, long ttlSeconds) {
+        if(key == null || value == null){
+            return false;
+        }
         // 同时设置key和ttl 原子操作
         Jedis jedis = jedisPool.getResource();
         try {
@@ -68,6 +83,9 @@ public class JedisPoolClient {
     }
 
     public boolean setWithTtl(byte[] key, byte[] value, long ttlSeconds) {
+        if(key == null || value == null){
+            return false;
+        }
         // 同时设置key和ttl 原子操作
         Jedis jedis = jedisPool.getResource();
         try {
@@ -78,6 +96,9 @@ public class JedisPoolClient {
     }
 
     public long setTtl(String key,long ttlSeconds) {
+        if(key == null){
+            return 0L;
+        }
         Jedis jedis = jedisPool.getResource();
         try {
             return jedis.expire(key, ttlSeconds);
@@ -87,6 +108,9 @@ public class JedisPoolClient {
     }
 
     public long setTtl(byte[] key,long ttlSeconds) {
+        if(key == null){
+            return 0L;
+        }
         Jedis jedis = jedisPool.getResource();
         try {
             return jedis.expire(key, ttlSeconds);
@@ -96,6 +120,9 @@ public class JedisPoolClient {
     }
 
     public long rmTtl(String key) {
+        if(key == null){
+            return 0L;
+        }
         Jedis jedis = jedisPool.getResource();
         try {
             return jedis.persist(key);
@@ -105,6 +132,9 @@ public class JedisPoolClient {
     }
 
     public long rmTtl(byte[] key) {
+        if(key == null){
+            return 0L;
+        }
         Jedis jedis = jedisPool.getResource();
         try {
             return jedis.persist(key);
@@ -114,6 +144,9 @@ public class JedisPoolClient {
     }
 
     public long getTtl(String key) {
+        if(key == null){
+            return 0L;
+        }
         Jedis jedis = jedisPool.getResource();
         try {
             return jedis.ttl(key);
@@ -123,6 +156,9 @@ public class JedisPoolClient {
     }
 
     public long getTtl(byte[] key) {
+        if(key == null){
+            return 0L;
+        }
         Jedis jedis = jedisPool.getResource();
         try {
             return jedis.ttl(key);
@@ -245,6 +281,8 @@ public class JedisPoolClient {
         Object o = redisUtils.deserializeObject(redisUtils.get("arr".getBytes()));
         ArrayList<String> arr = (ArrayList<String>) o;
         arr.forEach(System.out::println);
+
+        redisUtils.setWithTtl("arr".getBytes(), null, 100);
 
         redisUtils.close();
     }
