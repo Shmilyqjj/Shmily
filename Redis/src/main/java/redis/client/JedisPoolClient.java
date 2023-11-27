@@ -4,6 +4,8 @@ import redis.clients.jedis.*;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -176,7 +178,25 @@ public class JedisPoolClient {
         }
     }
 
+    public void hSet(byte[] key, byte[] field, byte[] value) {
+        Jedis jedis = jedisPool.getResource();
+        try {
+            jedis.hset(key, field, value);
+        }finally {
+            jedis.close();
+        }
+    }
+
     public String hGet(String key, String field) {
+        Jedis jedis = jedisPool.getResource();
+        try {
+            return jedis.hget(key,field);
+        }finally {
+            jedis.close();
+        }
+    }
+
+    public byte[] hGet(byte[] key, byte[] field) {
         Jedis jedis = jedisPool.getResource();
         try {
             return jedis.hget(key,field);
@@ -194,10 +214,46 @@ public class JedisPoolClient {
         }
     }
 
+    public boolean hExists(byte[] key, byte[] field) {
+        Jedis jedis = jedisPool.getResource();
+        try {
+            return jedis.hexists(key, field);
+        }finally {
+            jedis.close();
+        }
+    }
+
     public Long hDelete(String key, String... fields) {
         Jedis jedis = jedisPool.getResource();
         try {
             return jedis.hdel(key,fields);
+        }finally {
+            jedis.close();
+        }
+    }
+
+    public Long hDelete(byte[] key, byte[]... fields) {
+        Jedis jedis = jedisPool.getResource();
+        try {
+            return jedis.hdel(key,fields);
+        }finally {
+            jedis.close();
+        }
+    }
+
+    public Map<String, String> hGetAll(String key) {
+        Jedis jedis = jedisPool.getResource();
+        try {
+            return jedis.hgetAll(key);
+        }finally {
+            jedis.close();
+        }
+    }
+
+    public Map<byte[], byte[]> hGetAll(byte[] key) {
+        Jedis jedis = jedisPool.getResource();
+        try {
+            return jedis.hgetAll(key);
         }finally {
             jedis.close();
         }
@@ -213,6 +269,15 @@ public class JedisPoolClient {
     }
 
     public void delete(String key) {
+        Jedis jedis = jedisPool.getResource();
+        try {
+            jedis.del(key);
+        }finally {
+            jedis.close();
+        }
+    }
+
+    public void delete(byte[] key) {
         Jedis jedis = jedisPool.getResource();
         try {
             jedis.del(key);
@@ -271,7 +336,7 @@ public class JedisPoolClient {
         redisUtils.hSet("hkey", "col", "111");
         System.out.println(redisUtils.hGet("hkey", "col"));
 
-        // 缓存java object
+        // set缓存java object
         ArrayList<String> arrObj = new ArrayList<>();
         arrObj.add("a");
         arrObj.add("b");
@@ -281,8 +346,21 @@ public class JedisPoolClient {
         Object o = redisUtils.deserializeObject(redisUtils.get("arr".getBytes()));
         ArrayList<String> arr = (ArrayList<String>) o;
         arr.forEach(System.out::println);
-
         redisUtils.setWithTtl("arr".getBytes(), null, 100);
+
+        System.out.println("=========================");
+
+        // hset缓存java object
+        redisUtils.hSet("obj".getBytes(), "arr".getBytes(), byteValue);
+        ArrayList<String> arr1 = (ArrayList<String>) redisUtils.deserializeObject(redisUtils.hGet("obj".getBytes(), "arr".getBytes()));
+        arr1.forEach(System.out::println);
+        arr1.add("haha");
+        redisUtils.hSet("obj".getBytes(), "arr1".getBytes(), redisUtils.serializeObject(arr1));
+        Map<byte[], byte[]> map = redisUtils.hGetAll("obj".getBytes());
+        System.out.println(map.keySet().size());
+        System.out.println(map.values().size());
+        redisUtils.delete("obj".getBytes());
+
 
         redisUtils.close();
     }
