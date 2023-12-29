@@ -1,0 +1,10 @@
+server:
+  port: 8082
+
+logging:
+  level:
+    root: info
+    org.springframework.web: info
+    top.shmilyqjj.springboot.controller: debug
+    top.shmilyqjj.springboot.controller.channel: debug
+

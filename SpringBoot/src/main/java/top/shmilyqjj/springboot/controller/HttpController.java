@@ -7,30 +7,32 @@ package top.shmilyqjj.springboot.controller;
  * @Site: shmily-qjj.top
  */
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
-
 import org.springframework.web.multipart.MultipartFile;
 import top.shmilyqjj.springboot.models.DemoReq;
 import top.shmilyqjj.springboot.services.JsonService;
-import top.shmilyqjj.springboot.services.impl.JsonServiceImpl;
 
 
 @Controller
-public class HelloController {
+public class HttpController {
     @Autowired
     JsonService jsonService;
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpController.class);
 
     @ResponseBody
     @GetMapping("/hello/{name}")
     public String hello(@PathVariable("name") String name) throws UnsupportedEncodingException {
         // curl "http://localhost:8080/hello/qjj"
+        logger.debug("[Get]Hello " + name);
         return "Hello " + name;
     }
 
@@ -41,6 +43,7 @@ public class HelloController {
         if(age == null){
             age = "*";
         }
+        logger.debug("[Get]Hello " + name + age);
         return "Hello " + name + age;
     }
 
@@ -52,6 +55,7 @@ public class HelloController {
         // curl -H "Content-Type: application/json;charset=utf-8" -X POST "http://localhost:8080/hello" -d '{"name": "qjj", "age": "24"}'
         String name = String.valueOf(params.get("name"));
         int age = Integer.parseInt(String.valueOf(params.get("age")));
+        logger.debug("[POST]Hello"  + name + age);
         return "Hello " + name + age;
     }
 
@@ -63,6 +67,7 @@ public class HelloController {
         //  curl -H "Content-Type: application/x-www-form-urlencoded" -X POST "http://localhost:8080/form" -d "name=qjj&age=24"
         String name = String.valueOf(params.get("name"));
         int age = Integer.parseInt(String.valueOf(params.get("age")));
+        logger.debug("[POST]Hello"  + name + age);
         return "Hello " + name + age;
     }
 
@@ -76,7 +81,7 @@ public class HelloController {
         }else {
             res = "#JSON_DATA: "+ jsonService.getJsonString(jsonObject);
         }
-        System.out.println(res);
+        logger.debug(res);
         return res;
     }
 
@@ -103,7 +108,7 @@ public class HelloController {
         File localFile = new File(filePath + filename);
         try {
             file.transferTo(localFile); //把上传的文件保存至本地
-            System.out.println(file.getOriginalFilename()+" 成功上传到服务端文件: " + filePath + filename);
+            logger.debug(file.getOriginalFilename()+" 成功上传到服务端文件: " + filePath + filename);
         }catch (IOException e){
             e.printStackTrace();
             return "上传失败" + e;
