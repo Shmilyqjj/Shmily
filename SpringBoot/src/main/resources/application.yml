@@ -7,4 +7,7 @@ logging:
     org.springframework.web: info
     top.shmilyqjj.springboot.controller: debug
     top.shmilyqjj.springboot.controller.channel: debug
-
+spring:
+  mvc:
+    converters:
+      preferred-json-mapper: gson

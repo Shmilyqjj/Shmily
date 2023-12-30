@@ -1,5 +1,6 @@
 package top.shmilyqjj.springboot.controller.channel;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,6 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
-import top.shmilyqjj.springboot.models.DemoReq;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -20,6 +20,7 @@ import java.util.Map;
 
 @Component
 @ServerEndpoint(value = "/ws/hello")
+@Tag(name = "websocket", description = "websocket接口")
 public class WebSocketChannel {
     // WebSocket 是一种基于 TCP 协议的全双工通信协议，它允许客户端和服务器之间建立持久的、双向的通信连接。相比传统的 HTTP 请求 - 响应模式，WebSocket 提供了实时、低延迟的数据传输能力。通过 WebSocket，客户端和服务器可以在任意时间点互相发送消息，实现实时更新和即时通信的功能。WebSocket 协议经过了多个浏览器和服务器的支持，成为了现代 Web 应用中常用的通信协议之一。它广泛应用于聊天应用、实时数据更新、多人游戏等场景，为 Web 应用提供了更好的用户体验和更高效的数据传输方式。
     private static final Logger logger = LoggerFactory.getLogger(WebSocketChannel.class);
