@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- parameterType：要求输入参数的类型 -->
+<!-- resultType：输出的类型 -->
+
+
+<!-- namespace：在MyBatis中，Mapper中的namespace用于绑定Dao接口的，即面向接口编程。 它的好处在于当使用了namespace之后就可以不用写接口实现类，业务逻辑会直接通过这个绑定寻找到相对应的SQL语句进行对应的数据处理 -->
+
+<mapper namespace="test">
+    <!-- 全量查询 -->
+    <select id="listUsers" resultType="User">
+        select * from user
+    </select>
+
+    <!-- 流式查询 -->
+    <select id="streamListUsers" resultType="string" fetchSize="10">
+        select name from user
+    </select>
+
+    <!-- 流式查询 -->
+    <select id="streamListUserInfo" resultType="User" fetchSize="10">
+        select id,name,age from user
+    </select>
+
+
+</mapper>
