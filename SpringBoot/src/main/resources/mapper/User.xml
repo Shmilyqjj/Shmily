@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="top.shmilyqjj.springboot.mappers.UserMapper">
+    <!-- 全量查询 -->
+    <select id="listUsers" resultType="User">
+        select * from test.user
+    </select>
+
+    <!-- 条件查询 -->
+    <select id="getUserByName" parameterType="java.lang.String" resultType="User" fetchSize="1000">
+        select id,name,age from test.user where name = #{userName} limit 1
+    </select>
+
+    <!-- 流式查询 -->
+    <select id="streamListUsers" resultType="java.lang.String" fetchSize="10">
+        select name from test.user
+    </select>
+
+    <!-- 流式查询 -->
+    <select id="streamListUserInfo" resultType="User" fetchSize="1000">
+        select id,name,age from test.user
+    </select>
+
+
+
+
+
+</mapper>
