@@ -7,7 +7,7 @@
 
 <!-- namespace：在MyBatis中，Mapper中的namespace用于绑定Dao接口的，即面向接口编程。 它的好处在于当使用了namespace之后就可以不用写接口实现类，业务逻辑会直接通过这个绑定寻找到相对应的SQL语句进行对应的数据处理 -->
 
-<mapper namespace="test">
+<mapper namespace="test.mapper.UserMapper">
     <!-- 全量查询 -->
     <select id="listUsers" resultType="User">
         select * from user
@@ -23,5 +23,38 @@
         select id,name,age from user
     </select>
 
+    <!-- 动态列查询 -->
+    <select id="dynamicColumnsSelect" resultType="java.util.Map">
+        SELECT
+        <choose>
+            <when test="columnList != null">
+                ${columnList}
+            </when>
+            <otherwise>
+                *
+            </otherwise>
+        </choose>
+        FROM test.user
+        WHERE id = #{id}
+    </select>
+
+    <!-- 动态值查询 -->
+    <select id="dynamicValuesSelect" parameterType="list" resultType="java.util.Map">
+        SELECT
+        <choose>
+            <when test="columnList != null">
+                ${columnList}
+            </when>
+            <otherwise>
+                *
+            </otherwise>
+        </choose>
+        FROM test.user
+        WHERE id IN
+        <foreach item="item" index="index" collection="userIds"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
 </mapper>
