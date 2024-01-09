@@ -5,6 +5,7 @@ import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.shmilyqjj.springboot.mappers.UserMapper;
 import top.shmilyqjj.springboot.models.entity.User;
@@ -20,7 +21,7 @@ import java.util.List;
  * @Site: shmily-qjj.top
  */
 
-@Component
+@Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
