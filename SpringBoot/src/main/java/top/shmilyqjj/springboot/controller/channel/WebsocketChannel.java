@@ -130,7 +130,6 @@ public class WebsocketChannel implements ApplicationContextAware {
         public void run() {
             try {
                 while (running) {
-                    System.out.println(webSocketConnection.getClientId() + " == " + webSocketConnection.getLastHeartbeatTime());
                     if(System.currentTimeMillis() - webSocketConnection.getLastHeartbeatTime() > WebsocketChannel.heartbeatTimeoutMs) {
                         logger.info("Websocket heartbeat timeout, close conn id: {}", webSocketConnection.getSession().getId());
                         webSocketConnection.getSession().close(new CloseReason(CloseReason.CloseCodes.NO_STATUS_CODE, "Websocket heartbeat timeout."));

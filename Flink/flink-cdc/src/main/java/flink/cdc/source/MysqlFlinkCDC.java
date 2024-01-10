@@ -71,7 +71,7 @@ public class MysqlFlinkCDC {
         env.getConfig().setAutoWatermarkInterval(200);
         // 指定重启策略
 //        env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, 10000L));  // 固定延迟重启策略 设置3次，那么在第4次异常时，程序才会退出。重试间隔10s
-        env.setRestartStrategy(RestartStrategies.failureRateRestart(9, Time.minutes(10), Time.seconds(5)));  //失败率重启策略 10分钟内，最大失败9次（第9次错误发生时，程序退出）,而且每次失败重启间隔为5秒
+        env.setRestartStrategy(RestartStrategies.failureRateRestart(9, time.minutes(10), time.seconds(5)));  //失败率重启策略 10分钟内，最大失败9次（第9次错误发生时，程序退出）,而且每次失败重启间隔为5秒
 
         // 设置Flink SQL环境
         EnvironmentSettings tableEnvSettings = EnvironmentSettings.newInstance().useBlinkPlanner().inStreamingMode().build();
