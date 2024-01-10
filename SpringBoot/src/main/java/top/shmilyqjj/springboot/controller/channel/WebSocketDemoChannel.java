@@ -23,12 +23,15 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 这是一个websocket的Demo示例 只支持单个长连接 不支持多连接
+ */
 @Component
-@ServerEndpoint(value = "/ws/hello")
+@ServerEndpoint(value = "/ws/demo")
 @Tag(name = "websocket", description = "websocket接口")
-public class WebSocketChannel implements ApplicationContextAware {
+public class WebSocketDemoChannel implements ApplicationContextAware {
     // WebSocket 是一种基于 TCP 协议的全双工通信协议，它允许客户端和服务器之间建立持久的、双向的通信连接。相比传统的 HTTP 请求 - 响应模式，WebSocket 提供了实时、低延迟的数据传输能力。通过 WebSocket，客户端和服务器可以在任意时间点互相发送消息，实现实时更新和即时通信的功能。WebSocket 协议经过了多个浏览器和服务器的支持，成为了现代 Web 应用中常用的通信协议之一。它广泛应用于聊天应用、实时数据更新、多人游戏等场景，为 Web 应用提供了更好的用户体验和更高效的数据传输方式。
-    private static final Logger logger = LoggerFactory.getLogger(WebSocketChannel.class);
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketDemoChannel.class);
     private Session session;
     private static ApplicationContext applicationContext;
     private UserService userService;
@@ -60,7 +63,7 @@ public class WebSocketChannel implements ApplicationContextAware {
         this.session = session;
         Map<String, List<String>> query = session.getRequestParameterMap();
         // 手动获取注入的对象
-        this.userService = WebSocketChannel.applicationContext.getBean(UserService.class);
+        this.userService = WebSocketDemoChannel.applicationContext.getBean(UserService.class);
         logger.info("[websocket] 新的连接：id={} 数据:{}", this.session.getId(), query.toString());
     }
 
@@ -83,6 +86,6 @@ public class WebSocketChannel implements ApplicationContextAware {
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         //WebSocket接口 无法使用Autowired注入 需要手动从Spring对象池获取对象  通过WebSocketChannel.applicationContext.getBean(XXX.class)获取
-        WebSocketChannel.applicationContext = applicationContext;
+        WebSocketDemoChannel.applicationContext = applicationContext;
     }
 }
