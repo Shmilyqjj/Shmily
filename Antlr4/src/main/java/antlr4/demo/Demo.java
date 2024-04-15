@@ -24,8 +24,10 @@ public class Demo {
         parser.removeErrorListeners();
         parser.addErrorListener(errorListener);
 
-        // 调用解析器
+        // 调用解析器执行解析
         CustomEventParser.ExprContext context = parser.expr();
+
+        // 检测语句合法性
         int syntaxErrors = parser.getNumberOfSyntaxErrors();
         if (syntaxErrors == 0) {
             System.out.println("表达式符合语法规则");

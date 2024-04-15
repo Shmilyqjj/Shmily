@@ -11,6 +11,7 @@
 
     <modules>
         <module>Alluxio</module>
+        <module>Antlr4</module>
         <module>Flink</module>
         <module>Hadoop</module>
         <module>HBase</module>
