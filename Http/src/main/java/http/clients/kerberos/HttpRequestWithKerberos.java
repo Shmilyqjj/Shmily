@@ -77,7 +77,7 @@ import java.util.Set;
 public class HttpRequestWithKerberos {
     public static void main(String[] args) throws IOException, LoginException {
         String krb5Path = "/etc/krb5.conf";
-        String principal = "presto/HOST@xldw.xunlei.com";
+        String principal = "presto/HOST@REALMS.COM";
         String keytabPath = "/etc/ecm/presto-conf/presto.keytab";
 
         //Java api login

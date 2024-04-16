@@ -1,4 +1,4 @@
-package antlr4.demo.listener;
+package antlr4.demo.error;
 
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.Parser;

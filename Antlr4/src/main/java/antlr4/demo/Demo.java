@@ -2,7 +2,7 @@ package antlr4.demo;
 
 import antlr4.demo.gen.CustomEventLexer;
 import antlr4.demo.gen.CustomEventParser;
-import antlr4.demo.listener.ErrorListener;
+import antlr4.demo.error.ErrorListener;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
