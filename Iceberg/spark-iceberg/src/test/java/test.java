@@ -1,20 +1,19 @@
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class test {
     public static void main(String[] args) {
-        String[] sl = new String[]{"a","b","c"};
-        System.out.println(Arrays.stream(sl).reduce((x, y) -> x + ";" + y).get());
-
-        Map<Integer, A> am = new ConcurrentHashMap<>();
-        am.put(1, new A("aa", 1));
-        am.put(2, new A("aa", 1));
-        am.put(2, new A("bb", 1));
-        A a = am.get(2);
-        a.setBb(3);
-//        am.get(2).setBb(3);
-        am.values().forEach(v -> System.out.println(v.getBb()));
+        Pattern p = Pattern.compile("gateway_sign_20240101");
+        Matcher m = p.matcher("gateway_sign_20240101");
+        System.out.println(m.find());
     }
 }
 
