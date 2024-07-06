@@ -10,6 +10,8 @@
 
     <modules>
         <module>HDFS</module>
+        <module>MapReduce</module>
+        <module>Parquet</module>
     </modules>
 
     <build>

@@ -19,7 +19,6 @@
         <module>Kafka</module>
         <module>Kudu</module>
         <module>LearnJava</module>
-        <module>MapReduce</module>
         <module>OrientDB</module>
         <module>Phoenix</module>
         <module>Presto</module>
