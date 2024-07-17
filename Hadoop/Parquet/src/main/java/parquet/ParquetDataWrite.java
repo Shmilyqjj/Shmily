@@ -147,7 +147,7 @@ public class ParquetDataWrite {
      * @return
      */
     public static Group structWrite(Group group, int index,String[] values){
-        Group structGroup =group.addGroup(index);
+        Group structGroup = group.addGroup(index);
         for(int i = 0; i < values.length; i++){
             structGroup.add(i,values[i]);
         }

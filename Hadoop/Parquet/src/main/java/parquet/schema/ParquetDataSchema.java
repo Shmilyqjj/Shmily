@@ -9,6 +9,11 @@ import org.apache.parquet.schema.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Parquet Hive Schema
+ * 兼容Hive Schema 列类型的parquet schema string生成
+ */
+
 public class ParquetDataSchema {
 
     // schema string打印
@@ -47,12 +52,12 @@ public class ParquetDataSchema {
         columnNames.add("list_test");
         columnTypes.add(listTypeInfo);
 
-        MessageType messageType = ParquetDataSchema.convert(columnNames,columnTypes);
+        MessageType messageType = ParquetDataSchema.convert("hive_schema", columnNames,columnTypes);
         return messageType;
     }
 
-    public static MessageType convert(final List<String> columnNames, final List<TypeInfo> columnTypes) {
-        final MessageType schema = new MessageType("hive_schema", convertTypes(columnNames, columnTypes));
+    public static MessageType convert(String name, final List<String> columnNames, final List<TypeInfo> columnTypes) {
+        final MessageType schema = new MessageType(name, convertTypes(columnNames, columnTypes));
         return schema;
     }
 

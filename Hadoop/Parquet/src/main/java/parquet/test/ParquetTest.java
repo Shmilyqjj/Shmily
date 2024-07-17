@@ -1,9 +1,10 @@
 package parquet.test;
 
+import parquet.reader.ParquetReaderDemo;
 import parquet.schema.ParquetDataSchema;
 import parquet.writer.ParquetWriterDemo;
-
 import java.io.IOException;
+
 
 /**
  * @author shmily
@@ -12,12 +13,39 @@ import java.io.IOException;
  */
 public class ParquetTest {
     public static void main(String[] args) throws IOException {
-        ParquetWriterDemo prd = new ParquetWriterDemo();
-        String parquetFile = "E:\\test.parquet";
-        prd.writerSimpleParquetDemo(parquetFile);
+//        testSimpleTypeWrite();
+//        testReadParquet();
+//        testParquetSchema();
+        testParquetWriter();
+        testParquetReader();
+    }
 
 
+    public static void testSimpleTypeWrite() throws IOException {
+        ParquetWriterDemo pwd = new ParquetWriterDemo();
+        // String parquetFile = "E:\\test.parquet";
+        String parquetFile = "/home/shmily/Desktop/test.parquet";
+        pwd.writerSimpleParquetDemo(parquetFile);
+    }
+
+    public static void testReadParquet() throws IOException {
+        ParquetReaderDemo prd = new ParquetReaderDemo();
+        prd.readSimpleParquetDemo("/home/shmily/Desktop/test.parquet");
+    }
+
+    public static void testParquetSchema() {
         ParquetDataSchema parquetDataSchema = new ParquetDataSchema();
         parquetDataSchema.printParquetSchemaStr();
     }
+
+    public static void testParquetWriter() throws IOException {
+        ParquetWriterDemo pwd = new ParquetWriterDemo();
+        pwd.writeComplexParquet("/home/shmily/Desktop/test_complex.parquet");
+    }
+
+    public static void testParquetReader() throws IOException {
+        ParquetReaderDemo prd = new ParquetReaderDemo();
+        prd.readComplexParquetFile("/home/shmily/Desktop/test_complex.parquet");
+    }
+
 }
