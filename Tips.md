@@ -39,6 +39,7 @@ git commit -m "rm-files"
 git push origin master
 
 ## IDEA Plugins
+TONGYI Lingma
 Alibaba Java Coding Guidelines
 Big Data Tool
 Key Promoter X
