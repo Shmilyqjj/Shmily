@@ -1,6 +1,6 @@
 package String;
 
-import oracle.jrockit.jfr.StringConstantPool;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 
@@ -71,5 +71,8 @@ public class StringAPI {
         String intStr = "17835261516";
         long i = Long.parseLong(intStr);
         System.out.println("傻哲："+i);
+
+        System.out.println(StringUtils.isNotEmpty(intStr));
+
     }
 }

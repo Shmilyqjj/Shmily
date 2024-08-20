@@ -6,6 +6,7 @@ package faceObjects; /**
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
@@ -26,7 +27,7 @@ public class BigDataAPI {
 
         System.out.println("---------------------------------------------------");
 
-        //BigDecimal
+        //BigDecimal  （通用的数值类型处理对象）
         String i5 = "123.512345647995792453250255";
         String i6 = "230.512345647995798514325255";
         BigDecimal b1 = new BigDecimal(i5);
@@ -35,6 +36,16 @@ public class BigDataAPI {
         System.out.println(b1.subtract(b2));
         System.out.println(b1.multiply(b2));
         System.out.println(b1.divide(b2,2,BigDecimal.ROUND_HALF_UP)); //除法，保留两位，四舍五入
+        try {
+            BigDecimal curData = new BigDecimal("abc");
+            BigDecimal histData = new BigDecimal("def");
+            BigDecimal diff = curData.subtract(histData);
+            BigDecimal percent = diff.divide(histData, 3, RoundingMode.HALF_UP);
+            System.out.println(diff.toString());
+            System.out.println(percent.toString());
+        } catch (NumberFormatException e) {
+            System.out.println("捕获到NumberFormatException");
+        }
 
         System.out.println("---------------------------------------------------");
 

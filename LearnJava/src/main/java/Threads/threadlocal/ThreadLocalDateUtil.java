@@ -1,7 +1,5 @@
 package Threads.threadlocal;
 
-import javafx.scene.input.DataFormat;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
