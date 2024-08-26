@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,10 @@ import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 import top.shmilyqjj.springboot.models.request.DemoReq;
 import top.shmilyqjj.springboot.models.response.DemoRes;
+import top.shmilyqjj.springboot.services.HttpExchangeService;
 import top.shmilyqjj.springboot.services.JsonService;
+import top.shmilyqjj.springboot.services.api.LocalHostWebClient1Api;
+import top.shmilyqjj.springboot.services.api.LocalHostWebClient2Api;
 
 
 @RestController
@@ -35,6 +39,15 @@ public class HttpController {
 
     @Autowired
     JsonService jsonService;
+
+    @Resource
+    HttpExchangeService httpExchangeService;
+
+    @Resource
+    LocalHostWebClient1Api localHostWebClient1Api;
+
+    @Resource
+    LocalHostWebClient2Api localHostWebClient2Api;
 
     private static final Logger logger = LoggerFactory.getLogger(HttpController.class);
 
@@ -148,6 +161,24 @@ public class HttpController {
 
         return "上传成功";
 
+    }
+
+    @GetMapping(value = "/exchange/get")
+    @Operation(summary = "/exchange/get方法", description = "调用HttpExchange get方法")
+    public String httpExchangeGet(){
+        String c1 = localHostWebClient1Api.invokeHttpHello("localHostWebClient1");
+        String c2 = localHostWebClient2Api.invokeHttpHello("localHostWebClient2");
+        String s = httpExchangeService.invokeHttpHello("invokeHttpHello");
+        return s + "," + c1 + "," + "," +c2;
+    }
+
+
+    @ResponseBody
+    @PostMapping(value = "/exchange/post", produces = "application/json;charset=utf-8")
+    @Operation(summary = "/exchange/post方法", description = "调用HttpExchange post方法")
+    public String httpExchangePost(@RequestBody Map<String, Object> params){
+        params.put("/exchange/post", "invokeHttpJson");
+        return httpExchangeService.invokeHttpJson(params);
     }
 
 }
