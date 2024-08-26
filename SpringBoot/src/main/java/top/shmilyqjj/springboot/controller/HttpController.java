@@ -19,6 +19,8 @@ import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.IOException;
@@ -165,20 +167,22 @@ public class HttpController {
     }
 
     /**
-     * 调用HttpExchange get方法 使用拦截器获取到的userInfo对象
+     * 调用HttpExchange get方法 使用拦截器获取到的userInfo对象  ResponseEntity封装好的返回体
      * @param name name
      * @param currentUser currentUser
      * @return String
      */
     @GetMapping(value = "/exchange/get/{name}")
     @Operation(summary = "/exchange/get方法", description = "调用HttpExchange get方法")
-    public String httpExchangeGet(@PathVariable("name") @Parameter(description = "名字",example="qjj") String name,
+    public ResponseEntity<String> httpExchangeGet(@PathVariable("name") @Parameter(description = "名字",example="qjj") String name,
                                   @RequestAttribute(name = "userInfo") User currentUser){
         String curUserName = currentUser.getName();
         String c1 = localHostWebClient1Api.invokeHttpHello("localHostWebClient1");
         String c2 = localHostWebClient2Api.invokeHttpHello("localHostWebClient2");
         String s = httpExchangeService.invokeHttpHello(name);
-        return String.format("[User:%s][Result:%s %s %s]", curUserName, c1, c2, s);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(String.format("[User:%s][Result:%s %s %s]", curUserName, c1, c2, s));
     }
 
 
