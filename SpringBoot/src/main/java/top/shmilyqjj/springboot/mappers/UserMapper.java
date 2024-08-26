@@ -18,5 +18,6 @@ public interface UserMapper {
     List<User> listUsers();
 
     User getUserByName(String userName);
+
     Cursor<String> streamListUsers();
 }

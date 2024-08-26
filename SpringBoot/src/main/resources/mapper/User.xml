@@ -3,12 +3,12 @@
 
 <mapper namespace="top.shmilyqjj.springboot.mappers.UserMapper">
     <!-- 全量查询 -->
-    <select id="listUsers" resultType="User">
+    <select id="listUsers" resultType="top.shmilyqjj.springboot.models.entity.User">
         select * from test.user
     </select>
 
     <!-- 条件查询 -->
-    <select id="getUserByName" parameterType="java.lang.String" resultType="User" fetchSize="1000">
+    <select id="getUserByName" parameterType="java.lang.String" resultType="top.shmilyqjj.springboot.models.entity.User" fetchSize="1000">
         select id,name,age from test.user where name = #{userName} limit 1
     </select>
 
@@ -18,7 +18,7 @@
     </select>
 
     <!-- 流式查询 -->
-    <select id="streamListUserInfo" resultType="User" fetchSize="1000">
+    <select id="streamListUserInfo" resultType="top.shmilyqjj.springboot.models.entity.User" fetchSize="1000">
         select id,name,age from test.user
     </select>
 
