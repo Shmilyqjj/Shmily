@@ -1,8 +1,9 @@
 package top.shmilyqjj.springboot.models.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Shmily
@@ -12,6 +13,8 @@ import lombok.Data;
  */
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "User实体类")
 public class User {
     @Schema(description = "用户ID", example = "123")

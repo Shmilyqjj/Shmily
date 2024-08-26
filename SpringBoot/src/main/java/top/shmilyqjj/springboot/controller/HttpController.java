@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
+import top.shmilyqjj.springboot.models.entity.User;
 import top.shmilyqjj.springboot.models.request.DemoReq;
 import top.shmilyqjj.springboot.models.response.DemoRes;
 import top.shmilyqjj.springboot.services.HttpExchangeService;
@@ -163,13 +164,21 @@ public class HttpController {
 
     }
 
-    @GetMapping(value = "/exchange/get")
+    /**
+     * 调用HttpExchange get方法 使用拦截器获取到的userInfo对象
+     * @param name name
+     * @param currentUser currentUser
+     * @return String
+     */
+    @GetMapping(value = "/exchange/get/{name}")
     @Operation(summary = "/exchange/get方法", description = "调用HttpExchange get方法")
-    public String httpExchangeGet(){
+    public String httpExchangeGet(@PathVariable("name") @Parameter(description = "名字",example="qjj") String name,
+                                  @RequestAttribute(name = "userInfo") User currentUser){
+        String curUserName = currentUser.getName();
         String c1 = localHostWebClient1Api.invokeHttpHello("localHostWebClient1");
         String c2 = localHostWebClient2Api.invokeHttpHello("localHostWebClient2");
-        String s = httpExchangeService.invokeHttpHello("invokeHttpHello");
-        return s + "," + c1 + "," + "," +c2;
+        String s = httpExchangeService.invokeHttpHello(name);
+        return String.format("[User:%s][Result:%s %s %s]", curUserName, c1, c2, s);
     }
 
 

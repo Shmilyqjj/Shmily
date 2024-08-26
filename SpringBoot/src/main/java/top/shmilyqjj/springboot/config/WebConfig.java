@@ -2,18 +2,26 @@ package top.shmilyqjj.springboot.config;
 
 import com.google.gson.*;
 import com.google.gson.internal.bind.DateTypeAdapter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import top.shmilyqjj.springboot.interceptor.AuthInterceptor;
+
 import java.util.Arrays;
 import java.util.List;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    AuthInterceptor authInterceptor;
 
     // 支持Gson作为默认json处理框架 （注：此种方式启用gson 会导致swagger不可用  改为在application.yml增加配置spring.mvc.converters.preferred-json-mapper: gson）
 //    @Bean
@@ -49,5 +57,15 @@ public class WebConfig implements WebMvcConfigurer {
 //                        "md5")
                 .maxAge(3600);
 
+    }
+
+    /**
+     * 添加拦截器
+     * @param registry InterceptorRegistry
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        InterceptorRegistration registration = registry.addInterceptor(authInterceptor);
+        registration.addPathPatterns("/**");
     }
 }
