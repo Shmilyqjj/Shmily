@@ -16,7 +16,16 @@ spring:
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      auto-offset-reset: latest
 mybatis:
   typeAliasesPackage: top.shmilyqjj.springboot.models
   mapperLocations: classpath:mapper/*.xml
+
+kafka:
+  enabled: false
+  consumer:
+    topic: qjj
+    group: qjj_spring_kafka_group
