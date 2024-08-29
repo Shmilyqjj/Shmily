@@ -11,6 +11,7 @@ import org.apache.parquet.hadoop.example.GroupReadSupport;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.schema.*;
+import parquet.exceptions.NonPrimitiveTypeException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -40,8 +41,7 @@ public class ParquetReaderDemo {
         Gson gson = new GsonBuilder().create();
         Group line;
         while ((line = reader.read()) != null) {
-            List<Object> row = new ArrayList<>();
-            transRowFromLine(line, 0, schema.getFields(), row);
+            List<Object> row = transRowFromLine(line, schema.getFields());
             System.out.println(gson.toJson(row));
 
 //            String row = String.format("| %s | %s | %s | %s |",
@@ -61,25 +61,77 @@ public class ParquetReaderDemo {
     /**
      * 将parquet row group 按类型读数据
      * @param line rowGroup
-     * @param fieldIndex 当前字段索引位置 初始为0
-     * @param row 写入的数据
      */
-    private static void transRowFromLine(Group line, int fieldIndex, List<Type> fields, List<Object> row) {
+    private static List<Object> transRowFromLine(Group line, List<Type> fields) {
+        List<Object> parsedData = new ArrayList<>();
         for (Type field : fields) {
-            String colName = field.getName();
+            String fieldName = field.getName();
             //TODO: 根据类型解析并获取对应类型的数据 拼接row
             if (field.isPrimitive()) {
                 // 基本类型
-                PrimitiveType primitiveType = field.asPrimitiveType();
-                System.out.println(colName + "==" + primitiveType.getPrimitiveTypeName());
+                parsedData.add(getPrimitiveValue(line, field));
             }else {
                 // 复杂数据类型 (递归处理)
-                GroupType groupType = field.asGroupType();
-                System.out.println(colName + "==" + groupType.toString());
+                GroupType fieldGroupType = field.asGroupType();
+                List<Type> nestedFields = fieldGroupType.getFields();
+                List<Object> nestedData = new ArrayList<>();
+                int fieldCount = line.getFieldRepetitionCount(fieldName);
+                for (int i = 0; i < fieldCount; i++) {
+                    Group group = line.getGroup(fieldName, i);
+                    nestedData.add(transRowFromLine(group, nestedFields));
+                }
+                parsedData.add(nestedData);
             }
-            fieldIndex++;
         }
+        return parsedData;
     }
+
+
+    /**
+     * 获取基本类型数据值
+     * @param line parquet row group
+     * @param field parquet field schema
+     * @return value of this field
+     */
+    private static Object getPrimitiveValue(Group line, Type field) {
+        String fieldName = field.getName();
+        if (field.isPrimitive()) {
+            // 基本类型
+            PrimitiveType primitiveType = field.asPrimitiveType();
+            switch (primitiveType.getPrimitiveTypeName()) {
+                case INT32:
+                    return line.getInteger(fieldName, 0);
+                case INT64:
+                    return line.getLong(fieldName, 0);
+                case FLOAT:
+                    return line.getFloat(fieldName, 0);
+                case DOUBLE:
+                    return line.getDouble(fieldName, 0);
+                case BINARY:
+                    return line.getBinary(fieldName, 0).toStringUsingUTF8();
+                case BOOLEAN:
+                    return line.getBoolean(fieldName, 0);
+                case FIXED_LEN_BYTE_ARRAY:
+                    switch (field.getOriginalType()) {
+                        case DECIMAL:
+                            return binaryToBigDecimal(
+                                    line.getBinary(fieldName, 0),
+                                    primitiveType.getDecimalMetadata().getScale()
+                            );
+                        case UTF8:
+                        case ENUM:
+                        case JSON:
+                            return line.getBinary(fieldName, 0).toStringUsingUTF8();
+                        case BSON:
+                            return line.getBinary(fieldName, 0).getBytes();
+                    }
+                    break;
+
+            }
+        }
+        throw new NonPrimitiveTypeException("not support complex type:" + field.getOriginalType());
+    }
+
 
     /**
      * parquet binary 转 decimal
