@@ -61,6 +61,7 @@ public class ParquetReaderDemo {
     /**
      * 将parquet row group 按类型读数据
      * @param line rowGroup
+     * @param fields schema列表
      */
     private static List<Object> transRowFromLine(Group line, List<Type> fields) {
         List<Object> parsedData = new ArrayList<>();
@@ -102,6 +103,7 @@ public class ParquetReaderDemo {
                 case INT32:
                     return line.getInteger(fieldName, 0);
                 case INT64:
+                case INT96:
                     return line.getLong(fieldName, 0);
                 case FLOAT:
                     return line.getFloat(fieldName, 0);
