@@ -12,25 +12,25 @@ import java.io.IOException;
  * @ Linux   System Env： HADOOP_HOME=/path/to/hadoop;LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
  */
 public class ParquetTest {
+//    private static final String LOCAL_DIR = "E:\\";
+    private static final String LOCAL_DIR = "/home/shmily/Desktop";
     public static void main(String[] args) throws IOException {
-//        testSimpleTypeWrite();
-//        testReadParquet();
+//        testSimpleTypeWrite(LOCAL_DIR + "/test.parquet");
+//        testReadParquet(LOCAL_DIR + "/test.parquet");
 //        testParquetSchema();
-        testParquetWriter();
-        testParquetReader();
+        testParquetWriter(LOCAL_DIR + "/test_complex.parquet");
+        testParquetReader(LOCAL_DIR + "/test_complex.parquet");
     }
 
 
-    public static void testSimpleTypeWrite() throws IOException {
+    public static void testSimpleTypeWrite(String filePath) throws IOException {
         ParquetWriterDemo pwd = new ParquetWriterDemo();
-        // String parquetFile = "E:\\test.parquet";
-        String parquetFile = "/home/shmily/Desktop/test.parquet";
-        pwd.writerSimpleParquetDemo(parquetFile);
+        pwd.writerSimpleParquetDemo(filePath);
     }
 
-    public static void testReadParquet() throws IOException {
+    public static void testReadParquet(String filePath) throws IOException {
         ParquetReaderDemo prd = new ParquetReaderDemo();
-        prd.readSimpleParquetDemo("/home/shmily/Desktop/test.parquet");
+        prd.readSimpleParquetDemo(filePath);
     }
 
     public static void testParquetSchema() {
@@ -38,14 +38,14 @@ public class ParquetTest {
         parquetDataSchema.printParquetSchemaStr();
     }
 
-    public static void testParquetWriter() throws IOException {
+    public static void testParquetWriter(String filePath) throws IOException {
         ParquetWriterDemo pwd = new ParquetWriterDemo();
-        pwd.writeComplexParquet("/home/shmily/Desktop/test_complex.parquet");
+        pwd.writeComplexParquet(filePath);
     }
 
-    public static void testParquetReader() throws IOException {
+    public static void testParquetReader(String filePath) throws IOException {
         ParquetReaderDemo prd = new ParquetReaderDemo();
-        prd.readComplexParquetFile("/home/shmily/Desktop/test_complex.parquet");
+        prd.readComplexParquetFile(filePath);
     }
 
 }
