@@ -16,16 +16,21 @@ import java.io.IOException;
 public class ParquetTest {
 //    private static final String LOCAL_DIR = "E:\\";
     private static final String LOCAL_DIR = "/home/shmily/Desktop";
+    private static final String PROJECT_DIR = "/home/shmily/Projects/MyProjects/JavaProjects/Shmily/Hadoop/Parquet";
     public static void main(String[] args) throws IOException {
 //        testSimpleTypeWrite(LOCAL_DIR + "/test.parquet");
 //        testReadParquet(LOCAL_DIR + "/test.parquet");
 //        testParquetSchema();
         testParquetWriter(LOCAL_DIR + "/test_complex.parquet");
         testParquetReader(LOCAL_DIR + "/test_complex.parquet");
-
         // 清理
-//        cleanDataFile(LOCAL_DIR + "/test.parquet");
-//        cleanDataFile(LOCAL_DIR + "/test_complex.parquet");
+        cleanDataFile(LOCAL_DIR + "/test.parquet");
+        cleanDataFile(LOCAL_DIR + "/test_complex.parquet");
+
+        testParquetReader(PROJECT_DIR + "/ParquetFiles/spark_file.parquet");
+        testParquetReader(PROJECT_DIR + "/ParquetFiles/hive_file.parquet");
+
+
     }
 
 

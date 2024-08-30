@@ -1,5 +1,7 @@
 package parquet.reader;
 
+import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.hadoop.conf.Configuration;
@@ -17,10 +19,13 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Shmily
@@ -29,6 +34,13 @@ import java.util.Map;
  */
 
 public class ParquetReaderDemo {
+
+    private static final int JULIAN_EPOCH_OFFSET_DAYS = 2440588;
+    private static final long MILLIS_IN_DAY = TimeUnit.DAYS.toMillis(1);
+    private static final long NANOS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1);
+    private static final DateTimeFormatter dfDay = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+
     public void readComplexParquetFile(String path) throws IOException {
         // 获取Schema
         ParquetMetadata readFooter = ParquetFileReader.readFooter(new Configuration(), new Path(path));
@@ -190,15 +202,25 @@ public class ParquetReaderDemo {
 //            field.getRepetition()
         switch (primitiveType.getPrimitiveTypeName()) {
             case INT32:
+                // INT32 可以是INT也可以是DATE
+                if (field.getOriginalType() == OriginalType.DATE) {
+                    // Date类型格式化
+                    int days = line.getInteger(fieldName, 0);
+                    return LocalDate.ofEpochDay(days).format(dfDay);
+                }
                 return line.getInteger(fieldName, 0);
             case INT64:
-            case INT96:
+                // INT64 是Long类型
                 return line.getLong(fieldName, 0);
+            case INT96:
+                // INT96 是Timestamp类型
+                return binaryToLongTimestamp(line.getInt96(fieldName, 0));
             case FLOAT:
                 return line.getFloat(fieldName, 0);
             case DOUBLE:
                 return line.getDouble(fieldName, 0);
             case BINARY:
+                // BINARY 对应 string char varchar binary
                 return line.getBinary(fieldName, 0).toStringUsingUTF8();
             case BOOLEAN:
                 return line.getBoolean(fieldName, 0);
@@ -212,11 +234,9 @@ public class ParquetReaderDemo {
                     case UTF8:
                     case ENUM:
                     case JSON:
-                        return line.getBinary(fieldName, 0).toStringUsingUTF8();
                     case BSON:
-                        return line.getBinary(fieldName, 0).getBytes();
                     default:
-                        throw new NonPrimitiveTypeException("Not a FIXED_LEN_BYTE_ARRAY type, field: " + fieldName);
+                        return line.getBinary(fieldName, 0).toStringUsingUTF8();
                 }
             default:
                 throw new NonPrimitiveTypeException("Not a primitive type, field: " + fieldName);
@@ -235,8 +255,7 @@ public class ParquetReaderDemo {
         ByteBuffer buffer = ByteBuffer.wrap(binary.getBytes()).order(ByteOrder.BIG_ENDIAN);
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
-        BigDecimal decimal = new BigDecimal(new java.math.BigInteger(bytes), scale);
-        return decimal;
+        return new BigDecimal(new java.math.BigInteger(bytes), scale);
     }
 
 
@@ -261,4 +280,18 @@ public class ParquetReaderDemo {
         }
         reader.close();
     }
+
+
+    public static long binaryToLongTimestamp(Binary timestampBinary)
+    {
+        if (timestampBinary.length() != 12) {
+            return 0;
+        }
+        byte[] bytes = timestampBinary.getBytes();
+        long timeOfDayNanos = Longs.fromBytes(bytes[7], bytes[6], bytes[5], bytes[4], bytes[3], bytes[2], bytes[1], bytes[0]);
+        int julianDay = Ints.fromBytes(bytes[11], bytes[10], bytes[9], bytes[8]);
+        return (julianDay - JULIAN_EPOCH_OFFSET_DAYS) * MILLIS_IN_DAY + (timeOfDayNanos / NANOS_PER_MILLISECOND);
+    }
+
+
 }
