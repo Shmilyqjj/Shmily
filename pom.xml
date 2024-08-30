@@ -18,6 +18,7 @@
         <module>Hive</module>
         <module>Kafka</module>
         <module>Kudu</module>
+        <module>kyuubi</module>
         <module>LearnJava</module>
         <module>OrientDB</module>
         <module>Phoenix</module>
