@@ -196,6 +196,7 @@ public class ParquetReaderDemo {
      * @return value of this field
      */
     private static Object getPrimitiveValue(Group line, Type field) {
+        // TODO：空值处理和兼容  根据field.getRepetition()
         String fieldName = field.getName();
         // 基本类型
         PrimitiveType primitiveType = field.asPrimitiveType();
