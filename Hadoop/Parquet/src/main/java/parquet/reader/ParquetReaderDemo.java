@@ -150,7 +150,7 @@ public class ParquetReaderDemo {
     private static Object getFieldValue(Group line, Type field) {
         String fieldName = field.getName();
         if (field.isPrimitive()) {
-            getPrimitiveValue(line, field);
+            return getPrimitiveValue(line, field);
         }else {
             GroupType fieldGroupType = field.asGroupType();
             List<Type> nestedFields = fieldGroupType.getFields();
