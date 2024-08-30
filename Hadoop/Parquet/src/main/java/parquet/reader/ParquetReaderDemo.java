@@ -150,7 +150,7 @@ public class ParquetReaderDemo {
     private static Object getFieldValue(Group line, Type field) {
         String fieldName = field.getName();
         if (field.isPrimitive()) {
-            return getPrimitiveValue(line, field);
+            getPrimitiveValue(line, field);
         }else {
             GroupType fieldGroupType = field.asGroupType();
             List<Type> nestedFields = fieldGroupType.getFields();
@@ -202,7 +202,7 @@ public class ParquetReaderDemo {
 //            field.getRepetition()
         switch (primitiveType.getPrimitiveTypeName()) {
             case INT32:
-                // INT32 可以是INT也可以是DATE
+                // INT32 可以是INT也可以是DATE（Spark/Hive中）
                 if (field.getOriginalType() == OriginalType.DATE) {
                     // Date类型格式化
                     int days = line.getInteger(fieldName, 0);
@@ -210,17 +210,17 @@ public class ParquetReaderDemo {
                 }
                 return line.getInteger(fieldName, 0);
             case INT64:
-                // INT64 是Long类型
+                // INT64 是Long类型（Spark/Hive中）
                 return line.getLong(fieldName, 0);
             case INT96:
-                // INT96 是Timestamp类型
+                // INT96 是Timestamp类型 （Spark/Hive中）
                 return binaryToLongTimestamp(line.getInt96(fieldName, 0));
             case FLOAT:
                 return line.getFloat(fieldName, 0);
             case DOUBLE:
                 return line.getDouble(fieldName, 0);
             case BINARY:
-                // BINARY 对应 string char varchar binary
+                // BINARY 对应 string char varchar binary（Spark/Hive中）
                 return line.getBinary(fieldName, 0).toStringUsingUTF8();
             case BOOLEAN:
                 return line.getBoolean(fieldName, 0);

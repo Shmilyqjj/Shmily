@@ -4,8 +4,11 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.common.type.HiveDecimal;
 import org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe;
+import org.apache.hadoop.hive.ql.io.parquet.timestamp.NanoTimeUtils;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.GroupFactory;
+import org.apache.parquet.example.data.simple.NanoTime;
+import org.apache.parquet.example.data.simple.SimpleGroup;
 import org.apache.parquet.example.data.simple.SimpleGroupFactory;
 import org.apache.parquet.hadoop.ParquetFileWriter;
 import org.apache.parquet.hadoop.ParquetWriter;
@@ -18,8 +21,16 @@ import org.apache.parquet.schema.Types;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.time.format.DateTimeFormatter;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import static org.apache.parquet.schema.LogicalTypeAnnotation.*;
+import static org.apache.parquet.schema.LogicalTypeAnnotation.TimeUnit.*;
 import static org.apache.parquet.schema.OriginalType.*;
 import static org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName.*;
 
@@ -29,6 +40,11 @@ import static org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName.*;
  * Description: write data to parquet file
  */
 public class ParquetWriterDemo {
+
+    private static final DateTimeFormatter dfDay = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final int JULIAN_EPOCH_OFFSET_DAYS = 2440588;
+    private static final long MILLIS_IN_DAY = TimeUnit.DAYS.toMillis(1);
+    private static final long NANOS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1);
 
     /**
      *  Demo写入parquet文件  支持复杂数据类型
@@ -53,29 +69,41 @@ public class ParquetWriterDemo {
     public void writeComplexParquet(String parquetFilePath) throws IOException {
         // Schema
         MessageType schema = Types.buildMessage()
-                .optional(BINARY).as(stringType()).named("stringVal")
-                .optional(INT32).named("intVal")
-                .optional(INT64).named("bigintVal")
-                .optional(FIXED_LEN_BYTE_ARRAY).length(10).as(decimalType(2, 22)).named("decimalVal")
-                .optionalGroup()
-                    .optional(BINARY).as(stringType()).named("stringValInStruct")
-                    .optional(INT32).named("intValInStruct")
-                    .optional(FIXED_LEN_BYTE_ARRAY).length(10).as(decimalType(2, 22)).named("decimalValInStruct")
-                    .named("structVal")
-                .optionalGroup()
-                    .as(mapType())
-                    .repeatedGroup()
-                        .as(MAP_KEY_VALUE)
-                        .required(BINARY).as(stringType()).named("key")
-                        .optional(BINARY).as(stringType()).named("value")
-                        .named("mapEntry")
-                    .named("mapVal")
+                .optional(INT32).named("int_col")
+                .optional(INT64).named("bigint_col")
+                .optional(FLOAT).named("float_col")
+                .optional(DOUBLE).named("double_col")
+                .optional(FIXED_LEN_BYTE_ARRAY).length(5).as(decimalType(2, 10)).named("decimal_col")
+                .optional(BINARY).as(stringType()).named("string_col")
+                .optional(BINARY).named("varchar_col")
+                .optional(BINARY).named("char_col")
+                .optional(BOOLEAN).named("boolean_col")
+                .optional(BINARY).named("binary_col")
+                .optional(INT32).as(dateType()).named("dt_col")
+//                .optional(INT96).named("ts_col")  // TODO: 支持timestamp类型
+
                 .optionalGroup()
                     .as(listType())
-                    .repeatedGroup()
+                        .repeatedGroup()
                         .optional(BINARY).as(stringType()).named("elem")
                         .named("bag")
-                    .named("listVal")
+                    .named("array_col")
+
+                .optionalGroup()
+                    .as(mapType())
+                        .repeatedGroup()
+                        .as(MAP_KEY_VALUE)
+                        .required(BINARY).as(stringType()).named("key")
+                        .optional(INT32).named("value")
+                        .named("mapEntry")
+                    .named("map_col")
+
+                .optionalGroup()
+                    .optional(INT32).named("id")
+                    .optional(BINARY).as(stringType()).named("name")
+//                    .optional(FIXED_LEN_BYTE_ARRAY).length(10).as(decimalType(2, 22)).named("decimalValInStruct")
+                    .named("struct_col")
+
                 .named("parquet_schema");
 
         System.out.println(schema.toString());
@@ -95,32 +123,42 @@ public class ParquetWriterDemo {
         // Write data: 1000 rows
         for (int i = 0; i < 1000; i++) {
             Group row = factory.newGroup()
-                    .append("stringVal", String.format("haha_%d", i))
-                    .append("intVal", i)
-                    .append("bigintVal", i * 1000L)
-                    .append("decimalVal", decimalStrToBinary("3.14", 22, 2));
+                    .append("int_col", i)
+                    .append("bigint_col", i * 1000L)
+                    .append("float_col", i * 3.1415f)
+                    .append("double_col", i * 3.1415926)
+                    .append("decimal_col", decimalStrToBinary("3.14", 10, 2))
+                    .append("string_col", String.format("string_%d", i))
+                    .append("varchar_col", String.format("varchar_%d", i))
+                    .append("char_col", String.format("c_%d", i))
+                    .append("boolean_col", true)
+                    .append("binary_col", String.format("binary_%d", i))
+                    .append("dt_col", 19960 + i)
+                    // TODO: 支持timestamp类型
+//                    .append("ts_col", 19960 + i * 1000L)
+                    ;
 
-            // write struct
-            Group struct = row.addGroup("structVal");
-            struct.add("stringValInStruct", String.format("string_val_in_struct_%d", i));
-            struct.add("intValInStruct", i);
-            struct.add("decimalValInStruct", decimalStrToBinary("3.14", 22, 2));
+            // write array
+            Group arr = row.addGroup("array_col");
+            for (int j = 0; j < 3; j++) {
+                Group bag = arr.addGroup("bag");
+                bag.add("elem", String.format("elem_%d", i + j));
+            }
 
             // write map
-            Group map = row.addGroup("mapVal");
-            for (int j = 0; j < 6; j++) {
+            Group map = row.addGroup("map_col");
+            for (int j = 0; j < 3; j++) {
                 // 写入entry
                 Group mapEntry = map.addGroup("mapEntry");
                 mapEntry.add("key", String.format("key_%d", j));
-                mapEntry.add("value", String.format("value_%d", j));
+                mapEntry.add("value", j);
             }
 
-            // write list
-            Group list = row.addGroup("listVal");
-            for (int j = 0; j < 3; j++) {
-                Group bag = list.addGroup("bag");
-                bag.add("elem", String.format("elem_%d", j));
-            }
+            // write struct
+            Group struct = row.addGroup("struct_col");
+            struct.add("id", i);
+            struct.add("name", String.format("name_%d", i));
+//            struct.add("decimalValInStruct", decimalStrToBinary("3.14", 22, 2));
 
             writer.write(row);
         }
