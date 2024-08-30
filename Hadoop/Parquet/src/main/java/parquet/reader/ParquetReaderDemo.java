@@ -18,7 +18,9 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Shmily
@@ -41,50 +43,137 @@ public class ParquetReaderDemo {
         Gson gson = new GsonBuilder().create();
         Group line;
         while ((line = reader.read()) != null) {
-            List<Object> row = transRowFromLine(line, schema.getFields());
+//            List<Object> row = transRowFromLine(line, schema.getFields());
+            Map<String, Object> row = transRowToMapFromLine(line, schema.getFields());
             System.out.println(gson.toJson(row));
-
-//            String row = String.format("| %s | %s | %s | %s |",
-//                    line.getString("stringVal", 0),
-//                    line.getInteger("intVal", 0),
-//                    line.getLong("bigintVal", 0),
-//                    binaryToBigDecimal(line.getBinary("decimalVal", 0), 2)
-//            );
-//            System.out.println(row);
-
-
-
         }
         reader.close();
     }
 
     /**
-     * 将parquet row group 按类型读数据
+     * 将parquet row group 一行数据 按类型读数据
      * @param line rowGroup
      * @param fields schema列表
      */
     private static List<Object> transRowFromLine(Group line, List<Type> fields) {
-        List<Object> parsedData = new ArrayList<>();
+        List<Object> parsedData = new ArrayList<>(fields.size());
         for (Type field : fields) {
-            String fieldName = field.getName();
-            //TODO: 根据类型解析并获取对应类型的数据 拼接row
-            if (field.isPrimitive()) {
-                // 基本类型
-                parsedData.add(getPrimitiveValue(line, field));
-            }else {
-                // 复杂数据类型 (递归处理)
-                GroupType fieldGroupType = field.asGroupType();
-                List<Type> nestedFields = fieldGroupType.getFields();
-                List<Object> nestedData = new ArrayList<>();
-                int fieldCount = line.getFieldRepetitionCount(fieldName);
-                for (int i = 0; i < fieldCount; i++) {
-                    Group group = line.getGroup(fieldName, i);
-                    nestedData.add(transRowFromLine(group, nestedFields));
-                }
-                parsedData.add(nestedData);
-            }
+            parsedData.add(getFieldValue(line, field));
         }
         return parsedData;
+    }
+
+    /**
+     * 将parquet row group 一行数据 按类型读数据 （transRowFromLine的带字段名版本）
+     * @param line rowGroup
+     * @param fields schema列表
+     */
+    private static Map<String, Object> transRowToMapFromLine(Group line, List<Type> fields) {
+        Map<String, Object> parsedData = new LinkedHashMap<>(fields.size());
+        for (Type field : fields) {
+            parsedData.put(field.getName(), getFieldValue(line, field));
+        }
+        return parsedData;
+    }
+
+    /**
+     * 输出List类型字段值
+     * @param line rowGroup
+     * @param field schema
+     * @return List<Object>
+     */
+    private static List<Object> getListValue(Group line, Type field) {
+        List<Object> listData = new ArrayList<>();
+        int fieldCount = line.getFieldRepetitionCount(field.getName());
+        for (int i = 0; i < fieldCount; i++) {
+            Group group = line.getGroup(field.getName(), i);
+            listData.addAll(transRowFromLine(group, field.asGroupType().getFields()));
+        }
+        return listData;
+    }
+
+    /**
+     * 输出Struct类型字段值
+     * @param line rowGroup
+     * @param fields schema列表
+     * @return List<Object>
+     */
+    private static Map<String, Object> getStructValue(Group line, List<Type> fields) {
+        Map<String, Object> structData = new LinkedHashMap<>(fields.size());
+        for (Type field : fields) {
+            structData.put(field.getName(), getFieldValue(line, field));
+        }
+        return structData;
+    }
+
+    /**
+     * 输出Map类型字段值
+     * @param line rowGroup
+     * @param fields schema列表
+     * @return List<Object>
+     */
+    private static Map<String, Object> getMapValue(Group line, List<Type> fields) {
+        Map<String, Object> mapData = new LinkedHashMap<>(fields.size());
+        // field 为 MAP_KEY_VALUE 类型 是repeatedGroup
+        Type field = fields.get(0);
+        String mapEntryFieldName = field.getName();
+        GroupType fieldGroupType = field.asGroupType();
+        List<Type> mapKeyValueFields = fieldGroupType.getFields();
+        int fieldCount = line.getFieldRepetitionCount(mapEntryFieldName);
+        for (int i = 0; i < fieldCount; i++) {
+            Group group = line.getGroup(mapEntryFieldName, i);
+            mapData.put(
+                    getFieldValue(group, mapKeyValueFields.get(0)).toString(),
+                    getFieldValue(group, mapKeyValueFields.get(1)));
+        }
+        return mapData;
+    }
+
+    /**
+     * 获取字段值
+     * @param line rowGroup
+     * @param field schema
+     * @return Object 数据
+     */
+    private static Object getFieldValue(Group line, Type field) {
+        String fieldName = field.getName();
+        if (field.isPrimitive()) {
+            return getPrimitiveValue(line, field);
+        }else {
+            GroupType fieldGroupType = field.asGroupType();
+            List<Type> nestedFields = fieldGroupType.getFields();
+            int fieldCount = line.getFieldRepetitionCount(fieldName);
+            if (field.getLogicalTypeAnnotation() == LogicalTypeAnnotation.listType()) {
+                // list类型
+                List<Object> listData = new ArrayList<>();
+                for (int i = 0; i < fieldCount; i++) {
+                    Group group = line.getGroup(fieldName, i);
+                    listData.addAll(getListValue(group, nestedFields.get(0)));
+                }
+                return listData;
+            } else if (field.getLogicalTypeAnnotation() == LogicalTypeAnnotation.mapType()) {
+                // map类型
+                Map<String, Object> mapData = new LinkedHashMap<>(fieldCount);
+                Group repGroup = line.asGroup();
+                for (int i = 0; i < fieldCount; i++) {
+                    Group group = repGroup.getGroup(fieldName, i);
+                    mapData.putAll(getMapValue(group, nestedFields));
+                }
+                return mapData;
+            } else if (fieldCount >= 1 && field.getLogicalTypeAnnotation() == null) {
+                // struct类型
+                Map<String, Object> structData = new LinkedHashMap<>(fieldCount);
+                for (int i = 0; i < fieldCount; i++) {
+                    Group group = line.getGroup(fieldName, i);
+                    structData.putAll(getStructValue(group, nestedFields));
+                }
+                return structData;
+            } else {
+                // TODO: 如果遗漏情况或其他数据类型 在这里补充
+                throw new NonPrimitiveTypeException("Unresolved data type, field: " + field);
+            }
+        }
+
     }
 
 
@@ -96,42 +185,43 @@ public class ParquetReaderDemo {
      */
     private static Object getPrimitiveValue(Group line, Type field) {
         String fieldName = field.getName();
-        if (field.isPrimitive()) {
-            // 基本类型
-            PrimitiveType primitiveType = field.asPrimitiveType();
-            switch (primitiveType.getPrimitiveTypeName()) {
-                case INT32:
-                    return line.getInteger(fieldName, 0);
-                case INT64:
-                case INT96:
-                    return line.getLong(fieldName, 0);
-                case FLOAT:
-                    return line.getFloat(fieldName, 0);
-                case DOUBLE:
-                    return line.getDouble(fieldName, 0);
-                case BINARY:
-                    return line.getBinary(fieldName, 0).toStringUsingUTF8();
-                case BOOLEAN:
-                    return line.getBoolean(fieldName, 0);
-                case FIXED_LEN_BYTE_ARRAY:
-                    switch (field.getOriginalType()) {
-                        case DECIMAL:
-                            return binaryToBigDecimal(
-                                    line.getBinary(fieldName, 0),
-                                    primitiveType.getDecimalMetadata().getScale()
-                            );
-                        case UTF8:
-                        case ENUM:
-                        case JSON:
-                            return line.getBinary(fieldName, 0).toStringUsingUTF8();
-                        case BSON:
-                            return line.getBinary(fieldName, 0).getBytes();
-                    }
-                    break;
+        // 基本类型
+        PrimitiveType primitiveType = field.asPrimitiveType();
+//            field.getRepetition()
+        switch (primitiveType.getPrimitiveTypeName()) {
+            case INT32:
+                return line.getInteger(fieldName, 0);
+            case INT64:
+            case INT96:
+                return line.getLong(fieldName, 0);
+            case FLOAT:
+                return line.getFloat(fieldName, 0);
+            case DOUBLE:
+                return line.getDouble(fieldName, 0);
+            case BINARY:
+                return line.getBinary(fieldName, 0).toStringUsingUTF8();
+            case BOOLEAN:
+                return line.getBoolean(fieldName, 0);
+            case FIXED_LEN_BYTE_ARRAY:
+                switch (field.getOriginalType()) {
+                    case DECIMAL:
+                        return binaryToBigDecimal(
+                                line.getBinary(fieldName, 0),
+                                primitiveType.getDecimalMetadata().getScale()
+                        );
+                    case UTF8:
+                    case ENUM:
+                    case JSON:
+                        return line.getBinary(fieldName, 0).toStringUsingUTF8();
+                    case BSON:
+                        return line.getBinary(fieldName, 0).getBytes();
+                    default:
+                        throw new NonPrimitiveTypeException("Not a FIXED_LEN_BYTE_ARRAY type, field: " + fieldName);
+                }
+            default:
+                throw new NonPrimitiveTypeException("Not a primitive type, field: " + fieldName);
 
-            }
         }
-        throw new NonPrimitiveTypeException("not support complex type:" + field.getOriginalType());
     }
 
 
