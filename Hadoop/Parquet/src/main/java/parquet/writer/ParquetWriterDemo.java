@@ -14,21 +14,16 @@ import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.example.ExampleParquetWriter;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.io.api.Binary;
-import org.apache.parquet.schema.LogicalTypeAnnotation;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.MessageTypeParser;
 import org.apache.parquet.schema.Types;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.concurrent.TimeUnit;
 
 import static org.apache.parquet.schema.LogicalTypeAnnotation.*;
 import static org.apache.parquet.schema.OriginalType.*;
 import static org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName.*;
-import static parquet.ParquetDataWrite.timestampWrite;
 
 
 /**
@@ -36,11 +31,6 @@ import static parquet.ParquetDataWrite.timestampWrite;
  * Description: write data to parquet file
  */
 public class ParquetWriterDemo {
-
-    private static final DateTimeFormatter dfDay = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static final int JULIAN_EPOCH_OFFSET_DAYS = 2440588;
-    private static final long MILLIS_IN_DAY = TimeUnit.DAYS.toMillis(1);
-    private static final long NANOS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1);
 
     /**
      *  Demo写入parquet文件  支持复杂数据类型
