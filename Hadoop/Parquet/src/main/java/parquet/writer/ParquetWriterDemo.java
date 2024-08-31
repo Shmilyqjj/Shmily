@@ -2,9 +2,7 @@ package parquet.writer;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hive.common.type.HiveDecimal;
 import org.apache.hadoop.hive.common.type.Timestamp;
-import org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe;
 import org.apache.hadoop.hive.ql.io.parquet.timestamp.NanoTimeUtils;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.GroupFactory;
@@ -19,6 +17,9 @@ import org.apache.parquet.schema.MessageTypeParser;
 import org.apache.parquet.schema.Types;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.ZoneId;
 
 import static org.apache.parquet.schema.LogicalTypeAnnotation.*;
@@ -31,6 +32,15 @@ import static org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName.*;
  * Description: write data to parquet file
  */
 public class ParquetWriterDemo {
+
+    public static final int PRECISION_TO_BYTE_COUNT[] = new int[38];
+    static {
+        for (int prec = 1; prec <= 38; prec++) {
+            // Estimated number of bytes needed.
+            PRECISION_TO_BYTE_COUNT[prec - 1] = (int)
+                    Math.ceil((Math.log(Math.pow(10, prec) - 1) / Math.log(2) + 1) / 8);
+        }
+    }
 
     /**
      *  Demo写入parquet文件  支持复杂数据类型
@@ -147,9 +157,34 @@ public class ParquetWriterDemo {
             writer.write(row);
         }
 
-        // Writer close
         writer.close();
     }
+
+//    /**
+//     * Decimal类型数据写入 (依赖hive-exec包)
+//     * @param val 值，String类型，但数据为小数 如"3.14"
+//     * @param precision  精度（小数点后几位）
+//     * @param scale 规模
+//     * @return Parquet column binary
+//     */
+//    public static Binary decimalStrToBinary(String val, int precision, int scale) {
+//        HiveDecimal hiveDecimal = HiveDecimal.create(val);
+//        byte[] decimalBytes = hiveDecimal.bigIntegerBytesScaled(scale);
+//        int precToBytes = ParquetHiveSerDe.PRECISION_TO_BYTE_COUNT[precision - 1];
+//        if (precToBytes == decimalBytes.length) {
+//            // No padding needed.
+//            return Binary.fromByteArray(decimalBytes);
+//        }
+//        byte[] tgt = new byte[precToBytes];
+//        if (hiveDecimal.signum() == -1) {
+//            // For negative number, initializing bits to 1
+//            for (int i = 0; i < precToBytes; i++) {
+//                tgt[i] |= 0xFF;
+//            }
+//        }
+//        System.arraycopy(decimalBytes, 0, tgt, precToBytes - decimalBytes.length, decimalBytes.length);
+//        return Binary.fromByteArray(tgt);
+//    }
 
     /**
      * Decimal类型数据写入
@@ -159,22 +194,22 @@ public class ParquetWriterDemo {
      * @return Parquet column binary
      */
     public static Binary decimalStrToBinary(String val, int precision, int scale) {
-        HiveDecimal hiveDecimal = HiveDecimal.create(val);
-        byte[] decimalBytes = hiveDecimal.bigIntegerBytesScaled(scale);
-        int precToBytes = ParquetHiveSerDe.PRECISION_TO_BYTE_COUNT[precision - 1];
-        if (precToBytes == decimalBytes.length) {
+        BigDecimal bigDecimal = new BigDecimal(val, new MathContext(precision)).setScale(scale, RoundingMode.UNNECESSARY);
+        byte[] decimalBytes = bigDecimal.unscaledValue().toByteArray();
+        int pc = PRECISION_TO_BYTE_COUNT[precision - 1];
+        if (pc == decimalBytes.length) {
             // No padding needed.
-            return Binary.fromByteArray(decimalBytes);
+            return Binary.fromConstantByteArray(decimalBytes);
         }
-        byte[] tgt = new byte[precToBytes];
-        if (hiveDecimal.signum() == -1) {
+        byte[] tgt = new byte[pc];
+        if (bigDecimal.signum() == -1) {
             // For negative number, initializing bits to 1
-            for (int i = 0; i < precToBytes; i++) {
+            for (int i = 0; i < pc; i++) {
                 tgt[i] |= 0xFF;
             }
         }
-        System.arraycopy(decimalBytes, 0, tgt, precToBytes - decimalBytes.length, decimalBytes.length);
-        return Binary.fromByteArray(tgt);
+        System.arraycopy(decimalBytes, 0, tgt, pc - decimalBytes.length, decimalBytes.length);
+        return Binary.fromConstantByteArray(tgt);
     }
 
     /**
