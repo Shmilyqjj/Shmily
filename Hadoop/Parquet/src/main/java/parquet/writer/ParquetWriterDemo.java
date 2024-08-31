@@ -4,11 +4,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.common.type.HiveDecimal;
 import org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe;
-import org.apache.hadoop.hive.ql.io.parquet.timestamp.NanoTimeUtils;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.GroupFactory;
-import org.apache.parquet.example.data.simple.NanoTime;
-import org.apache.parquet.example.data.simple.SimpleGroup;
 import org.apache.parquet.example.data.simple.SimpleGroupFactory;
 import org.apache.parquet.hadoop.ParquetFileWriter;
 import org.apache.parquet.hadoop.ParquetWriter;
@@ -20,17 +17,10 @@ import org.apache.parquet.schema.MessageTypeParser;
 import org.apache.parquet.schema.Types;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.sql.Timestamp;
-import java.text.ParseException;
 import java.time.format.DateTimeFormatter;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.parquet.schema.LogicalTypeAnnotation.*;
-import static org.apache.parquet.schema.LogicalTypeAnnotation.TimeUnit.*;
 import static org.apache.parquet.schema.OriginalType.*;
 import static org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName.*;
 
@@ -177,7 +167,6 @@ public class ParquetWriterDemo {
     public static Binary decimalStrToBinary(String val, int precision, int scale) {
         HiveDecimal hiveDecimal = HiveDecimal.create(val);
         byte[] decimalBytes = hiveDecimal.bigIntegerBytesScaled(scale);
-        // Estimated number of bytes needed.
         int precToBytes = ParquetHiveSerDe.PRECISION_TO_BYTE_COUNT[precision - 1];
         if (precToBytes == decimalBytes.length) {
             // No padding needed.
@@ -229,7 +218,7 @@ public class ParquetWriterDemo {
                     .append("longValue", i*1000L)
                     .append("doubleValue", 3.1415926)
                     .append("stringValue", "haha")
-                    .append("binValue", new String("bin_haha"));
+                    .append("binValue", "bin_haha");
             writer.write(group);
         }
         writer.close();

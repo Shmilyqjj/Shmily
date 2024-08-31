@@ -14,8 +14,8 @@ import java.io.IOException;
  * @ Linux   System Env： HADOOP_HOME=/path/to/hadoop;LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
  */
 public class ParquetTest {
-//    private static final String LOCAL_DIR = "E:\\";
-    private static final String LOCAL_DIR = "/home/shmily/Desktop";
+    private static final String LOCAL_DIR = "E:\\";
+//    private static final String LOCAL_DIR = "/home/shmily/Desktop";
     private static final String PROJECT_DIR = "/home/shmily/Projects/MyProjects/JavaProjects/Shmily/Hadoop/Parquet";
     public static void main(String[] args) throws IOException {
 //        testSimpleTypeWrite(LOCAL_DIR + "/test.parquet");
@@ -27,6 +27,7 @@ public class ParquetTest {
         cleanDataFile(LOCAL_DIR + "/test.parquet");
         cleanDataFile(LOCAL_DIR + "/test_complex.parquet");
 
+        // 读取HiveSpark中生成的parquet文件
         testParquetReader(PROJECT_DIR + "/ParquetFiles/spark_file.parquet");
         testParquetReader(PROJECT_DIR + "/ParquetFiles/hive_file.parquet");
 

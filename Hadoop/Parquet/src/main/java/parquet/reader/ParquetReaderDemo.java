@@ -88,58 +88,6 @@ public class ParquetReaderDemo {
         return parsedData;
     }
 
-    /**
-     * 输出List类型字段值
-     * @param line rowGroup
-     * @param field schema
-     * @return List<Object>
-     */
-    private static List<Object> getListValue(Group line, Type field) {
-        List<Object> listData = new ArrayList<>();
-        int fieldCount = line.getFieldRepetitionCount(field.getName());
-        for (int i = 0; i < fieldCount; i++) {
-            Group group = line.getGroup(field.getName(), i);
-            listData.addAll(transRowFromLine(group, field.asGroupType().getFields()));
-        }
-        return listData;
-    }
-
-    /**
-     * 输出Struct类型字段值
-     * @param line rowGroup
-     * @param fields schema列表
-     * @return List<Object>
-     */
-    private static Map<String, Object> getStructValue(Group line, List<Type> fields) {
-        Map<String, Object> structData = new LinkedHashMap<>(fields.size());
-        for (Type field : fields) {
-            structData.put(field.getName(), getFieldValue(line, field));
-        }
-        return structData;
-    }
-
-    /**
-     * 输出Map类型字段值
-     * @param line rowGroup
-     * @param fields schema列表
-     * @return List<Object>
-     */
-    private static Map<String, Object> getMapValue(Group line, List<Type> fields) {
-        Map<String, Object> mapData = new LinkedHashMap<>(fields.size());
-        // field 为 MAP_KEY_VALUE 类型 是repeatedGroup
-        Type field = fields.get(0);
-        String mapEntryFieldName = field.getName();
-        GroupType fieldGroupType = field.asGroupType();
-        List<Type> mapKeyValueFields = fieldGroupType.getFields();
-        int fieldCount = line.getFieldRepetitionCount(mapEntryFieldName);
-        for (int i = 0; i < fieldCount; i++) {
-            Group group = line.getGroup(mapEntryFieldName, i);
-            mapData.put(
-                    getFieldValue(group, mapKeyValueFields.get(0)).toString(),
-                    getFieldValue(group, mapKeyValueFields.get(1)));
-        }
-        return mapData;
-    }
 
     /**
      * 获取字段值
@@ -200,49 +148,110 @@ public class ParquetReaderDemo {
         String fieldName = field.getName();
         // 基本类型
         PrimitiveType primitiveType = field.asPrimitiveType();
-//            field.getRepetition()
-        switch (primitiveType.getPrimitiveTypeName()) {
-            case INT32:
-                // INT32 可以是INT也可以是DATE（Spark/Hive中）
-                if (field.getOriginalType() == OriginalType.DATE) {
-                    // Date类型格式化
-                    int days = line.getInteger(fieldName, 0);
-                    return LocalDate.ofEpochDay(days).format(dfDay);
-                }
-                return line.getInteger(fieldName, 0);
-            case INT64:
-                // INT64 是Long类型（Spark/Hive中）
-                return line.getLong(fieldName, 0);
-            case INT96:
-                // INT96 是Timestamp类型 （Spark/Hive中）
-                return binaryToLongTimestamp(line.getInt96(fieldName, 0));
-            case FLOAT:
-                return line.getFloat(fieldName, 0);
-            case DOUBLE:
-                return line.getDouble(fieldName, 0);
-            case BINARY:
-                // BINARY 对应 string char varchar binary（Spark/Hive中）
-                return line.getBinary(fieldName, 0).toStringUsingUTF8();
-            case BOOLEAN:
-                return line.getBoolean(fieldName, 0);
-            case FIXED_LEN_BYTE_ARRAY:
-                switch (field.getOriginalType()) {
-                    case DECIMAL:
-                        return binaryToBigDecimal(
-                                line.getBinary(fieldName, 0),
-                                primitiveType.getDecimalMetadata().getScale()
-                        );
-                    case UTF8:
-                    case ENUM:
-                    case JSON:
-                    case BSON:
-                    default:
-                        return line.getBinary(fieldName, 0).toStringUsingUTF8();
-                }
-            default:
-                throw new NonPrimitiveTypeException("Not a primitive type, field: " + fieldName);
+        Type.Repetition repetition = field.getRepetition();
+        try {
+            switch (primitiveType.getPrimitiveTypeName()) {
+                case INT32:
+                    // INT32 可以是INT也可以是DATE（Spark/Hive中）
+                    if (field.getOriginalType() == OriginalType.DATE) {
+                        // Date类型格式化
+                        int days = line.getInteger(fieldName, 0);
+                        return LocalDate.ofEpochDay(days).format(dfDay);
+                    }
+                    return line.getInteger(fieldName, 0);
+                case INT64:
+                    // INT64 是Long类型（Spark/Hive中）
+                    return line.getLong(fieldName, 0);
+                case INT96:
+                    // INT96 是Timestamp类型 （Spark/Hive中）
+                    return binaryToLongTimestamp(line.getInt96(fieldName, 0));
+                case FLOAT:
+                    return line.getFloat(fieldName, 0);
+                case DOUBLE:
+                    return line.getDouble(fieldName, 0);
+                case BINARY:
+                    // BINARY 对应 string char varchar binary（Spark/Hive中）
+                    return line.getBinary(fieldName, 0).toStringUsingUTF8();
+                case BOOLEAN:
+                    return line.getBoolean(fieldName, 0);
+                case FIXED_LEN_BYTE_ARRAY:
+                    switch (field.getOriginalType()) {
+                        case DECIMAL:
+                            return binaryToBigDecimal(
+                                    line.getBinary(fieldName, 0),
+                                    primitiveType.getDecimalMetadata().getScale()
+                            );
+                        case UTF8:
+                        case ENUM:
+                        case JSON:
+                        case BSON:
+                        default:
+                            return line.getBinary(fieldName, 0).toStringUsingUTF8();
+                    }
+                default:
+                    throw new NonPrimitiveTypeException("Not a primitive type, field: " + fieldName);
 
+            }
+        } catch (RuntimeException e) {
+            if (repetition == Type.Repetition.OPTIONAL || repetition == Type.Repetition.REPEATED) {
+                return null;
+            } else {
+                throw e;
+            }
         }
+    }
+
+    /**
+     * 输出List类型字段值
+     * @param line rowGroup
+     * @param field schema
+     * @return List<Object>
+     */
+    private static List<Object> getListValue(Group line, Type field) {
+        List<Object> listData = new ArrayList<>();
+        int fieldCount = line.getFieldRepetitionCount(field.getName());
+        for (int i = 0; i < fieldCount; i++) {
+            Group group = line.getGroup(field.getName(), i);
+            listData.addAll(transRowFromLine(group, field.asGroupType().getFields()));
+        }
+        return listData;
+    }
+
+    /**
+     * 输出Struct类型字段值
+     * @param line rowGroup
+     * @param fields schema列表
+     * @return List<Object>
+     */
+    private static Map<String, Object> getStructValue(Group line, List<Type> fields) {
+        Map<String, Object> structData = new LinkedHashMap<>(fields.size());
+        for (Type field : fields) {
+            structData.put(field.getName(), getFieldValue(line, field));
+        }
+        return structData;
+    }
+
+    /**
+     * 输出Map类型字段值
+     * @param line rowGroup
+     * @param fields schema列表
+     * @return List<Object>
+     */
+    private static Map<String, Object> getMapValue(Group line, List<Type> fields) {
+        Map<String, Object> mapData = new LinkedHashMap<>(fields.size());
+        // field 为 MAP_KEY_VALUE 类型 是repeatedGroup
+        Type field = fields.get(0);
+        String mapEntryFieldName = field.getName();
+        GroupType fieldGroupType = field.asGroupType();
+        List<Type> mapKeyValueFields = fieldGroupType.getFields();
+        int fieldCount = line.getFieldRepetitionCount(mapEntryFieldName);
+        for (int i = 0; i < fieldCount; i++) {
+            Group group = line.getGroup(mapEntryFieldName, i);
+            mapData.put(
+                    getFieldValue(group, mapKeyValueFields.get(0)).toString(),
+                    getFieldValue(group, mapKeyValueFields.get(1)));
+        }
+        return mapData;
     }
 
 
@@ -257,6 +266,22 @@ public class ParquetReaderDemo {
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
         return new BigDecimal(new java.math.BigInteger(bytes), scale);
+    }
+
+    /**
+     * Converts a Parquet binary timestamp to a long timestamp.
+     * @param timestampBinary  the Parquet binary timestamp to convert
+     * @return the long timestamp representation of the input binary timestamp
+     */
+    public static long binaryToLongTimestamp(Binary timestampBinary)
+    {
+        if (timestampBinary.length() != 12) {
+            return 0;
+        }
+        byte[] bytes = timestampBinary.getBytes();
+        long timeOfDayNanos = Longs.fromBytes(bytes[7], bytes[6], bytes[5], bytes[4], bytes[3], bytes[2], bytes[1], bytes[0]);
+        int julianDay = Ints.fromBytes(bytes[11], bytes[10], bytes[9], bytes[8]);
+        return (julianDay - JULIAN_EPOCH_OFFSET_DAYS) * MILLIS_IN_DAY + (timeOfDayNanos / NANOS_PER_MILLISECOND);
     }
 
 
@@ -281,18 +306,5 @@ public class ParquetReaderDemo {
         }
         reader.close();
     }
-
-
-    public static long binaryToLongTimestamp(Binary timestampBinary)
-    {
-        if (timestampBinary.length() != 12) {
-            return 0;
-        }
-        byte[] bytes = timestampBinary.getBytes();
-        long timeOfDayNanos = Longs.fromBytes(bytes[7], bytes[6], bytes[5], bytes[4], bytes[3], bytes[2], bytes[1], bytes[0]);
-        int julianDay = Ints.fromBytes(bytes[11], bytes[10], bytes[9], bytes[8]);
-        return (julianDay - JULIAN_EPOCH_OFFSET_DAYS) * MILLIS_IN_DAY + (timeOfDayNanos / NANOS_PER_MILLISECOND);
-    }
-
 
 }
