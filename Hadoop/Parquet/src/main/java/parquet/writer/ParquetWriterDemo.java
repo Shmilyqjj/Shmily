@@ -2,8 +2,6 @@ package parquet.writer;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hive.common.type.Timestamp;
-import org.apache.hadoop.hive.ql.io.parquet.timestamp.NanoTimeUtils;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.GroupFactory;
 import org.apache.parquet.example.data.simple.SimpleGroupFactory;
@@ -20,8 +18,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.time.ZoneId;
-
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.concurrent.TimeUnit;
 import static org.apache.parquet.schema.LogicalTypeAnnotation.*;
 import static org.apache.parquet.schema.OriginalType.*;
 import static org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName.*;
@@ -41,6 +40,12 @@ public class ParquetWriterDemo {
                     Math.ceil((Math.log(Math.pow(10, prec) - 1) / Math.log(2) + 1) / 8);
         }
     }
+
+    private static final long NANOS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1);
+
+    public static final long MILLIS_IN_DAY = 86400000L;
+
+    private static final int JULIAN_EPOCH_OFFSET_DAYS = 2440588;
 
     /**
      *  Demo写入parquet文件  支持复杂数据类型
@@ -130,7 +135,7 @@ public class ParquetWriterDemo {
                     .append("boolean_col", true)
                     .append("binary_col", String.format("binary_%d", i))
                     .append("dt_col", 19960 + i)
-                    .append("ts_col", nanoTimeToInt96Binary(System.currentTimeMillis(), 0));
+                    .append("ts_col", timeToInt96Binary(System.currentTimeMillis()));
 
             // write array
             Group arr = row.addGroup("array_col");
@@ -212,16 +217,32 @@ public class ParquetWriterDemo {
         return Binary.fromConstantByteArray(tgt);
     }
 
+//    /**
+//     * Converts nano time to int96 parquet binary format.
+//     * (need org.apache.hadoop.hive.common.type.Timestamp,org.apache.hadoop.hive.ql.io.parquet.timestamp.NanoTimeUtils in hive-exec jar)
+//     * @param millis  time in milliseconds
+//     * @return        int96 nano time binary
+//     */
+//    public static Binary nanoTimeToInt96Binary(long millis) {
+//        return NanoTimeUtils.getNanoTime(
+//                Timestamp.ofEpochMilli(millis, 0), false, ZoneId.of("UTC")
+//        ).toBinary();
+//    }
+
+
     /**
-     * Converts nano time to int96 parquet binary format.
-     * @param millis  time in milliseconds
-     * @param nanos   the number of nanoseconds
+     * Converts nano time to int96 parquet binary format. (without hive-exec jar)
      * @return        int96 nano time binary
      */
-    public static Binary nanoTimeToInt96Binary(long millis, int nanos) {
-        return NanoTimeUtils.getNanoTime(
-                Timestamp.ofEpochMilli(millis, nanos), true, ZoneId.systemDefault()
-        ).toBinary();
+    public static Binary timeToInt96Binary(long millis) {
+        long timeOfDayNanos = millis % MILLIS_IN_DAY * NANOS_PER_MILLISECOND;
+        int julianDay = (int) ((millis / MILLIS_IN_DAY) + JULIAN_EPOCH_OFFSET_DAYS);
+        ByteBuffer buf = ByteBuffer.allocate(12);
+        buf.order(ByteOrder.nativeOrder());
+        buf.putLong(timeOfDayNanos);
+        buf.putInt(julianDay);
+        buf.flip();
+        return Binary.fromConstantByteBuffer(buf);
     }
 
 
