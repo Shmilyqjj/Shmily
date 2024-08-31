@@ -3,7 +3,9 @@ package parquet.writer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.common.type.HiveDecimal;
+import org.apache.hadoop.hive.common.type.Timestamp;
 import org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe;
+import org.apache.hadoop.hive.ql.io.parquet.timestamp.NanoTimeUtils;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.GroupFactory;
 import org.apache.parquet.example.data.simple.SimpleGroupFactory;
@@ -12,17 +14,21 @@ import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.example.ExampleParquetWriter;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.io.api.Binary;
+import org.apache.parquet.schema.LogicalTypeAnnotation;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.MessageTypeParser;
 import org.apache.parquet.schema.Types;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.parquet.schema.LogicalTypeAnnotation.*;
 import static org.apache.parquet.schema.OriginalType.*;
 import static org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName.*;
+import static parquet.ParquetDataWrite.timestampWrite;
 
 
 /**
@@ -70,7 +76,7 @@ public class ParquetWriterDemo {
                 .optional(BOOLEAN).named("boolean_col")
                 .optional(BINARY).named("binary_col")
                 .optional(INT32).as(dateType()).named("dt_col")
-//                .optional(INT96).named("ts_col")  // TODO: 支持timestamp类型
+                .optional(INT96).named("ts_col")
 
                 .optionalGroup()
                     .as(listType())
@@ -124,9 +130,7 @@ public class ParquetWriterDemo {
                     .append("boolean_col", true)
                     .append("binary_col", String.format("binary_%d", i))
                     .append("dt_col", 19960 + i)
-                    // TODO: 支持timestamp类型
-//                    .append("ts_col", 19960 + i * 1000L)
-                    ;
+                    .append("ts_col", nanoTimeToInt96Binary(System.currentTimeMillis(), 0));
 
             // write array
             Group arr = row.addGroup("array_col");
@@ -181,6 +185,18 @@ public class ParquetWriterDemo {
         }
         System.arraycopy(decimalBytes, 0, tgt, precToBytes - decimalBytes.length, decimalBytes.length);
         return Binary.fromByteArray(tgt);
+    }
+
+    /**
+     * Converts nano time to int96 parquet binary format.
+     * @param millis  time in milliseconds
+     * @param nanos   the number of nanoseconds
+     * @return        int96 nano time binary
+     */
+    public static Binary nanoTimeToInt96Binary(long millis, int nanos) {
+        return NanoTimeUtils.getNanoTime(
+                Timestamp.ofEpochMilli(millis, nanos), true, ZoneId.systemDefault()
+        ).toBinary();
     }
 
 
