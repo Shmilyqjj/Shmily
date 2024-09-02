@@ -41,7 +41,7 @@ git push origin master
 ## IDEA Plugins
 RESTFul-Tool
 Maven Helper
-TONGYI Lingma
+Codeium
 Alibaba Java Coding Guidelines
 Big Data Tool
 Key Promoter X
