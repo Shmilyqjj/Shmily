@@ -15,11 +15,11 @@ import java.io.IOException;
  */
 public class ParquetTest {
 
-//    private static final String LOCAL_DIR = "/home/shmily/Desktop";
-//    private static final String PROJECT_DIR = "/home/shmily/Projects/MyProjects/JavaProjects/Shmily/Hadoop/Parquet";
+    private static final String LOCAL_DIR = "/home/shmily/Desktop";
+    private static final String PROJECT_DIR = "/home/shmily/Projects/MyProjects/JavaProjects/Shmily/Hadoop/Parquet";
 
-    private static final String LOCAL_DIR = "E:\\";
-    private static final String PROJECT_DIR = "C:\\Programing\\Projects\\Shmily\\Hadoop\\Parquet\\";
+//    private static final String LOCAL_DIR = "E:\\";
+//    private static final String PROJECT_DIR = "C:\\Programing\\Projects\\Shmily\\Hadoop\\Parquet\\";
 
     public static void main(String[] args) throws IOException {
 //        testSimpleTypeWrite(LOCAL_DIR + "/test.parquet");
@@ -28,8 +28,8 @@ public class ParquetTest {
         testParquetWriter(LOCAL_DIR + "/test_complex.parquet");
         testParquetReader(LOCAL_DIR + "/test_complex.parquet");
         // 清理
-        cleanDataFile(LOCAL_DIR + "/test.parquet");
-        cleanDataFile(LOCAL_DIR + "/test_complex.parquet");
+//        cleanDataFile(LOCAL_DIR + "/test.parquet");
+//        cleanDataFile(LOCAL_DIR + "/test_complex.parquet");
 
         // 读取HiveSpark中生成的parquet文件
         testParquetReader(PROJECT_DIR + "/ParquetFiles/spark_file.parquet");
