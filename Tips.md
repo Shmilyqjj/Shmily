@@ -64,6 +64,7 @@ GitToolBox
 Big Data Tools
 visualGC
 VisualVM Launcher
+Avro and Parquet Viewer
 
 ## IDEA Optimize
 1.vmoptions
