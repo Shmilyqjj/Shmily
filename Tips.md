@@ -70,10 +70,10 @@ VisualVM Launcher
 ```text
 -Xms4096m
 -Xmx8192m
--XX:ReservedCodeCacheSize=512m
--XX:MetaspaceSize=250m
+-XX:ReservedCodeCacheSize=2048m
 -XX:+IgnoreUnrecognizedVMOptions
 -XX:+UseG1GC
+-XX:MaxGCPauseMillis=500
 -XX:SoftRefLRUPolicyMSPerMB=50
 -XX:CICompilerCount=2
 -XX:+HeapDumpOnOutOfMemoryError
