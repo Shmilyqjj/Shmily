@@ -58,6 +58,7 @@ GitToolBox
 arthas idea
 Antlr
 Go
+Kafka
 MybatisX
 Lombok
 GitToolBox
