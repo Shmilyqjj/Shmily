@@ -14,6 +14,7 @@ public class ListTest {
         vector();
         linkedList();
         listAdd();
+        removeIfFunc();
     }
 
     /**
@@ -100,6 +101,20 @@ public class ListTest {
         all.addAll(l2);
         all.forEach(System.out::printf);
         System.out.println("");
+    }
+
+    public static void removeIfFunc() {
+        List<String> checkedTasks = new ArrayList<>();
+        checkedTasks.add("a1");
+        checkedTasks.add("b1");
+        checkedTasks.add("c2");
+        checkedTasks.add("d2");
+        checkedTasks.add("e1");
+        checkedTasks.removeIf(t -> {
+            System.out.println("t = " + t);
+            return t.contains("2");
+        });
+        System.out.println(checkedTasks);
     }
 }
 
