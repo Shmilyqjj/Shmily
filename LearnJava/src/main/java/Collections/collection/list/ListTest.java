@@ -1,5 +1,6 @@
 package Collections.collection.list;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -115,6 +116,26 @@ public class ListTest {
             return t.contains("2");
         });
         System.out.println(checkedTasks);
+    }
+
+    /**
+     * List深拷贝
+     * @param src source
+     * @return target
+     * @param <T> type which implements serializable
+     * @throws IOException ioe
+     * @throws ClassNotFoundException class not found
+     */
+    public static <T> List<T> deepCopy(List<T> src) throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(byteOut);
+        out.writeObject(src);
+
+        ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+        ObjectInputStream in = new ObjectInputStream(byteIn);
+        @SuppressWarnings("unchecked")
+        List<T> dest = (List<T>) in.readObject();
+        return dest;
     }
 }
 
