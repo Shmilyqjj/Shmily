@@ -15,15 +15,15 @@
         <spark.version>3.5.1</spark.version>
         <hive.version>3.1.2</hive.version>
         <hadoop.version>3.2.1</hadoop.version>
-        <kyuubi.version>1.9.2</kyuubi.version>
+<!--        <kyuubi.version>1.9.2</kyuubi.version>-->
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.kyuubi</groupId>
-            <artifactId>kyuubi-hive-jdbc</artifactId>
-            <version>${kyuubi.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.kyuubi</groupId>-->
+<!--            <artifactId>kyuubi-hive-jdbc</artifactId>-->
+<!--            <version>${kyuubi.version}</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.apache.hive</groupId>
