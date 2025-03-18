@@ -3,6 +3,7 @@ package JavaAPIs;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 /**
  * @author Shmily
@@ -12,7 +13,7 @@ import java.net.UnknownHostException;
 
 public class IP2IntAndInt2IP {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
         // 数字转 IPv4 地址
         long number = 3967429803L;
         String ipv4FromNumber = numberToIpv4(number);
@@ -27,15 +28,24 @@ public class IP2IntAndInt2IP {
 
         // Ipv6 地址转数字
         String ipv6 = "FFFF:FFFF:7654:FEDA:1245:BA98:3210:4562";
-        BigInteger bigInteger = ipv6ToInt(ipv6);
+        BigInteger ipv6BigInteger = ipv6ToInt(ipv6);
         System.out.println("IPv6 Address: " + ipv6);
-        System.out.println("IPv6 as Number: " + bigInteger.toString());
+        System.out.println("IPv6 as Number: " + ipv6BigInteger.toString());
 
         // 数字 转 Ipv6 地址
-        String ipv6Str = intToIpv6(bigInteger);
-        System.out.println("Number: " + bigInteger);
+        String ipv6Str = intToIpv6(ipv6BigInteger);
+        System.out.println("Number: " + ipv6BigInteger);
         System.out.println("Number as IPv6: " + ipv6Str);
 
+        // IP数字与给定的IP地址是否为同一IP
+        System.out.println(ipv4NumberIsIP(number, ipv4FromNumber));
+    }
+
+    // IPv4数字与给定的IPv4地址是否为同一IP
+    public static boolean ipv4NumberIsIP(Number intIp, String strIp) throws UnknownHostException {
+        byte[] addr1 = InetAddress.getByName(String.valueOf(intIp)).getAddress();
+        byte[] addr2 = InetAddress.getByName(strIp).getAddress();
+        return Arrays.equals(addr1,addr2);
     }
 
     // IP 地址转数字
