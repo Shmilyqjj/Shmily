@@ -35,6 +35,7 @@
         <module>Openldap</module>
         <module>Trino</module>
         <module>Iceberg</module>
+        <module>JDBC</module>
         <module>Http</module>
     </modules>
 </project>
