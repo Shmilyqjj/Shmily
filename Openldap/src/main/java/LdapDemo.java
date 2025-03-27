@@ -10,7 +10,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
 public class LdapDemo{
-    public static void main(String[] args){
+    public static void main(String[] args) {
         System.out.println("IPAdress: " + args[0]);
         System.out.println("Username: " + args[1]);
         System.out.println("Password: " + args[2]);
