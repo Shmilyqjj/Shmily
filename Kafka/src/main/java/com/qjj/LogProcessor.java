@@ -1,4 +1,4 @@
-package com.weichuang;
+package com.qjj;
 
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
@@ -25,10 +25,7 @@ public class LogProcessor implements Processor<byte[], byte[]> {
 
     }
 
-    @Override
-    public void punctuate(long l) {
 
-    }
 
     @Override
     public void close() {

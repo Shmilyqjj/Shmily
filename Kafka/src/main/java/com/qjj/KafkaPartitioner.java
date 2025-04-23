@@ -1,4 +1,4 @@
-package com.weichuang;
+package com.qjj;
 
 import org.apache.kafka.clients.producer.Partitioner;
 import org.apache.kafka.common.Cluster;

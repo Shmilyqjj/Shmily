@@ -1,4 +1,4 @@
-package com.weichuang;
+package com.qjj;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -15,7 +15,7 @@ public class CustomNewConsumer {
         Properties props = new Properties();
 
         props.put("enable.auto.commit",true);
-        props.put("group.id","weichuang");
+        props.put("group.id","qjj");
         // 定义kakfa 服务的地址，不需要将所有broker指定上
         props.put("bootstrap.servers", "hadoop101:9092");
         // key的序列化类

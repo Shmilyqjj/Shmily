@@ -1,8 +1,5 @@
-package com.weichuang;
+package com.qjj;
 
-
-
-import kafka.tools.ConsoleProducer;
 import org.apache.kafka.clients.producer.*;
 
 import java.util.ArrayList;

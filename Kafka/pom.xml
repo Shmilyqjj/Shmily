@@ -9,9 +9,11 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <kafka.version>2.2.1</kafka.version>
+        <kafka.client.version>3.2.0</kafka.client.version>
         <hadoop.version>3.0.0</hadoop.version>
         <encoding>UTF-8</encoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
 
@@ -20,22 +22,52 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>0.11.0.0</version>
+            <version>${kafka.client.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka -->
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka_2.12</artifactId>
-            <version>0.11.0.0</version>
+            <version>${kafka.client.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-streams -->
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <version>0.11.0.0</version>
+            <version>${kafka.client.version}</version>
         </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!--main method in Jar-->
+                            <!-- java -jar形式执行时需指定mainClass -->
+                            <!-- 如果不指定mainClass 运行命令时需要java -cp $JarFile $mainClass -->
+                            <!--                            <mainClass>kyuubi.jdbc.JDBCTest</mainClass>-->
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>
