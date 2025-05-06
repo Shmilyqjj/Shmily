@@ -25,7 +25,7 @@
         <iceberg.version>1.1.0</iceberg.version>
         <hive.version>3.1.2</hive.version>
         <kafka.version>2.2.1</kafka.version>
-        <mysql.version>8.0.27</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <fastjson.version>1.2.71</fastjson.version>
         <encoding>UTF-8</encoding>
         <!--
