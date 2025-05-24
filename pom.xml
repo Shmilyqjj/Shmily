@@ -37,5 +37,6 @@
         <module>Iceberg</module>
         <module>JDBC</module>
         <module>Http</module>
+        <module>JSqlParser</module>
     </modules>
 </project>
