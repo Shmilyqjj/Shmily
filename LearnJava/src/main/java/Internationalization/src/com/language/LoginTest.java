@@ -1,4 +1,4 @@
-package com.language;
+package Internationalization.src.com.language;
 /**
  * 语言国际化
  * Locale("zh","CN")   Locale("en","US")

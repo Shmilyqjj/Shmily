@@ -1,3 +1,5 @@
+package DataStructure.src;
+
 /**
  * 功能：基本数据类型包装类
  * date:2018.12.7

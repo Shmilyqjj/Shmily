@@ -1,4 +1,4 @@
-/**
+package circulation.src; /**
  * 打印图形合集
  */
 import java.util.Scanner;

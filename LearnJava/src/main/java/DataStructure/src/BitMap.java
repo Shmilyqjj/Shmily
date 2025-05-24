@@ -1,3 +1,5 @@
+package DataStructure.src;
+
 public class BitMap {
     private byte[] bits;      //保存数据的
     private int capacity;    //容量

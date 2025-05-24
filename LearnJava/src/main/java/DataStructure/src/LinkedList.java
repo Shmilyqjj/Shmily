@@ -1,3 +1,5 @@
+package DataStructure.src;
+
 /**
 *功能：链表学习    用内部类实现
 */
