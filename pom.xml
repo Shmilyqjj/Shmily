@@ -38,5 +38,6 @@
         <module>JDBC</module>
         <module>Http</module>
         <module>JSqlParser</module>
+        <module>Kerberos</module>
     </modules>
 </project>
