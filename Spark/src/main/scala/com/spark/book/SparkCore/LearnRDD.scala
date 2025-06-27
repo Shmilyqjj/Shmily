@@ -10,7 +10,7 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.spark.rdd.JdbcRDD
 import org.apache.spark.rdd.RDD
 
-import scala.util.parsing.json.{JSONArray, JSONObject}
+//import scala.util.parsing.json.{JSONArray, JSONObject}
 
 /**
   * @Description:  Spark RDD读写基本操作学习 scala版本
@@ -119,10 +119,10 @@ object LearnRDD {
     println(a)
 
     //读取JSON文件
-    val inputJson = sc.textFile("Spark/src/main/scala/com/spark/book/SparkCore/Json_File")
-    import scala.util.parsing.json.JSON
-    val content = inputJson.map(JSON.parseFull)
-    println(content.collect().mkString(","))
+//    val inputJson = sc.textFile("Spark/src/main/scala/com/spark/book/SparkCore/Json_File")
+//    import scala.util.parsing.json.JSON
+//    val content = inputJson.map(JSON.parseFull)
+//    println(content.collect().mkString(","))
   }
 
   def readCSV_TSV(sc: SparkContext): Unit = {
@@ -183,11 +183,11 @@ object LearnRDD {
   //写出JSON内容
   def writeToJson(sc:SparkContext): Unit = {
     val path = "D:\\tmp\\tmp2"
-    val map1 = Map("name" -> "qjj","age" -> "21", "desc" -> JSONArray(List("weight","sex")))
-    val map2 = Map("name" -> "zxw","age" -> "21", "desc" -> JSONArray(List("weight","sex")))
-    val rdd = sc.parallelize(List(JSONObject(map1),JSONObject(map2)),1)
-    rdd.saveAsTextFile(path)
-    println("写出JSON内容到%s成功".format(path))
+//    val map1 = Map("name" -> "qjj","age" -> "21", "desc" -> JSONArray(List("weight","sex")))
+//    val map2 = Map("name" -> "zxw","age" -> "21", "desc" -> JSONArray(List("weight","sex")))
+//    val rdd = sc.parallelize(List(JSONObject(map1),JSONObject(map2)),1)
+//    rdd.saveAsTextFile(path)
+//    println("写出JSON内容到%s成功".format(path))
   }
 
   //写入CSV/TSV文件
