@@ -13,6 +13,7 @@ import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 import java.util
 import java.util.Properties
 import scala.collection.JavaConverters._
+import scala.collection.Seq
 import scala.collection.convert.ImplicitConversions.`map AsScala`
 
 /**
@@ -160,7 +161,7 @@ object SparkKafka2Hive {
     AdminClient.create(props)
   }
 
-  private def getStartingOffsets(adminClient: AdminClient, topic: String, groupId: String): Map[String, Long] = {
+  def getStartingOffsets(adminClient: AdminClient, topic: String, groupId: String): Map[String, Long] = {
     val topicDesc = adminClient.describeTopics(List(topic).asJava).values().get(topic).get()
     val topicPartitions: java.util.List[TopicPartition] = topicDesc.partitions().asScala
       .map(tp => new TopicPartition(topic, tp.partition()))
@@ -169,8 +170,15 @@ object SparkKafka2Hive {
       .listConsumerGroupOffsets(groupId, new ListConsumerGroupOffsetsOptions().topicPartitions(topicPartitions))
       .partitionsToOffsetAndMetadata()
       .get()
-    val groupOffsets: Map[String, Long] = offsets.asScala
-      .map { case (tp, offsetMeta) => (tp.partition().toString, offsetMeta.offset()) }
+    val groupOffsets: Map[String, Long] = Option(offsets)
+      .map(_.asScala)
+      .getOrElse(Seq.empty)
+      .flatMap {
+        case (tp, offsetMeta) =>
+          Option(tp).flatMap(t =>
+            Option(offsetMeta).map(m => (t.partition().toString, m.offset()))
+          )
+      }
       .toMap
     groupOffsets
   }
