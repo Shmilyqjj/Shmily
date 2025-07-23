@@ -1,4 +1,4 @@
-import common.utils.OssUtils;
+import common.utils.OSSUtils;
 
 import java.io.File;
 
@@ -9,7 +9,7 @@ import java.io.File;
  */
 public class TestOssUtils {
     public static void main(String[] args) {
-        OssUtils ossUtils = new OssUtils(
+        OSSUtils ossUtils = new OSSUtils(
                 "https://oss-cn-shenzhen.aliyuncs.com",
                 "your-access-key",
                 "your-secret-key",

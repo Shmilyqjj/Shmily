@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * OSS工具类
  */
-public class OssUtils {
+public class OSSUtils {
     private final OSS ossClient;
     private final String bucketName;
 
@@ -35,7 +35,7 @@ public class OssUtils {
      * @param accessKeySecret AccessKey Secret
      * @param bucketName   默认Bucket名称
      */
-    public OssUtils(String endpoint, String accessKeyId, String accessKeySecret, String bucketName) {
+    public OSSUtils(String endpoint, String accessKeyId, String accessKeySecret, String bucketName) {
         this.bucketName = bucketName;
         this.ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
     }
