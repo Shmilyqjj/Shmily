@@ -39,5 +39,6 @@
         <module>Http</module>
         <module>JSqlParser</module>
         <module>Kerberos</module>
+        <module>ObjectStorage</module>
     </modules>
 </project>
