@@ -105,4 +105,44 @@ public class LdapUserMgr {
         }
     }
 
+
+    /**
+     * 判断LDAP用户是否存在
+     * @param uid 用户ID
+     * @return true表示用户存在，false表示用户不存在或发生异常
+     */
+    public static boolean isUserExist(String uid) {
+        DirContext ctx = null;
+        try {
+            ctx = LdapConfig.getContext();
+
+            // 构造用户DN
+            String userDn = "uid=" + uid + "," + LdapConfig.USER_BASE_DN;
+
+            // 尝试获取用户属性
+            Attributes attrs = ctx.getAttributes(userDn);
+
+            // 如果能获取到属性，说明用户存在
+            return attrs != null && attrs.size() > 0;
+
+        } catch (NamingException e) {
+            // 如果捕获到NameNotFoundException，说明用户不存在
+            if (e instanceof javax.naming.NameNotFoundException) {
+                return false;
+            }
+            e.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (ctx != null) {
+                try {
+                    ctx.close();
+                } catch (NamingException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 }

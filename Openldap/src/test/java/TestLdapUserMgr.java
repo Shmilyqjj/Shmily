@@ -17,5 +17,8 @@ public class TestLdapUserMgr {
         if (modifyPassword) {
             System.out.println("Password modified");
         }
+
+        System.out.println(LdapUserMgr.isUserExist("qjj"));
+        System.out.println(LdapUserMgr.isUserExist("qjj1"));
     }
 }
