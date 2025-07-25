@@ -145,4 +145,30 @@ public class LdapUserMgr {
         }
     }
 
+    /**
+     * 删除LDAP user
+     * @param uid 要删除的user
+     * @return 删除是否成功
+     */
+    public static boolean deleteUser(String uid) {
+        DirContext ctx = null;
+        try {
+            ctx = LdapConfig.getContext();
+            String userDn = "uid=" + uid + "," + LdapConfig.USER_BASE_DN;
+            ctx.destroySubcontext(userDn);
+            return true;
+        } catch (Exception e) {
+            System.err.println("删除LDAP条目失败: " + e.getMessage());
+            return false;
+        } finally {
+            if (ctx != null) {
+                try {
+                    ctx.close();
+                } catch (NamingException e) {
+                    System.err.println("关闭LDAP连接时出错: " + e.getMessage());
+                }
+            }
+        }
+    }
+
 }
