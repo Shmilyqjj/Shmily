@@ -40,5 +40,6 @@
         <module>JSqlParser</module>
         <module>Kerberos</module>
         <module>ObjectStorage</module>
+        <module>MongoDB</module>
     </modules>
 </project>
