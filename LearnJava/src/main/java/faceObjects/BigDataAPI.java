@@ -58,6 +58,9 @@ public class BigDataAPI {
         System.out.println(new DecimalFormat("#").format(pi));//取所有整数部分
         System.out.println(new DecimalFormat("#.##%").format(pi));//以百分比方式计数，并取两位小数
 
+        // 科学记数法转换
+        BigDecimal decimal = new BigDecimal("4.081768481E9");
+        System.out.println(decimal.longValue());
 
     }
 }
