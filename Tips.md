@@ -39,6 +39,7 @@ git commit -m "rm-files"
 git push origin master
 
 ## IDEA Plugins
+idea continue插件（AI编程，搭配DeepSeek API以及其他OpenAPI）
 RESTFul-Tool
 Maven Helper
 Codeium
