@@ -16,12 +16,12 @@ import javax.naming.directory.InitialDirContext;
  * @Site: shmily-qjj.top
  * @Usage:
      java -cp Openldap-1.0-jar-with-dependencies.jar LDAPTest \
-     --urls "" \
-     --base-dn "" \
-     --username "" \
+     --urls "ldap://ldapServer1:389/ ldap://ldapServer2:389/" \
+     --base-dn "dc=xx,dc=xx,dc=xx" \
+     --username "cn=Manager,ou=Control,dc=xx,dc=xx,dc=xx" \
      --password "" \
-     --identity-attribute "" \
-     --email-attribute "" \
+     --identity-attribute "uid" \
+     --email-attribute "mail" \
      --login-user "" \
      --login-password ""
  */
