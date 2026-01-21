@@ -12,7 +12,7 @@
     <artifactId>api-iceberg</artifactId>
 
     <properties>
-        <hadoop.version>3.2.1</hadoop.version>
+        <hadoop.version>3.2.4</hadoop.version>
         <hive.version>3.1.2</hive.version>
         <scala.version>2.12</scala.version>
         <iceberg.version>1.0.0</iceberg.version>
