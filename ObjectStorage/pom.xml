@@ -14,6 +14,7 @@
     <url>http://maven.apache.org</url>
     <modules>
         <module>OSS</module>
+        <module>COS</module>
     </modules>
 
 
