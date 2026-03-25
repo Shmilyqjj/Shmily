@@ -28,6 +28,17 @@
             <artifactId>commons-io</artifactId>
             <version>2.14.0</version>
         </dependency>
+        <!-- 腾讯云 COS STS SDK：用于获取临时安全令牌 -->
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos-sts_api</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.0</version>
+        </dependency>
     </dependencies>
 
     <build>

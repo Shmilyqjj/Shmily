@@ -9,11 +9,16 @@ package common.utils;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
+import com.qcloud.cos.auth.BasicSessionCredentials;
 import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.exception.CosClientException;
+import com.qcloud.cos.http.HttpMethodName;
 import com.qcloud.cos.http.HttpProtocol;
 import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
+import com.tencent.cloud.CosStsClient;
+import com.tencent.cloud.Response;
+import com.tencent.cloud.assumerole.AssumeRoleParam;
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -21,8 +26,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * 腾讯云COS工具类
@@ -31,6 +40,11 @@ public class COSUtils {
     private final COSClient cosClient;
     private final String bucketName;
     private final String region;
+    private final String secretId;
+    private final String secretKey;
+    private String roleArn;
+    private long durationSeconds = 1800L;
+    private String basePath = "";
 
     /**
      * 构造函数
@@ -43,17 +57,50 @@ public class COSUtils {
     public COSUtils(String region, String secretId, String secretKey, String bucketName) {
         this.bucketName = bucketName;
         this.region = region;
-        
+        this.secretId = secretId;
+        this.secretKey = secretKey;
+
         // 初始化用户身份信息
         COSCredentials cred = new BasicCOSCredentials(secretId, secretKey);
-        
+
         // 设置bucket的地域
         ClientConfig clientConfig = new ClientConfig(new Region(region));
         // 设置使用https协议
         clientConfig.setHttpProtocol(HttpProtocol.https);
-        
+
         // 生成cos客户端
         this.cosClient = new COSClient(cred, clientConfig);
+    }
+
+    /**
+     * 构造函数（带STS配置）
+     *
+     * @param region          地域
+     * @param secretId        腾讯云 SecretId
+     * @param secretKey       腾讯云 SecretKey
+     * @param bucketName      存储桶名称
+     * @param roleArn         角色ARN（用于AssumeRole获取临时凭证）
+     * @param durationSeconds STS临时凭证有效期（秒）
+     * @param basePath        文件基础路径前缀
+     */
+    public COSUtils(String region, String secretId, String secretKey, String bucketName,
+                    String roleArn, long durationSeconds, String basePath) {
+        this(region, secretId, secretKey, bucketName);
+        this.roleArn = roleArn;
+        this.durationSeconds = durationSeconds;
+        this.basePath = basePath;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public void setDurationSeconds(long durationSeconds) {
+        this.durationSeconds = durationSeconds;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
     }
 
     /**
@@ -328,5 +375,213 @@ public class COSUtils {
      */
     public String getRegion() {
         return region;
+    }
+
+    /**
+     * 上传字符串内容到COS并返回STS预签名下载URL
+     * 使用长期凭证上传文件，使用STS临时凭证生成预签名URL（更安全）
+     *
+     * @param content  文件内容
+     * @param fileName 文件名
+     * @return STS预签名下载URL
+     */
+    public String uploadWithStsUrl(String content, String fileName) {
+        String objectName = basePath.isEmpty() ? fileName : basePath + "/" + fileName;
+        return uploadWithStsUrl(objectName, content.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * 上传字节数组到COS并返回STS预签名下载URL
+     * 使用长期凭证上传文件，使用STS临时凭证生成预签名URL（更安全）
+     *
+     * @param objectName COS对象名称（包含路径）
+     * @param bytes      字节数组
+     * @return STS预签名下载URL
+     */
+    public String uploadWithStsUrl(String objectName, byte[] bytes) {
+        try {
+            // 1. 使用长期凭证上传文件
+            try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentLength(bytes.length);
+                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, inputStream, objectMetadata);
+                cosClient.putObject(putObjectRequest);
+            }
+
+            // 2. 使用STS临时凭证生成预签名下载URL
+            return generateStsPresignedUrl(objectName);
+        } catch (CosClientException | IOException e) {
+            throw new RuntimeException("上传文件到COS并生成STS预签名URL失败", e);
+        }
+    }
+
+    /**
+     * 使用STS临时凭证生成预签名下载URL
+     *
+     * @param objectName COS对象名称
+     * @return 预签名URL
+     */
+    public String generateStsPresignedUrl(String objectName) {
+        return generateStsPresignedUrl(objectName, 24 * 60 * 60 * 1000); // 默认24小时有效
+    }
+
+    /**
+     * 使用STS临时凭证生成预签名下载URL
+     *
+     * @param objectName     COS对象名称
+     * @param expireTimeMillis URL过期时间（毫秒）
+     * @return 预签名URL
+     */
+    public String generateStsPresignedUrl(String objectName, long expireTimeMillis) {
+        try {
+            // 1. 获取STS临时凭证
+            Response stsResponse = getStsCredentials();
+            String tmpSecretId = stsResponse.credentials.tmpSecretId;
+            String tmpSecretKey = stsResponse.credentials.tmpSecretKey;
+            String sessionToken = stsResponse.credentials.sessionToken;
+
+            // 2. 使用临时凭证创建COS客户端
+            COSCredentials cred = new BasicSessionCredentials(tmpSecretId, tmpSecretKey, sessionToken);
+            ClientConfig clientConfig = new ClientConfig(new Region(region));
+            COSClient stsClient = new COSClient(cred, clientConfig);
+
+            try {
+                // 3. 生成预签名URL
+                Date expirationDate = new Date(System.currentTimeMillis() + expireTimeMillis);
+                GeneratePresignedUrlRequest req =
+                        new GeneratePresignedUrlRequest(bucketName, objectName, HttpMethodName.GET);
+                req.setExpiration(expirationDate);
+
+                URL url = stsClient.generatePresignedUrl(req);
+                return url.toString();
+            } finally {
+                stsClient.shutdown();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("生成STS预签名URL失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 获取STS临时凭证
+     * 如果配置了roleArn，使用AssumeRole接口；否则使用GetFederationToken接口
+     */
+    private Response getStsCredentials() throws Exception {
+        if (roleArn != null && !roleArn.isEmpty()) {
+            return getStsCredentialsByAssumeRole();
+        } else {
+            return getStsCredentialsByFederationToken();
+        }
+    }
+
+    /**
+     * 使用AssumeRole接口获取临时凭证
+     */
+    private Response getStsCredentialsByAssumeRole() throws Exception {
+        AssumeRoleParam assumeRoleParam = new AssumeRoleParam();
+        assumeRoleParam.setSecretId(secretId);
+        assumeRoleParam.setSecretKey(secretKey);
+        assumeRoleParam.setRegion(region);
+        assumeRoleParam.setRoleArn(roleArn);
+        assumeRoleParam.setRoleSessionName("cos-session");
+        assumeRoleParam.setHost("sts.tencentcloudapi.com");
+        assumeRoleParam.setSignatureMethod("HmacSHA256");
+        assumeRoleParam.setDurationSec((int) durationSeconds);
+        assumeRoleParam.setPolicy(buildDefaultPolicy());
+
+        Response response = CosStsClient.getRoleCredential(assumeRoleParam);
+        // AssumeRole返回的Token在token字段，需要转到sessionToken字段
+        if (response.credentials.token != null) {
+            response.credentials.sessionToken = response.credentials.token;
+        }
+        return response;
+    }
+
+    /**
+     * 使用GetFederationToken接口获取临时凭证
+     */
+    private Response getStsCredentialsByFederationToken() throws Exception {
+        TreeMap<String, Object> config = new TreeMap<>();
+        config.put("secretId", secretId);
+        config.put("secretKey", secretKey);
+        config.put("durationSeconds", durationSeconds);
+        config.put("domain", "sts.tencentcloudapi.com");
+        config.put("region", region);
+        config.put("policy", buildDefaultPolicy());
+
+        return CosStsClient.getCredential(config);
+    }
+
+    /**
+     * 构建默认的STS策略
+     * 限制临时密钥只能对指定bucket执行getObject操作
+     */
+    private String buildDefaultPolicy() {
+        String resourcePath = basePath.isEmpty() ? "*" : basePath + "/*";
+        String bucket = "qcs::cos:" + region + ":uid/" + getAppIdFromBucket() + ":" + bucketName + "/" + resourcePath;
+
+        Map<String, Object> policyMap = new HashMap<>();
+        policyMap.put("version", "2.0");
+
+        Map<String, Object> statement = new HashMap<>();
+        statement.put("effect", "allow");
+        statement.put("action", new String[]{"name/cos:GetObject"});
+        statement.put("resource", new String[]{bucket});
+
+        policyMap.put("statement", new Map[]{statement});
+
+        return toJsonString(policyMap);
+    }
+
+    /**
+     * 从bucket名称中提取appId
+     * COS bucket格式通常为: bucketName-appId
+     */
+    private String getAppIdFromBucket() {
+        if (bucketName == null || bucketName.isEmpty()) {
+            return "";
+        }
+        int lastDashIndex = bucketName.lastIndexOf('-');
+        if (lastDashIndex > 0 && lastDashIndex < bucketName.length() - 1) {
+            return bucketName.substring(lastDashIndex + 1);
+        }
+        return "";
+    }
+
+    /**
+     * 简单的JSON序列化方法
+     */
+    private String toJsonString(Map<String, Object> map) {
+        StringBuilder sb = new StringBuilder("{");
+        boolean first = true;
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (!first) sb.append(",");
+            sb.append("\"").append(entry.getKey()).append("\":");
+            Object value = entry.getValue();
+            if (value instanceof String) {
+                sb.append("\"").append(value).append("\"");
+            } else if (value instanceof String[]) {
+                sb.append("[");
+                String[] arr = (String[]) value;
+                for (int i = 0; i < arr.length; i++) {
+                    if (i > 0) sb.append(",");
+                    sb.append("\"").append(arr[i]).append("\"");
+                }
+                sb.append("]");
+            } else if (value instanceof Map[]) {
+                sb.append("[");
+                Map[] arr = (Map[]) value;
+                for (int i = 0; i < arr.length; i++) {
+                    if (i > 0) sb.append(",");
+                    sb.append(toJsonString(arr[i]));
+                }
+                sb.append("]");
+            } else {
+                sb.append(value);
+            }
+            first = false;
+        }
+        sb.append("}");
+        return sb.toString();
     }
 }
