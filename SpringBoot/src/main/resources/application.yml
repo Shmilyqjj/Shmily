@@ -8,9 +8,6 @@ logging:
     top.shmilyqjj.springboot.controller: debug
     top.shmilyqjj.springboot.controller.channel: debug
 spring:
-  mvc:
-    converters:
-      preferred-json-mapper: gson
   datasource:
     url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
     username: root
@@ -20,6 +17,22 @@ spring:
     consumer:
       bootstrap-servers: localhost:9092
       auto-offset-reset: latest
+  # Spring AI OpenAI 配置 - 支持自定义云厂商大模型服务
+  # 注意：Spring AI 默认追加 /v1/chat/completions 到 base-url
+  # 如果你的 base-url 已包含 /v1，需要配置 completions-path
+  ai:
+    model:
+      chat: openai
+    openai:
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+      api-key: ${OPENAI_API_KEY:your-api-key-here}
+      chat:
+        # 覆盖默认的 completions-path，适配 URL 已包含 /v1 的服务
+        completions-path: ${OPENAI_COMPLETIONS_PATH:/chat/completions}
+        options:
+          model: ${AI_MODEL:glm-5}
+          temperature: 0.7
+
 mybatis:
   typeAliasesPackage: top.shmilyqjj.springboot.models
   mapperLocations: classpath:mapper/*.xml
