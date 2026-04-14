@@ -8,6 +8,10 @@ logging:
     top.shmilyqjj.springboot.controller: debug
     top.shmilyqjj.springboot.controller.channel: debug
 spring:
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
   datasource:
     url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
     username: root
@@ -17,21 +21,53 @@ spring:
     consumer:
       bootstrap-servers: localhost:9092
       auto-offset-reset: latest
-  # Spring AI OpenAI 配置 - 支持自定义云厂商大模型服务
-  # 注意：Spring AI 默认追加 /v1/chat/completions 到 base-url
-  # 如果你的 base-url 已包含 /v1，需要配置 completions-path
+  # Redis：Spring AI Redis 向量库使用 Jedis（与 spring-ai-redis-store 一致），勿用 lettuce
+  # RediSearch 建向量索引仅允许逻辑库 0；向量连接会固定用 db0。若需非 0 库存其它业务数据可保留 database，向量仍写 db0。
+  # 本机无密码：username 勿默认 default（会触发 AUTH）；无 ACL 用户则留空，仅在有密码时再配 REDIS_USERNAME
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      client-type: jedis
+      ssl:
+        enabled: ${REDIS_SSL:false}
+  autoconfigure:
+    exclude:
+      # 由 KnowledgeRedisVectorStoreConfig 注册，以声明 kbDocId 等元数据字段（否则按 kbDocId 删除会失败）
+      - org.springframework.ai.vectorstore.redis.autoconfigure.RedisVectorStoreAutoConfiguration
+  # Spring AI OpenAI 配置（OpenAI 兼容网关）
+  # base-url 建议以 /v1 结尾；chat 使用 completions-path，embedding 使用 embeddings-path，避免重复 /v1
   ai:
     model:
       chat: openai
     openai:
-      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+      # 官方默认带版本前缀；阿里云等兼容模式同样使用 .../v1
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
       api-key: ${OPENAI_API_KEY:your-api-key-here}
       chat:
-        # 覆盖默认的 completions-path，适配 URL 已包含 /v1 的服务
         completions-path: ${OPENAI_COMPLETIONS_PATH:/chat/completions}
         options:
           model: ${AI_MODEL:glm-5}
           temperature: 0.7
+      # 若 base-url 已含 /v1，此处必须为 /embeddings，否则会请求 .../v1/v1/embeddings（404）
+      # 若 base-url 不含版本段（极少见），可通过 OPENAI_EMBEDDINGS_PATH 覆盖为 /v1/embeddings
+      embedding:
+        # 向量 / Embedding 专用 Key；不配置时与上方 spring.ai.openai.api-key 相同（见下方默认值链）
+        api-key: ${OPENAI_EMBEDDING_API_KEY:${OPENAI_API_KEY:your-api-key-here}}
+        embeddings-path: ${OPENAI_EMBEDDINGS_PATH:/embeddings}
+        options:
+          model: ${AI_EMBEDDING_MODEL:text-embedding-v4}
+          # DashScope text-embedding-v3/v4 等与 OpenAI 兼容接口支持 dimensions；默认 1024，须与检索侧一致
+          dimensions: ${AI_EMBEDDING_DIMENSIONS:2048}
+    # Redis 向量库（需 Redis Stack / RediSearch + 向量模块）
+    vectorstore:
+      redis:
+        initialize-schema: true
+        index-name: ${REDIS_VECTOR_INDEX:kb-vector-index}
+        prefix: ${REDIS_VECTOR_PREFIX:kb:}
 
 mybatis:
   typeAliasesPackage: top.shmilyqjj.springboot.models
@@ -42,3 +78,10 @@ kafka:
   consumer:
     topic: qjj
     group: qjj_spring_kafka_group
+
+# 知识库文件落盘目录（须为可写绝对路径；勿仅用 ./ 相对路径，嵌入式 Tomcat 工作目录在 tmp 下会导致目录不存在）
+app:
+  knowledge-base:
+    storage-dir: ${KB_STORAGE_DIR:${java.io.tmpdir}/shmily-knowledge-base}
+    # true：每次启动都全量重建 Redis 向量（最稳、慢）。false：仅在「库有文档但 Redis 索引无向量」时启动自动重建
+    reindex-from-db-on-startup: ${KB_REINDEX_FROM_DB_ON_STARTUP:false}

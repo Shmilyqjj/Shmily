@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SchedulerTask {
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 300000)
     public void func() {
         System.out.println("Application is running");
     }

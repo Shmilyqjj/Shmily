@@ -1,5 +1,6 @@
 CREATE DATABASE IF NOT EXISTS test DEFAULT CHARACTER SET utf8;
 
+-- 用户表
 CREATE TABLE test.user(
   id varchar(255) NOT NULL DEFAULT (UUID ()),
   name varchar(255) NOT NULL UNIQUE,
@@ -10,3 +11,12 @@ CREATE TABLE test.user(
 INSERT INTO test.user(name,age) VALUES('QJJ', 26);
 INSERT INTO test.user(name,age) VALUES('ABC', 26);
 INSERT INTO test.user(name,age) VALUES('aa', 26),('bb', 26),('cc', 26),('dd', 26),('ee', 26),('ff', 26),('gg', 26),('hh', 26),('ii', 26),('jj', 26),('kk', 26),('ll', 26),('mm', 26),('nn', 26),('oo', 26),('pp', 26),('qq', 26),('rr', 26),('ss', 26),('tt', 26),('uu', 26),('vv', 26),('ww', 26),('xx', 26),('yy', 26),('zz', 26);
+
+-- 知识库管理
+CREATE TABLE IF NOT EXISTS test.kb_document (
+                                                id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                                                original_filename VARCHAR(512) NOT NULL,
+                                                stored_filename VARCHAR(512) NOT NULL,
+                                                content_type VARCHAR(128) NULL,
+                                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

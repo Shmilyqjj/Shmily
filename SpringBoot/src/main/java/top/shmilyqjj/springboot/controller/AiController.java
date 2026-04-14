@@ -8,14 +8,19 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.shmilyqjj.springboot.exception.ApiErrorCode;
+import top.shmilyqjj.springboot.exception.ApiException;
 import top.shmilyqjj.springboot.models.request.AiChatReq;
 import top.shmilyqjj.springboot.models.response.AiChatResponse;
 
@@ -24,7 +29,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +45,7 @@ import java.util.Map;
 public class AiController {
 
     private final ChatModel chatModel;
+    private final ObjectProvider<EmbeddingModel> embeddingModelProvider;
 
     @Value("${spring.ai.openai.base-url:未配置}")
     private String baseUrl;
@@ -50,20 +56,63 @@ public class AiController {
     @Value("${spring.ai.openai.chat.options.model:未配置}")
     private String model;
 
+    @Value("${spring.ai.model.chat:未配置}")
+    private String springAiModelChat;
+
+    @Value("${spring.ai.openai.chat.completions-path:未配置}")
+    private String completionsPath;
+
+    @Value("${spring.ai.openai.chat.options.temperature:未配置}")
+    private String chatTemperature;
+
+    @Value("${spring.ai.openai.embedding.api-key:未配置}")
+    private String embeddingApiKey;
+
+    @Value("${spring.ai.openai.embedding.embeddings-path:未配置}")
+    private String embeddingEmbeddingsPath;
+
+    @Value("${spring.ai.openai.embedding.options.model:未配置}")
+    private String embeddingModel;
+
+    @Value("${spring.ai.openai.embedding.options.dimensions:未配置}")
+    private String embeddingDimensions;
+
     @GetMapping("/config")
-    @Operation(summary = "查看AI配置", description = "诊断接口：查看当前Spring AI配置")
-    public Map<String, String> getConfig() {
-        Map<String, String> config = new HashMap<>();
+    @Operation(summary = "查看AI配置", description = "诊断接口：查看当前 Spring AI 的聊天与 Embedding 等配置")
+    public Map<String, Object> getConfig() {
+        Map<String, Object> config = new LinkedHashMap<>();
         config.put("baseUrl", baseUrl);
-        config.put("apiKey", apiKey.length() > 10 ? apiKey.substring(0, 10) + "..." : apiKey);
+        config.put("apiKey", maskSecret(apiKey));
         config.put("model", model);
         config.put("chatModelInjected", chatModel != null ? "YES" : "NO");
+        config.put("springAiModelChat", springAiModelChat);
+        config.put("completionsPath", completionsPath);
+        config.put("chatTemperature", chatTemperature);
+
+        Map<String, Object> embedding = new LinkedHashMap<>();
+        embedding.put("apiKey", maskSecret(embeddingApiKey));
+        embedding.put("embeddingsPath", embeddingEmbeddingsPath);
+        embedding.put("model", embeddingModel);
+        embedding.put("dimensions", embeddingDimensions);
+        embedding.put("embeddingModelInjected", embeddingModelProvider.getIfAvailable() != null ? "YES" : "NO");
+        config.put("embedding", embedding);
+
         return config;
+    }
+
+    private static String maskSecret(String secret) {
+        if (secret == null || secret.isEmpty()) {
+            return secret;
+        }
+        return secret.length() > 10 ? secret.substring(0, 10) + "..." : secret;
     }
 
     @PostMapping("/chat")
     @Operation(summary = "AI 聊天", description = "发送消息给 AI 模型并获取回复")
     public AiChatResponse chat(@RequestBody AiChatReq request) {
+        if (request == null || !StringUtils.hasText(request.getMessage())) {
+            throw new ApiException(ApiErrorCode.AI_MESSAGE_EMPTY);
+        }
         log.info("AI chat request: message={}, model={}", request.getMessage(), request.getModel());
 
         // 构建聊天选项（支持请求级别的参数覆盖）
@@ -106,6 +155,9 @@ public class AiController {
     public String simpleChat(HttpServletRequest request) throws IOException {
         Charset charset = resolveRequestCharset(request);
         String message = StreamUtils.copyToString(request.getInputStream(), charset);
+        if (!StringUtils.hasText(message)) {
+            throw new ApiException(ApiErrorCode.AI_MESSAGE_EMPTY);
+        }
         log.info("Simple AI chat request: {}", message);
         UserMessage userMessage = new UserMessage(message);
         Prompt prompt = new Prompt(List.of(userMessage));
