@@ -18,7 +18,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring-ai.version>1.1.4</spring-ai.version>
+        <spring-ai.version>1.1.8</spring-ai.version>
     </properties>
 
     <repositories>
