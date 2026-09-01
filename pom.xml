@@ -41,5 +41,6 @@
         <module>Kerberos</module>
         <module>ObjectStorage</module>
         <module>MongoDB</module>
+        <module>Druid</module>
     </modules>
 </project>
